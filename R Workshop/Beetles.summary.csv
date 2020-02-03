@@ -1,0 +1,72 @@
+"","Species","family","X2013","X2014","X2015","X2016","X2017","X2018","Total","value.sum","value.mean","value.sd","value.min","value.max","value.length"
+"Aegomorphus modestus","Aegomorphus modestus","Cerambycidae",0,3,3,3,1,0,10,20,2.85714285714286,3.4364987719369,0,10,7
+"Cyrtophorus verrucosus","Cyrtophorus verrucosus","Cerambycidae",0,0,0,3,11,1,15,30,4.28571428571429,6.15668432719771,0,15,7
+"Gaurotes cyanipennis","Gaurotes cyanipennis","Cerambycidae",0,0,1,1,9,2,13,26,3.71428571428571,5.15474815790535,0,13,7
+"Knulliana cincta","Knulliana cincta","Cerambycidae",1,0,22,11,6,1,41,82,11.7142857142857,15.0744185704821,0,41,7
+"Leptostylus transversus","Leptostylus transversus","Cerambycidae",1,0,1,3,0,1,6,12,1.71428571428571,2.1380899352994,0,6,7
+"Lepturges confluens","Lepturges confluens","Cerambycidae",0,1,4,3,6,0,14,28,4,4.93288286231625,0,14,7
+"Megacyllene caryae","Megacyllene caryae","Cerambycidae",0,0,4,1,13,0,18,36,5.14285714285714,7.35818300552909,0,18,7
+"Molorchus bimaculatus","Molorchus bimaculatus","Cerambycidae",0,0,3,2,3,0,8,16,2.28571428571429,2.87020822207993,0,8,7
+"Neoclytus acuminatus","Neoclytus acuminatus","Cerambycidae",30,43,218,209,112,12,624,1248,178.285714285714,213.509339597213,12,624,7
+"Urgleptes querci","Urgleptes querci","Cerambycidae",0,0,3,7,0,11,21,42,6,7.83156008298049,0,21,7
+"Xylotrechus colonus","Xylotrechus colonus","Cerambycidae",5,3,27,66,22,11,134,268,38.2857142857143,47.2924034975114,3,134,7
+"Dryophthorus americanus","Dryophthorus americanus","Curculionidae",0,0,0,2,2,0,4,8,1.14285714285714,1.57359158493889,0,4,7
+"Lechriops oculata","Lechriops oculata","Curculionidae",0,0,0,0,7,1,8,16,2.28571428571429,3.59231985000806,0,8,7
+"Stenoscelis brevis","Stenoscelis brevis","Curculionidae",0,0,1,11,12,5,29,58,8.28571428571429,10.4197614450346,0,29,7
+"Amphicerus bicaudatus","Amphicerus bicaudatus","Bostrichidae",1,0,0,0,0,0,1,2,0.285714285714286,0.487950036474267,0,1,7
+"Prostephanus punctatus","Prostephanus punctatus","Bostrichidae",0,0,0,0,2,0,2,4,0.571428571428571,0.975900072948533,0,2,7
+"Ambrosiophilus atratus","Ambrosiophilus atratus","Curculionidae",2,1,17,16,24,3,63,126,18,21.7408984788271,1,63,7
+"Cyclorhipidion pelliculosum","Cyclorhipidion pelliculosum","Curculionidae",1,0,0,45,42,0,88,176,25.1428571428571,34.4210622121039,0,88,7
+"Monarthrum fasciatum","Monarthrum fasciatum","Curculionidae",3,1,46,193,31,7,281,562,80.2857142857143,111.224569056952,1,281,7
+"Monarthrum mali","Monarthrum mali","Curculionidae",4,2,5,53,6,0,70,140,20,28.8386314978133,0,70,7
+"Xylosandrus germanus","Xylosandrus germanus","Curculionidae",7,5,44,124,85,7,272,544,77.7142857142857,96.9255973856825,5,272,7
+"Cnesinus strigicollis","Cnesinus strigicollis","Curculionidae",0,0,0,16,15,0,31,62,8.85714285714286,12.1987509118567,0,31,7
+"Hylesinus aculeatus","Hylesinus aculeatus","Curculionidae",0,0,2,1,0,0,3,6,0.857142857142857,1.21498579258791,0,3,7
+"Phloeotribus liminaris","Phloeotribus liminaris","Curculionidae",7,1,47,56,10,0,121,242,34.5714285714286,44.290168746789,0,121,7
+"Agrilus sp","Agrilus sp","Buprestidae",0,2,0,1,0,0,3,6,0.857142857142857,1.21498579258791,0,3,7
+"Cryptolestes sp ","Cryptolestes sp ","Laemophloeidae",13,0,0,0,0,1,14,28,4,6.50640709864771,0,14,7
+"Laemophloeus biguttatus","Laemophloeus biguttatus","Laemophloeidae",23,0,0,0,0,0,23,46,6.57142857142857,11.2228508389081,0,23,7
+"Pediacus sp ","Pediacus sp ","Cucujidae",2,0,0,0,0,0,2,4,0.571428571428571,0.975900072948533,0,2,7
+"Chariessa pilosa","Chariessa pilosa","Cleridae",0,2,10,6,0,1,19,38,5.42857142857143,7.02037850017464,0,19,7
+"Cymatodera bicolor","Cymatodera bicolor","Cleridae",0,1,5,3,0,0,9,18,2.57142857142857,3.40867241298539,0,9,7
+"Enoclerus nigrifrons","Enoclerus nigrifrons","Cleridae",0,0,1,8,0,0,9,18,2.57142857142857,4.07664661444276,0,9,7
+"Enoclerus nigripes","Enoclerus nigripes","Cleridae",16,0,36,32,50,29,163,326,46.5714285714286,53.7024429700585,0,163,7
+"Placopterus thoracicus","Placopterus thoracicus","Cleridae",0,0,6,2,0,0,8,16,2.28571428571429,3.3523268393901,0,8,7
+"Pyticeroides laticornis","Pyticeroides laticornis","Cleridae",1,0,2,19,9,1,32,64,9.14285714285714,12.1576940169394,0,32,7
+"Zenodosus sanguineus","Zenodosus sanguineus","Thanerocleridae",1,0,0,1,1,0,3,6,0.857142857142857,1.0690449676497,0,3,7
+"Anelaphus spp","Anelaphus spp","Cerambycidae",126,4,755,411,333,18,1647,3294,470.571428571429,581.46334282362,4,1647,7
+"Anisandrus spp","Anisandrus spp","Curculionidae",0,0,3,25,2,0,30,60,8.57142857142857,13.0621226306848,0,30,7
+"Braconidae","Braconidae","Braconidae",0,0,0,86,1,3,90,180,25.7142857142857,42.5782193369422,0,90,7
+"Cossonus spp","Cossonus spp","Curculionidae",0,2,2,4,3,0,11,22,3.14285714285714,3.76069902316805,0,11,7
+"Cathartosilvanus imbellus","Cathartosilvanus imbellus","Silvanidae",0,0,0,0,7,0,7,14,2,3.41565025531987,0,7,7
+"Corthylus punctatissimus","Corthylus punctatissimus","Curculionidae",0,0,1,8,6,0,15,30,4.28571428571429,5.73626724488686,0,15,7
+"Catogenus spp","Catogenus spp","Passandridae",2,0,0,1,0,6,9,18,2.57142857142857,3.5523298860111,0,9,7
+"Ceutorhynchus spp","Ceutorhynchus spp","Curculionidae",1,0,0,12,12,0,25,50,7.14285714285714,9.63376996868432,0,25,7
+"Chrysobothris spp","Chrysobothris spp","Buprestidae",1,0,0,0,0,4,5,10,1.42857142857143,2.14919697074224,0,5,7
+"Chrysopidae","Chrysopidae","Chrysopidae",1,6,0,16,7,0,30,60,8.57142857142857,11.0129793555474,0,30,7
+"Conotrachelus spp","Conotrachelus spp","Curculionidae",0,4,32,157,44,3,240,480,68.5714285714286,93.3806852670957,0,240,7
+"Curculio spp","Curculio spp","Curculionidae",0,0,2,3,0,0,5,10,1.42857142857143,1.98805959477601,0,5,7
+"Elaphidion mucronatum","Elaphidion mucronatum","Cerambycidae",1,0,9,1,1,0,12,24,3.42857142857143,4.92805380304581,0,12,7
+"Eupogonius pauper","Eupogonius pauper","Cerambycidae",0,1,5,5,0,0,11,22,3.14285714285714,4.14039335605413,0,11,7
+"Euwallacea validus","Euwallacea validus","Curculionidae",2,1,1,0,0,0,4,8,1.14285714285714,1.4638501094228,0,4,7
+"Hemerobiidae","Hemerobiidae","Hemerobiidae",21,41,0,76,2,2,142,284,40.5714285714286,52.5162106492117,0,142,7
+"Histeridae","Histeridae","Histeridae",0,1,0,78,89,20,188,376,53.7142857142857,70.182415380004,0,188,7
+"Hylastes spp","Hylastes spp","Curculionidae",0,0,1,0,0,0,1,2,0.285714285714286,0.487950036474267,0,1,7
+"Hylocurus spp","Hylocurus spp","Curculionidae",0,0,3,0,3,0,6,12,1.71428571428571,2.36038737740833,0,6,7
+"Hypothenemus spp","Hypothenemus spp","Curculionidae",0,3,6,16,38,0,63,126,18,23.9652526240249,0,63,7
+"Obrium maculatum","Obrium maculatum","Cerambycidae",0,0,2,0,0,0,2,4,0.571428571428571,0.975900072948533,0,2,7
+"Ichneumonidae","Ichneumonidae","Ichneumonidae",0,23,3,64,41,5,136,272,38.8571428571429,48.7627883104476,0,136,7
+"Liopinus alpha","Liopinus alpha","Cerambycidae",0,0,10,4,3,0,17,34,4.85714285714286,6.44020112078734,0,17,7
+"Madoniella dislocata","Madoniella dislocata","Cleridae",0,1,8,35,15,1,60,120,17.1428571428571,22.5789619736941,0,60,7
+"Neoclytus mucronatus","Neoclytus mucronatus","Cerambycidae",0,0,0,1,0,4,5,10,1.42857142857143,2.14919697074224,0,5,7
+"Neorthopleura thoracica","Neorthopleura thoracica","Cleridae",2,4,7,6,4,0,23,46,6.57142857142857,7.61264612026468,0,23,7
+"Notoxus spp","Notoxus spp","Anthicidae",10,39,3,5,0,0,57,114,16.2857142857143,22.5367424865432,0,57,7
+"Phymatodes amoenus","Phymatodes amoenus","Cerambycidae",2,0,0,5,3,1,11,22,3.14285714285714,3.89138242053607,0,11,7
+"Pityophthorus spp","Pityophthorus spp","Curculionidae",0,11,2,1,1,0,15,30,4.28571428571429,6.10230245383619,0,15,7
+"Plocamus echidna","Plocamus echidna","Curculionidae",0,0,0,5,1,0,6,12,1.71428571428571,2.62769136406122,0,6,7
+"Scolytus sp","Scolytus sp","Curculionidae",0,0,6,4,2,0,12,24,3.42857142857143,4.42933941113657,0,12,7
+"Texania campestris","Texania campestris","Buprestidae",0,0,0,5,0,0,5,10,1.42857142857143,2.43975018237133,0,5,7
+"Tenebroides spp","Tenebroides spp","Trogossitidae",14,0,0,3136,43,3,3196,6392,913.142857142857,1539.16410523932,0,3196,7
+"Xyleborinus saxeseni","Xyleborinus saxeseni","Curculionidae",813,809,1357,3352,1746,22,8099,16198,2314,2755.40172509684,22,8099,7
+"Xylobiops basilaris","Xylobiops basilaris","Bostrichidae",8,24,138,158,41,3,372,744,106.285714285714,132.693524440989,3,372,7
+"Xylosandrus crassiusculus","Xylosandrus crassiusculus","Curculionidae",190,131,417,2825,2343,17,5923,11846,1692.28571428571,2188.33366699305,17,5923,7
