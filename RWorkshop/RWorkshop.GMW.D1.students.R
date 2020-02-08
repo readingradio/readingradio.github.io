@@ -247,7 +247,7 @@ digits[j]
 colnames(ppl.matrix)<-c('Teenagers', 'Adults')
 ppl.matrix
 
-# Call the column of Xavier alumni
+# Call the column of grownups
 ppl.matrix[, "Adults"]
 
 
