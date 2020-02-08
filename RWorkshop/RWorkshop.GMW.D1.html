@@ -688,7 +688,7 @@ new.one[rows2, columns[2]]</code></pre>
 <h2>Reading in data</h2>
 <p>The <strong><code>read.csv()</code></strong> function is useful. First check that you are in the right drive, and if not, navigate to the proper directory where you have stored the files for the workshop. You can scroll down to Session &gt; Set Working Directory or use <code>getwd()</code> and <code>setwd()</code> on the command line to see what directory R is working in, and change the directory if necessary.</p>
 <pre class="r"><code>getwd()
-setwd(&quot;/Users/will1809/OneDrive/R Workshop&quot;)
+setwd(&quot;/Users/will1809/OneDrive - purdue.edu/TCD microbiome spring 2017/Aaron Manuscript/Geoff_Final_RFiles/Juglans.microbiome.github/readingradio.github.io/RWorkshop&quot;)
 beetles &lt;- read.csv(&quot;WillGinzEnvEnt2019.Fall.csv&quot;)</code></pre>
 <p><strong><code>head()</code></strong> Looks at just the first six, or a different number of rows specified by <code>n=</code>.</p>
 <p><strong><code>names()</code></strong> returns the same thing as <code>colnames()</code>.</p>
@@ -813,20 +813,20 @@ head(orderBy(~ -Total, new.data.frame))</code></pre>
 ## Anelaphus spp                         Anelaphus spp  Cerambycidae   126     4
 ## Neoclytus acuminatus           Neoclytus acuminatus  Cerambycidae    30    43
 ## Xylobiops basilaris             Xylobiops basilaris  Bostrichidae     8    24
-##                           X2015 X2016 X2017 X2018 Total value.mean  value.sd
-## Xyleborinus saxeseni       1357  3352  1746    22  8099  2314.0000 2755.4017
-## Xylosandrus crassiusculus   417  2825  2343    17  5923  1692.2857 2188.3337
-## Tenebroides spp               0  3136    43     3  3196   913.1429 1539.1641
-## Anelaphus spp               755   411   333    18  1647   470.5714  581.4633
-## Neoclytus acuminatus        218   209   112    12   624   178.2857  213.5093
-## Xylobiops basilaris         138   158    41     3   372   106.2857  132.6935
-##                           value.min value.max value.length
-## Xyleborinus saxeseni             22      8099            7
-## Xylosandrus crassiusculus        17      5923            7
-## Tenebroides spp                   0      3196            7
-## Anelaphus spp                     4      1647            7
-## Neoclytus acuminatus             12       624            7
-## Xylobiops basilaris               3       372            7</code></pre>
+##                           X2015 X2016 X2017 X2018 Total value.sum value.mean
+## Xyleborinus saxeseni       1357  3352  1746    22  8099     16198  2314.0000
+## Xylosandrus crassiusculus   417  2825  2343    17  5923     11846  1692.2857
+## Tenebroides spp               0  3136    43     3  3196      6392   913.1429
+## Anelaphus spp               755   411   333    18  1647      3294   470.5714
+## Neoclytus acuminatus        218   209   112    12   624      1248   178.2857
+## Xylobiops basilaris         138   158    41     3   372       744   106.2857
+##                            value.sd value.min value.max value.length
+## Xyleborinus saxeseni      2755.4017        22      8099            7
+## Xylosandrus crassiusculus 2188.3337        17      5923            7
+## Tenebroides spp           1539.1641         0      3196            7
+## Anelaphus spp              581.4633         4      1647            7
+## Neoclytus acuminatus       213.5093        12       624            7
+## Xylobiops basilaris        132.6935         3       372            7</code></pre>
 <pre class="r"><code>tail(orderBy(~ -Total, new.data.frame))</code></pre>
 <pre><code>##                                       Species          family X2013 X2014 X2015
 ## Zenodosus sanguineus     Zenodosus sanguineus Thanerocleridae     1     0     0
@@ -835,20 +835,20 @@ head(orderBy(~ -Total, new.data.frame))</code></pre>
 ## Obrium maculatum             Obrium maculatum    Cerambycidae     0     0     2
 ## Amphicerus bicaudatus   Amphicerus bicaudatus    Bostrichidae     1     0     0
 ## Hylastes spp                     Hylastes spp   Curculionidae     0     0     1
-##                        X2016 X2017 X2018 Total value.mean  value.sd value.min
-## Zenodosus sanguineus       1     1     0     3  0.8571429 1.0690450         0
-## Prostephanus punctatus     0     2     0     2  0.5714286 0.9759001         0
-## Pediacus sp                0     0     0     2  0.5714286 0.9759001         0
-## Obrium maculatum           0     0     0     2  0.5714286 0.9759001         0
-## Amphicerus bicaudatus      0     0     0     1  0.2857143 0.4879500         0
-## Hylastes spp               0     0     0     1  0.2857143 0.4879500         0
-##                        value.max value.length
-## Zenodosus sanguineus           3            7
-## Prostephanus punctatus         2            7
-## Pediacus sp                    2            7
-## Obrium maculatum               2            7
-## Amphicerus bicaudatus          1            7
-## Hylastes spp                   1            7</code></pre>
+##                        X2016 X2017 X2018 Total value.sum value.mean  value.sd
+## Zenodosus sanguineus       1     1     0     3         6  0.8571429 1.0690450
+## Prostephanus punctatus     0     2     0     2         4  0.5714286 0.9759001
+## Pediacus sp                0     0     0     2         4  0.5714286 0.9759001
+## Obrium maculatum           0     0     0     2         4  0.5714286 0.9759001
+## Amphicerus bicaudatus      0     0     0     1         2  0.2857143 0.4879500
+## Hylastes spp               0     0     0     1         2  0.2857143 0.4879500
+##                        value.min value.max value.length
+## Zenodosus sanguineus           0         3            7
+## Prostephanus punctatus         0         2            7
+## Pediacus sp                    0         2            7
+## Obrium maculatum               0         2            7
+## Amphicerus bicaudatus          0         1            7
+## Hylastes spp                   0         1            7</code></pre>
 <pre class="r"><code># try to plot species abundance curve
 ordered.data &lt;- orderBy(~ -Total, new.data.frame)
 plot(ordered.data$Species, log(ordered.data$Total)) ### thats not what we want</code></pre>

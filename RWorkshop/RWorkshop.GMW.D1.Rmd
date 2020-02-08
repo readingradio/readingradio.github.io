@@ -382,7 +382,7 @@ The **`read.csv()`** function is useful. First check that you are in the right d
 
 ```{r, cache=T, results='hide'}
 getwd()
-setwd("/Users/will1809/OneDrive/R Workshop")
+setwd("/Users/will1809/OneDrive - purdue.edu/TCD microbiome spring 2017/Aaron Manuscript/Geoff_Final_RFiles/Juglans.microbiome.github/readingradio.github.io/RWorkshop")
 beetles <- read.csv("WillGinzEnvEnt2019.Fall.csv")
 ```
 
