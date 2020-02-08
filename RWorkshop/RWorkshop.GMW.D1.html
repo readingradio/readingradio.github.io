@@ -414,7 +414,7 @@ FALSE | FALSE
 <p><code>New.object &lt;- Line.of.operations</code></p>
 </blockquote>
 <blockquote>
-<p><code>(Input)    &lt;-     (Output)</code></p>
+<p><code>(Output)    &lt;-     (Input)</code></p>
 </blockquote>
 <pre class="r"><code># make some objects
 obj  &lt;- 5
@@ -497,7 +497,7 @@ digits[8] + 1</code></pre>
 <blockquote>
 <p><code>Name.of.matrix.object[row, column]</code></p>
 </blockquote>
-<p>When you leave the first number in the brackets empty (<code>[,n]</code>) you return the conents of the nth column as a <code>vector</code>. You can get the nth row by leaving the second part empty (<code>[,n]</code>). When you put <code>[,n]</code> or <code>[,n]</code> on the left side of the <code>&lt;-</code> operator, R will populate just the nth column or nth row, respectively. If you leave both row and column blank, it will populate the matrix column by column.</p>
+<p>When you leave the first number in the brackets empty (<code>[,n]</code>) you return the conents of the nth column as a <code>vector</code>. You can get the nth row by leaving the second part empty (<code>[n,]</code>). When you put <code>[,n]</code> or <code>[n,]</code> on the left side of the <code>&lt;-</code> operator, R will populate just the nth column or nth row, respectively. If you leave both row and column blank, it will populate the matrix column by column.</p>
 <pre class="r"><code># Create the matrix
 my.matrix &lt;- matrix(nrow=3, ncol=3)
 my.matrix
@@ -885,8 +885,8 @@ lines(ordered.data$Species, log(ordered.data$Total))</code></pre>
 <li>Make a new column with mean - standard error</li>
 <li>Log-transform the three new columns</li>
 <li>Plot the log mean</li>
-<li><p>Add dotted lines in different colors (<code>?par</code>) for log mean +/- SE</p></li>
-<li><p>Add a legend with this code</p></li>
+<li>Add dotted lines in different colors (<code>?par</code>) for log mean +/- SE</li>
+<li>Add a legend with this code</li>
 </ul>
 <pre class="r"><code>legend(&quot;topright&quot;, legend = c(&quot;Mean&quot;, &quot;+/- SE&quot;), lty=c(1,2), col=c(&quot;black&quot;,&quot;blue&quot;))</code></pre>
 </div>

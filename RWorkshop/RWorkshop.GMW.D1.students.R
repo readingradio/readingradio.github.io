@@ -51,7 +51,7 @@ FALSE | FALSE
 
 #> `New.object <- Line.of.operations`
 
-#> `(Input)    <-     (Output)`
+#> `(Output)    <-     (Input)`
 
 
 
@@ -157,7 +157,7 @@ digits[8] + 1
 
 #> `Name.of.matrix.object[row, column]`
 
-#When you leave the first number in the brackets empty (`[,n]`) you return the conents of the nth column as a `vector`. You can get the nth row by leaving the second part empty (`[,n]`). When you put `[,n]` or `[,n]` on the left side of the `<-` operator, R will populate just the nth column or nth row, respectively. If you leave both row and column blank, it will populate the matrix column by column. 
+#When you leave the first number in the brackets empty (`[,n]`) you return the conents of the nth column as a `vector`. You can get the nth row by leaving the second part empty (`[n,]`). When you put `[,n]` or `[n,]` on the left side of the `<-` operator, R will populate just the nth column or nth row, respectively. If you leave both row and column blank, it will populate the matrix column by column. 
 
 
 # Create the matrix

@@ -62,7 +62,7 @@ In R, the most important operator is the arros `<-` which allows you to *re-rout
 
 > `New.object <- Line.of.operations`
 
-> `(Input)    <-     (Output)`
+> `(Output)    <-     (Input)`
 
 ```{r error=T, cache=T, results='hide'}
 
@@ -168,7 +168,7 @@ Remember that R will try to do stuff, even if its not what we want. Since we hav
 
 > `Name.of.matrix.object[row, column]`
 
-When you leave the first number in the brackets empty (`[,n]`) you return the conents of the nth column as a `vector`. You can get the nth row by leaving the second part empty (`[,n]`). When you put `[,n]` or `[,n]` on the left side of the `<-` operator, R will populate just the nth column or nth row, respectively. If you leave both row and column blank, it will populate the matrix column by column. 
+When you leave the first number in the brackets empty (`[,n]`) you return the conents of the nth column as a `vector`. You can get the nth row by leaving the second part empty (`[n,]`). When you put `[,n]` or `[n,]` on the left side of the `<-` operator, R will populate just the nth column or nth row, respectively. If you leave both row and column blank, it will populate the matrix column by column. 
 
 ```{r, results="hide", cache=T}
 # Create the matrix
@@ -382,7 +382,7 @@ The **`read.csv()`** function is useful. First check that you are in the right d
 
 ```{r, cache=T, results='hide'}
 getwd()
-setwd("/Users/will1809/OneDrive/R Workshop")
+setwd("/Users/will1809/OneDrive - purdue.edu/TCD microbiome spring 2017/Aaron Manuscript/Geoff_Final_RFiles/Juglans.microbiome.github/readingradio.github.io/RWorkshop")
 beetles <- read.csv("WillGinzEnvEnt2019.Fall.csv")
 ```
 
