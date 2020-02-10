@@ -1,0 +1,135 @@
+---
+title: "Teach Yourself R Tutorial #1"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Day 1. Programming Basics
+
+#Geoff Williams
+Purdue University 2020
+
+**Note**: you have options of how you want to run through the script during the tutorial.
+
+1. Copy and paste from web page (suggested, but you have to go line-by-line in order, and if you skip/miss a line some of the following lines will not work).
+
+2. Download the `.R` file and run the code in basic R (not R Studio) by pressing CTRL-Enter (PCs) or Command-Enter (Macs)
+
+3. Download the `.Rmd` file and run the code line-by-line from the script in Rstudio by pressing the Run button . You will have to install and load packages `knitr` and `rmarkdown`.
+    + `install.packages(c('knitr','rmarkdown'))`
+    + `library(knitr)`
+    + `library(rmarkdown)`
+
+## Overview of day 2
+
+Today, we are going to learn about how to search the documentation of a package, how to install and load a package, and how to write a function.
+
+## Packages
+
+Go to the following pages in your web browser, and read the documentation of the package.
+
+> [link](https://cran.r-project.org/web/packages/cowsay/cowsay.pdf)
+
+> [link](https://cran.r-project.org/web/packages/fortunes/fortunes.pdf)
+
+You can usually find pages like this by searching google for something like "R package that does X" and one of the first things that comes up will be the pdf documentation for the package. If it doesn't all you need is the name of the package and you can search for by going here [link](https://cran.r-project.org) and clicking on one of the first two links, then press CTRL-F to search or scroll down to find the package.
+
+The first package (`cowsay`) has several functions in it. The documentation page for every package is organized as follows:
+
+**R topics documented** is a table of contents with all the functions in the package.
+
+Next, after **Index**, is a list of the functions with the sections listed in the day one tutorial. I will recap them here for convenience.
+
+**Description** gives a brief description of what a function does.
+
+**Usage** provides the syntax. Note that by default, `data = NA`, `nrow = 1`, `ncol = 1`, and `byrow = FALSE`.
+
+**Arguments** are the things you put inside the parenteses when you call a function. On the help page, it tells you what you are allowed to pass as **input**. Note that when you leave out the names of **arguments** when you are calling the function `matrix`, R knows what you are telling it to do based on the order of the **arguments**. If you want to give the **arguments** of the function out of order, you have to specify their names.
+
+**Details** tells you additional information you might need to understand what a function is doing.
+
+## Installing packages
+
+To install the packages, use the `install.packages` function. **You only have to do this once**.
+```{r, message=F, eval=F}
+install.packages('cowsay')
+install.packages('fortunes')
+```
+
+## Loading packages
+
+To load a package, use the `library` function. **You have to do this again every time you start R if you want t use functions that are in a package**
+## Loading packages
+```{r, cache=T, message=F}
+library(cowsay)
+library(fortunes)
+```
+
+Try out some of the functions in `cowsay` ands `fortunes`. Personally, I like `endless_horse` but with `endless=FALSE`
+
+```{r, eval=F}
+endless_horse()
+endless_horse(endless=F)
+say("Oh hay!")
+```
+
+## Writing functions
+
+By now, you've read the documentation for some functions, and you should understand that a function is an object in R that returns **output** (whatever goes onto the console, or into an object when you put the arrow `<-` to the left of it) based on the **input** that you include in the parenteses, separated by commas.
+
+Lets try **defining** a simple function. First, you put the name you want to give the function, followed by the arrow `<-` and then `function(blah, blahblah)` with the arguments in parentheses, separated by commas. This tells R that whenever you use those variables, with those names that you put in the parentheses you use inside the 'curly brackets' or 'curly braces' `{` and `}` to get the from the parentheses when the function is called.
+
+```{r, cache=T, results='hide'}
+sayhi <- function(name="!") {
+  print(paste("Hi there ", name))
+}
+```
+
+Now lets try calling the function. We wrote a function to say hi to the person of your choice.
+
+```{r}
+sayhi(name="Bob.")
+sayhi("Bob...")
+sayhi("my friend!")
+sayhi()
+```
+
+Note that, by default, if you don't provide an argument to the function, it puts an exclamation point after "Hi" because we specified this in the **definition** as the default value for the `name` parameter.
+
+We can write another function that combines `cowsay` and `fortunes`.
+
+```{r, cache=T}
+animalsayhi <- function() {
+  animal <- sample(names(animals), 1)
+  say(paste("Hello, I'm a ", animal, ".", collapse = ""), by = animal)
+}
+```
+
+Now try it out.
+
+```{r}
+animalsayhi()
+```
+
+We can write another fun function, and then we'll base an excercise off of it. This function takes a name, a verb, a place, and a vehicle. It is called `madlib` and outputs a madlib.
+
+```{r, cache=T}
+madlib <- function(name="Mr. Bojangles", verb = "drove", place="town", vehicle="wheelbarrow")
+  print(paste("The dog ", name, "  to ", place, " in a ", vehicle))
+```
+
+Try calling the function. Note that you can leave out some arguments, and it uses the default for others, and you can put the arguments in any order you want.
+
+```{r}
+madlib()
+madlib("Jonathan", )
+madlib(vehicle="motorcade", name="President Trump")
+```
+
+# Function excercise
+
