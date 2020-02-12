@@ -1,5 +1,5 @@
 ---
-title: "Teach Yourself R Tutorial #1"
+title: "Teach Yourself R Tutorial #2"
 output: html_document
 editor_options: 
   chunk_output_type: console
@@ -33,9 +33,9 @@ Today, we are going to learn about how to search the documentation of a package,
 
 Go to the following pages in your web browser, and read the documentation of the package.
 
-> [link](https://cran.r-project.org/web/packages/cowsay/cowsay.pdf)
+> https://cran.r-project.org/web/packages/cowsay/cowsay.pdf
 
-> [link](https://cran.r-project.org/web/packages/fortunes/fortunes.pdf)
+> https://cran.r-project.org/web/packages/fortunes/fortunes.pdf
 
 You can usually find pages like this by searching google for something like "R package that does X" and one of the first things that comes up will be the pdf documentation for the package. If it doesn't all you need is the name of the package and you can search for by going here [link](https://cran.r-project.org) and clicking on one of the first two links, then press CTRL-F to search or scroll down to find the package.
 
@@ -101,18 +101,16 @@ sayhi()
 
 Note that, by default, if you don't provide an argument to the function, it puts an exclamation point after "Hi" because we specified this in the **definition** as the default value for the `name` parameter.
 
-We can write another function that combines `cowsay` and `fortunes`.
+We can write another function that combines `cowsay` and `fortunes`. I stole this from https://www.r-bloggers.com/useless-but-fun-r-packages/
 
-```{r, cache=T}
+```{r, cache=T, eval=T}
 animalsayhi <- function() {
   animal <- sample(names(animals), 1)
   say(paste("Hello, I'm a ", animal, ".", collapse = ""), by = animal)
 }
-```
 
-Now try it out.
+# Now try it out.
 
-```{r}
 animalsayhi()
 ```
 
@@ -130,6 +128,3 @@ madlib()
 madlib("Jonathan", )
 madlib(vehicle="motorcade", name="President Trump")
 ```
-
-# Function excercise
-
