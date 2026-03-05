@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 12 – Quantitative Genetics & Complex Traits</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; }
+
+  /* NAV */
+  nav { background: #1a1a2e; color: #fff; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 8px; }
+  nav h1 { font-size: 1rem; font-weight: 700; color: #7ec8e3; }
+  .nav-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .nav-btn { background: #2d2d5e; border: none; color: #ccc; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; transition: background 0.2s; }
+  .nav-btn:hover, .nav-btn.active { background: #4a90d9; color: #fff; }
+
+  /* PROGRESS */
+  .progress-bar { height: 4px; background: #7ec8e3; transition: width 0.3s; }
+
+  /* SLIDES */
+  .slide-container { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+  .slide { display: none; animation: fadeIn 0.3s ease; }
+  .slide.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* CARDS */
+  .card { background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.09); padding: 28px 32px; margin-bottom: 18px; }
+  .section-badge { display: inline-block; background: #4a90d9; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; }
+  .slide-title { font-size: 1.4rem; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; line-height: 1.3; }
+  .slide-subtitle { font-size: 0.85rem; color: #888; margin-bottom: 18px; }
+  .content p { font-size: 0.95rem; line-height: 1.7; margin-bottom: 10px; color: #333; }
+  .content ul { padding-left: 18px; margin-bottom: 12px; }
+  .content li { font-size: 0.93rem; line-height: 1.7; color: #333; margin-bottom: 4px; }
+  .highlight { background: #fff3cd; border-left: 4px solid #f0ad4e; padding: 10px 14px; border-radius: 6px; margin: 12px 0; font-size: 0.9rem; }
+  .formula { background: #eef4ff; border: 1px solid #c5d8f5; border-radius: 8px; padding: 12px 18px; text-align: center; font-size: 1.05rem; font-weight: 700; color: #1a1a2e; margin: 12px 0; letter-spacing: 0.03em; }
+  .example-box { background: #f0faf4; border-left: 4px solid #28a745; padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: 0.9rem; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+  .def-box { background: #f8f0ff; border: 1px solid #d4b8e8; border-radius: 8px; padding: 12px 14px; }
+  .def-box h4 { color: #6f42c1; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; }
+  .def-box p { font-size: 0.85rem; color: #444; margin: 0; }
+  .compare-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.88rem; }
+  .compare-table th { background: #1a1a2e; color: #fff; padding: 8px 12px; text-align: left; }
+  .compare-table td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+  .compare-table tr:nth-child(even) td { background: #f8f9fa; }
+  .tag { display: inline-block; background: #e8f4f8; color: #0077a8; border-radius: 4px; padding: 1px 7px; font-size: 0.78rem; font-weight: 600; margin: 2px; }
+  .lo-box { background: #fff8e1; border: 1px solid #ffd54f; border-radius: 10px; padding: 14px 18px; margin-bottom: 18px; }
+  .lo-box h3 { font-size: 0.8rem; text-transform: uppercase; color: #e65100; font-weight: 700; letter-spacing: .05em; margin-bottom: 8px; }
+  .lo-box li { font-size: 0.88rem; color: #555; margin-bottom: 4px; }
+
+  /* QUESTIONS */
+  .q-card { background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.09); padding: 22px 28px; margin-bottom: 16px; border-top: 5px solid #4a90d9; }
+  .q-card h3 { font-size: 0.75rem; text-transform: uppercase; color: #4a90d9; font-weight: 700; letter-spacing: .05em; margin-bottom: 10px; }
+  .q-card p { font-size: 0.95rem; color: #222; margin-bottom: 14px; line-height: 1.6; }
+  .answer-btn { background: #eef4ff; border: 2px solid #4a90d9; color: #1a1a2e; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; transition: all 0.2s; }
+  .answer-btn:hover { background: #4a90d9; color: #fff; }
+  .answer { display: none; background: #f0faf4; border-left: 4px solid #28a745; padding: 10px 14px; border-radius: 6px; margin-top: 10px; font-size: 0.9rem; color: #1a4731; }
+  .answer.show { display: block; }
+
+  /* NAV ARROWS */
+  .slide-nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 0 0; }
+  .slide-nav button { background: #1a1a2e; color: #fff; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: background 0.2s; }
+  .slide-nav button:hover { background: #4a90d9; }
+  .slide-nav button:disabled { background: #ccc; cursor: default; }
+  .slide-counter { font-size: 0.85rem; color: #888; }
+
+  @media(max-width:600px) { .two-col { grid-template-columns: 1fr; } .card { padding: 18px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <h1>📘 Lecture 12 – Quantitative Genetics</h1>
+  <div class="nav-btns">
+    <button class="nav-btn active" onclick="goSection('intro')">Intro & Overview</button>
+    <button class="nav-btn" onclick="goSection('distributions')">Distributions</button>
+    <button class="nav-btn" onclick="goSection('polygenic')">Polygenic Inheritance</button>
+    <button class="nav-btn" onclick="goSection('complex')">Complex Traits</button>
+    <button class="nav-btn" onclick="goSection('heritability')">Heritability</button>
+    <button class="nav-btn" onclick="goSection('questions')">Review Questions</button>
+  </div>
+</nav>
+<div class="progress-bar" id="progress" style="width:5%"></div>
+
+<div class="slide-container">
+
+<!-- ════════════════════════════ SECTION 1: INTRO ════════════════════════════ -->
+
+<div class="slide active" id="s-intro-1" data-section="intro">
+  <div class="card">
+    <span class="section-badge">📌 Course Overview</span>
+    <div class="slide-title">Lecture 12 – Introduction to Quantitative Genetics & Complex Traits</div>
+    <div class="slide-subtitle">Building on Mendelian genetics to understand traits shaped by many genes and the environment</div>
+    <div class="lo-box">
+      <h3>🎯 Learning Objectives</h3>
+      <ul>
+        <li>Distinguish qualitative from quantitative traits and their distributions</li>
+        <li>Explain additive genetic variance and polygenic inheritance</li>
+        <li>Define Quantitative Trait Loci (QTLs) and how they are identified</li>
+        <li>Understand full-sib vs. half-sib family structure</li>
+        <li>Recognize the duality of qualitative vs. quantitative trait measurement</li>
+        <li>Explain major-gene resistance (MGR) vs. quantitative resistance</li>
+        <li>Define complex (multifactorial) traits and the P ~ f(G, E) model</li>
+        <li>Calculate and interpret broad- and narrow-sense heritability</li>
+      </ul>
+    </div>
+    <div class="content">
+      <p><strong>Key topics this lecture:</strong></p>
+      <ul>
+        <li>Qualitative vs. quantitative traits</li>
+        <li>Multiple gene hypothesis & polygenic inheritance</li>
+        <li>Additive genetic variance & QTLs</li>
+        <li>Families (full-sib, half-sib)</li>
+        <li>Threshold traits & the qualitative/quantitative duality</li>
+        <li>Major-gene and quantitative resistance</li>
+        <li>Complex traits & heritability</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button disabled>← Previous</button>
+    <span class="slide-counter" id="counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SECTION 2: DISTRIBUTIONS ════════════════════════════ -->
+
+<div class="slide" id="s-distributions-1" data-section="distributions">
+  <div class="card">
+    <span class="section-badge">📊 Section 1 – Trait Types & Distributions</span>
+    <div class="slide-title">Qualitative vs. Quantitative Traits</div>
+    <div class="slide-subtitle">Whether a trait is quantitative or qualitative depends on what is being observed</div>
+    <div class="lo-box">
+      <h3>🎯 Learning Objectives</h3>
+      <ul>
+        <li>Define qualitative and quantitative traits</li>
+        <li>Recognize the type of distribution each follows</li>
+        <li>Provide biological examples of each</li>
+      </ul>
+    </div>
+    <div class="two-col">
+      <div class="def-box">
+        <h4>🔷 Qualitative Traits</h4>
+        <p>Fall into <strong>discrete categories</strong>. Follow a <strong>binomial distribution</strong>.</p>
+        <br>
+        <p><em>Examples:</em> blood type (A, B, O, AB); presence/absence of trichomes in <em>Glycine max</em> (controlled by dominant gene <em>Pb1</em>)</p>
+      </div>
+      <div class="def-box">
+        <h4>🔶 Quantitative Traits</h4>
+        <p>Are <strong>continuous</strong>. Follow a <strong>Gaussian (normal) distribution</strong>.</p>
+        <br>
+        <p><em>Examples:</em> human height; lesion size caused by <em>Cryphonectria parasitica</em> in chestnut</p>
+      </div>
+    </div>
+    <div class="highlight">
+      <strong>Key definition:</strong> A <em>phenotype</em> is any characteristic that can be measured using some assay. The same biological attribute (e.g., disease resistance) can be measured as either qualitative or quantitative depending on the measurement used.
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter" id="counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<div class="slide" id="s-distributions-2" data-section="distributions">
+  <div class="card">
+    <span class="section-badge">📊 Section 1 – Trait Types & Distributions</span>
+    <div class="slide-title">Defining a Distribution</div>
+    <div class="slide-subtitle">The mean and variance or standard deviation characterize the shape of any distribution</div>
+    <div class="content">
+      <ul>
+        <li><strong>Mean (μ)</strong> – the average value of all measurements</li>
+        <li><strong>Median</strong> – the middle value (50th percentile)</li>
+        <li><strong>Standard deviation (SD or σ)</strong> – describes the width of the distribution; approximately 68% of values fall within ±1 SD of the mean</li>
+        <li><strong>Variance (σ²)</strong> – the square of the standard deviation; calculated as the average of squared distances from the mean (mean sum of squares)</li>
+      </ul>
+    </div>
+    <div class="formula">σ² = variance = (standard deviation)²</div>
+    <div class="example-box">
+      <strong>Applied example:</strong> In a study of bud yaw angle across chestnut backcross generations, BC₃ trees had a mean of 17.3° and standard error of 1.16. With n ≈ 49 trees, σ = 1.16 × √49 = 8.12. This means ~68% of BC₃ trees fall between 9.18° and 25.42°.
+    </div>
+    <div class="highlight">
+      <strong>Standard error vs. standard deviation:</strong> SE = σ/√n. SE describes uncertainty about the <em>mean</em>; SD describes spread of <em>individual values</em>.
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SECTION 3: POLYGENIC ════════════════════════════ -->
+
+<div class="slide" id="s-polygenic-1" data-section="polygenic">
+  <div class="card">
+    <span class="section-badge">🧬 Section 2 – Polygenic Inheritance & QTLs</span>
+    <div class="slide-title">Additive Genetic Variance & the Multiple-Gene Hypothesis</div>
+    <div class="slide-subtitle">Continuous variation arises from many genes acting in Mendelian fashion</div>
+    <div class="lo-box">
+      <h3>🎯 Learning Objectives</h3>
+      <ul>
+        <li>Explain how multiple genes produce continuous phenotypic variation</li>
+        <li>Define additive alleles and polygenic inheritance</li>
+        <li>Estimate the number of polygenes using two methods</li>
+      </ul>
+    </div>
+    <div class="content">
+      <p>When <strong>alleles of many genes</strong> all contribute to a phenotype, more phenotypic categories can be observed and distinctions between categories become smaller — ultimately producing a continuous distribution.</p>
+      <ul>
+        <li><strong>Monogenic (1 gene):</strong> Clearly distinct phenotypic classes</li>
+        <li><strong>Several genes:</strong> More categories, less distinction</li>
+        <li><strong>Many genes (polygenic):</strong> Continuous phenotypes</li>
+      </ul>
+    </div>
+    <div class="def-box" style="margin-top:14px">
+      <h4>🔑 Polygenic / Multigenic Trait</h4>
+      <p>A quantitative phenotype controlled by more than one gene (<em>polygenes</em>) each behaving in Mendelian fashion. Alleles are <strong>additive</strong> — each copy contributes a fixed, equal amount to the phenotype.</p>
+    </div>
+    <div class="example-box">
+      <strong>Classic example (H. Nilsson-Ehle, 1909):</strong> Wheat kernel color. R = additive allele (contributes to redness); r = nonadditive allele. Crossing R₁R₁R₂R₂ (dark red) × r₁r₁r₂r₂ (white) → F₁ medium red → F₂ produces 5 phenotypic categories in a 1:4:6:4:1 ratio.
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<div class="slide" id="s-polygenic-2" data-section="polygenic">
+  <div class="card">
+    <span class="section-badge">🧬 Section 2 – Polygenic Inheritance & QTLs</span>
+    <div class="slide-title">Estimating the Number of Polygenes</div>
+    <div class="slide-subtitle">Two methods based on F₂ phenotypic class frequencies</div>
+    <div class="content">
+      <p>Both methods assume alleles contribute <strong>equally and additively</strong>, with <strong>no environmental effect</strong>.</p>
+    </div>
+    <div class="two-col">
+      <div class="def-box">
+        <h4>Method 1 — Extreme phenotype ratio</h4>
+        <p style="margin-bottom:6px">The proportion of F₂ offspring showing the most extreme phenotype equals 1/4ⁿ, where n = number of polygenes.</p>
+        <p><strong>Formula:</strong> n = log(1/p) / log(4)</p>
+        <p><em>Example:</em> If 1/16 of F₂ are extreme → n = log(16)/log(4) = <strong>2</strong></p>
+      </div>
+      <div class="def-box">
+        <h4>Method 2 — Number of phenotypic categories</h4>
+        <p style="margin-bottom:6px">The number of phenotypic bins in F₂ equals 2n + 1.</p>
+        <p><strong>Formula:</strong> n = (bins − 1) / 2</p>
+        <p><em>Example:</em> If there are 5 categories → n = (5 − 1)/2 = <strong>2</strong></p>
+      </div>
+    </div>
+    <div class="highlight">
+      <strong>⚠️ Assumptions:</strong> These methods only work when all alleles contribute equally and additively, and when the environment has no effect on phenotype — rarely fully met in real populations.
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<div class="slide" id="s-polygenic-3" data-section="polygenic">
+  <div class="card">
+    <span class="section-badge">🧬 Section 2 – Polygenic Inheritance & QTLs</span>
+    <div class="slide-title">Quantitative Trait Loci (QTLs)</div>
+    <div class="slide-subtitle">Genomic regions associated with quantitative phenotypic variation</div>
+    <div class="content">
+      <ul>
+        <li>A <strong>QTL</strong> is a region of DNA (a locus) containing genes that contribute to a complex, multifactorial, or quantitative trait</li>
+        <li>Multiple genes within a QTL may work together to determine phenotype</li>
+        <li>QTL genes may be <strong>co-inherited</strong> due to physical linkage on a chromosome</li>
+        <li><strong>GWAS (Genome-Wide Association Study)</strong> is a powerful approach for identifying QTLs — a <em>Manhattan plot</em> displays statistical significance (–log₁₀ P) across chromosomes, with peaks indicating likely QTL locations</li>
+      </ul>
+    </div>
+    <div class="example-box">
+      <strong>Forest Genetics context:</strong> QTL mapping is used to understand variation in traits relevant to forest management goals — diversity, conservation, productivity, resilience, and especially <strong>breeding for disease resistance</strong>.
+    </div>
+    <div class="highlight">
+      <strong>Full-sib vs. Half-sib families</strong> (relevant to QTL studies in trees):<br>
+      <strong>Full-sibs</strong> share <em>both</em> parents. <strong>Half-sibs</strong> share only one parent (typically the mother in open-pollination studies). Family structure is critical for partitioning genetic variance.
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<div class="slide" id="s-polygenic-4" data-section="polygenic">
+  <div class="card">
+    <span class="section-badge">🧬 Section 2 – Polygenic Inheritance & QTLs</span>
+    <div class="slide-title">Major-Gene vs. Quantitative Resistance</div>
+    <div class="slide-subtitle">The duality of qualitative and quantitative trait measurement</div>
+    <div class="content">
+      <p>The same biological attribute — such as <strong>disease resistance</strong> — can be measured as either qualitative or quantitative, depending on the trait used:</p>
+      <ul>
+        <li><strong>Qualitative measurement:</strong> survival (0 = dead, 1 = alive) — a <em>threshold trait</em></li>
+        <li><strong>Quantitative measurement:</strong> time to death (years), severity index, lesion size</li>
+      </ul>
+    </div>
+    <div class="two-col">
+      <div class="def-box">
+        <h4>Major-Gene Resistance (MGR)</h4>
+        <p>Controlled by a single dominant gene. Phenotype is largely discrete (resistant vs. susceptible). Example: <em>Cr2</em> gene in <em>Pinus monticola</em> conferring hypersensitive reaction to <em>Cronartium ribicola</em> (white pine blister rust).</p>
+      </div>
+      <div class="def-box">
+        <h4>Quantitative Resistance (QR)</h4>
+        <p>Controlled by many genes. Phenotype is continuous (a spectrum of resistance levels). Example: TACF backcross chestnut program — canker severity varies continuously across families.</p>
+      </div>
+    </div>
+    <div class="highlight">
+      <strong>Threshold trait:</strong> A qualitative phenotype (e.g., alive/dead) that is <em>under polygenic control</em>. The phenotype appears categorical, but the underlying inheritance is quantitative. Example: % survival of <em>P. strobiformis</em> families infected with <em>C. ribicola</em> varies continuously → quantitatively inherited.
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SECTION 4: COMPLEX TRAITS ════════════════════════════ -->
+
+<div class="slide" id="s-complex-1" data-section="complex">
+  <div class="card">
+    <span class="section-badge">🌿 Section 3 – Complex Traits</span>
+    <div class="slide-title">Complex (Multifactorial) Traits</div>
+    <div class="slide-subtitle">Phenotype = f(Genotype, Environment)</div>
+    <div class="lo-box">
+      <h3>🎯 Learning Objectives</h3>
+      <ul>
+        <li>Define complex/multifactorial traits</li>
+        <li>Apply the P ~ f(G, E) model to real examples</li>
+        <li>Explain how environmental variation affects phenotypic distributions</li>
+      </ul>
+    </div>
+    <div class="content">
+      <p>A <strong>complex (multifactorial) trait</strong> is one whose phenotype is shaped by <em>both multiple genes and the environment</em> — the classic "nature and nurture" interaction.</p>
+      <ul>
+        <li>Concept emerged alongside Mendelian genetics, developed by <strong>Sir Ronald Fisher</strong></li>
+        <li>Most quantitative traits are likely complex traits</li>
+        <li>Examples: human height, tree diameter, seed weight, disease severity</li>
+      </ul>
+    </div>
+    <div class="formula">P ~ f (G, E)</div>
+    <div class="example-box">
+      <strong>Example 1:</strong> Port-Orford cedar (<em>Chamaecyparis lawsoniana</em>) tree diameter measured at two sites (Battle Axe vs. Meis) planted the same year. Mean DBH differed by ~10 cm between sites, demonstrating strong environmental influence on the same genotypes.
+    </div>
+    <div class="example-box">
+      <strong>Example 2:</strong> Seed weight in maritime pine (<em>Pinus pinaster</em>) — families show consistent <em>rank order</em> across two sites (parallel lines in reaction norm plot), indicating both genetic differences among families and environmental effects across sites.
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SECTION 5: HERITABILITY ════════════════════════════ -->
+
+<div class="slide" id="s-heritability-1" data-section="heritability">
+  <div class="card">
+    <span class="section-badge">📐 Section 4 – Heritability</span>
+    <div class="slide-title">What Is Heritability?</div>
+    <div class="slide-subtitle">Partitioning phenotypic variance into genetic and environmental components</div>
+    <div class="lo-box">
+      <h3>🎯 Learning Objectives</h3>
+      <ul>
+        <li>Define heritability and state its range</li>
+        <li>Explain VP = VG + VE and what each component represents</li>
+        <li>Distinguish broad-sense (H²) from narrow-sense (h²) heritability</li>
+        <li>Describe key assumptions and limitations of heritability estimates</li>
+        <li>Calculate heritability from given variance components</li>
+      </ul>
+    </div>
+    <div class="content">
+      <p><strong>Heritability</strong> is the proportion of total phenotypic variance in a population that can be explained by genetic differences among individuals.</p>
+    </div>
+    <div class="formula">0 ≤ H² ≤ 1</div>
+    <div class="two-col">
+      <div class="def-box">
+        <h4>H² = 0</h4>
+        <p>All observed variation is due to the environment. Genetic differences among individuals do not contribute to phenotypic differences.</p>
+      </div>
+      <div class="def-box">
+        <h4>H² = 1</h4>
+        <p>All observed variation is due to genetic differences. The environment has no effect on phenotypic variation in this population.</p>
+      </div>
+    </div>
+    <div class="highlight">
+      <strong>Critical applications:</strong> Heritability is fundamental to medicine (predicting disease risk), plant and animal breeding (predicting selection response), and conservation genetics (assessing adaptive potential).
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<div class="slide" id="s-heritability-2" data-section="heritability">
+  <div class="card">
+    <span class="section-badge">📐 Section 4 – Heritability</span>
+    <div class="slide-title">Variance Components: VP = VG + VE</div>
+    <div class="slide-subtitle">Conventions for partitioning phenotypic variance</div>
+    <table class="compare-table">
+      <tr><th>Symbol</th><th>Name</th><th>Meaning</th></tr>
+      <tr><td>V<sub>P</sub> (σ²<sub>P</sub>)</td><td>Total phenotypic variance</td><td>All observed variation in phenotype across individuals</td></tr>
+      <tr><td>V<sub>G</sub> (σ²<sub>G</sub>)</td><td>Genetic variance</td><td>Portion of phenotypic variance due to genetic differences</td></tr>
+      <tr><td>V<sub>E</sub> (σ²<sub>E</sub>)</td><td>Environmental variance</td><td>Portion due to environmental differences among individuals</td></tr>
+      <tr><td>σ²<sub>A</sub></td><td>Additive genetic variance</td><td>Due to additive allele effects (relevant to narrow-sense h²)</td></tr>
+      <tr><td>σ²<sub>D</sub></td><td>Dominance variance</td><td>Due to dominance effects (heterozygotes ≠ intermediate)</td></tr>
+      <tr><td>σ²<sub>I</sub></td><td>Epistatic variance</td><td>Due to gene–gene interactions</td></tr>
+    </table>
+    <div class="formula" style="margin-top:16px">V<sub>P</sub> = V<sub>G</sub> + V<sub>E</sub> &nbsp;&nbsp;|&nbsp;&nbsp; V<sub>G</sub> = σ²<sub>A</sub> + σ²<sub>D</sub> + σ²<sub>I</sub></div>
+    <div class="highlight">
+      To estimate heritability you need: (1) knowledge of genotype, genetic relatedness, or genetic background, and (2) a way to account for environmental factors across individuals.
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<div class="slide" id="s-heritability-3" data-section="heritability">
+  <div class="card">
+    <span class="section-badge">📐 Section 4 – Heritability</span>
+    <div class="slide-title">Broad-Sense vs. Narrow-Sense Heritability</div>
+    <div class="slide-subtitle">Two ways to partition genetic contributions to phenotypic variance</div>
+    <div class="two-col">
+      <div class="def-box">
+        <h4>Broad-Sense Heritability (H²)</h4>
+        <p>Accounts for <strong>all forms</strong> of genetic variance — additive, dominance, and epistatic effects.</p>
+        <br>
+        <div class="formula" style="font-size:0.95rem">H² = V<sub>G</sub> / V<sub>P</sub></div>
+        <br>
+        <p>Uses the <em>total</em> genetic variance in the numerator. Less useful for predicting offspring performance.</p>
+      </div>
+      <div class="def-box">
+        <h4>Narrow-Sense Heritability (h²)</h4>
+        <p>Accounts for <strong>additive genetic variance only</strong> — ignores dominance and epistasis.</p>
+        <br>
+        <div class="formula" style="font-size:0.95rem">h² = V<sub>A</sub> / V<sub>P</sub></div>
+        <br>
+        <p>More useful for <em>predicting selection response</em> and breeding programs, since additive effects are transmitted to offspring.</p>
+      </div>
+    </div>
+    <div class="highlight">
+      <strong>Key distinction:</strong> h² ≤ H² always, because V<sub>A</sub> ≤ V<sub>G</sub>. When dominance and epistasis are negligible, h² ≈ H².
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<div class="slide" id="s-heritability-4" data-section="heritability">
+  <div class="card">
+    <span class="section-badge">📐 Section 4 – Heritability</span>
+    <div class="slide-title">Assumptions & Limitations of Heritability</div>
+    <div class="slide-subtitle">Heritability is population- and environment-specific — not a universal property of a trait</div>
+    <div class="content">
+      <ul>
+        <li>Heritability does <strong>not</strong> tell you how much of a trait is "genetically determined" in any absolute sense</li>
+        <li>It only applies to the <strong>specific population and environment</strong> being studied</li>
+        <li>If environmental variation increases → V<sub>E</sub> increases → H² <em>decreases</em></li>
+        <li>If environmental variation is reduced (e.g., controlled greenhouse) → V<sub>E</sub> decreases → H² <em>increases</em></li>
+      </ul>
+    </div>
+    <div class="example-box">
+      <strong>Example:</strong> Heritability of systolic blood pressure varies widely across ethnic groups and studies (from ~0.16 to ~0.66), demonstrating that heritability estimates are not stable across populations.
+    </div>
+    <div class="example-box">
+      <strong>Example (disease resistance):</strong> Heritability of blister rust resistance is higher in controlled greenhouse inoculations (reduced V<sub>E</sub>) than in passive field infection (high V<sub>E</sub>).
+    </div>
+    <div class="highlight">
+      <strong>Practical implication:</strong> Always report the population, environment, and method when stating a heritability estimate. Two studies measuring "the same trait" may yield very different values.
+    </div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SECTION 6: QUESTIONS ════════════════════════════ -->
+
+<div class="slide" id="s-questions-1" data-section="questions">
+  <div class="card" style="border-top:5px solid #e65100">
+    <span class="section-badge" style="background:#e65100">❓ Section 5 – Review Questions</span>
+    <div class="slide-title">Section 1: Trait Types & Distributions</div>
+    <div class="slide-subtitle">Test your understanding — click "Show Answer" to reveal each answer</div>
+  </div>
+
+  <div class="q-card">
+    <h3>Question 1</h3>
+    <p>A researcher measures whether individual pea plants produce round or wrinkled seeds. Is this a qualitative or quantitative trait? What type of distribution would you expect?</p>
+    <button class="answer-btn" onclick="toggleAnswer(this)">Show Answer</button>
+    <div class="answer">This is a <strong>qualitative trait</strong> — it falls into discrete categories (round vs. wrinkled). It would follow a <strong>binomial distribution</strong>, not a continuous one, because the phenotype is controlled by a single gene with dominant/recessive alleles.</div>
+  </div>
+
+  <div class="q-card">
+    <h3>Question 2</h3>
+    <p>In a population of American chestnuts, you measure canker lesion area after fungal infection. What type of trait is this, and what distribution would you expect? What does the mean and standard deviation tell you?</p>
+    <button class="answer-btn" onclick="toggleAnswer(this)">Show Answer</button>
+    <div class="answer">Lesion area is a <strong>quantitative trait</strong> that follows a <strong>Gaussian (normal) distribution</strong>. The <strong>mean (μ)</strong> tells you the average lesion size in the population. The <strong>standard deviation (σ)</strong> describes the spread — approximately 68% of individuals will have lesion sizes within ±1 SD of the mean, reflecting the natural variation in resistance across the population.</div>
+  </div>
+
+  <div class="q-card">
+    <h3>Question 3</h3>
+    <p>In a chestnut experiment, the bud yaw angle in BC₃ trees has a mean of 17.3° and a standard error of 1.16 based on ~49 trees. What is the standard deviation of this sample?</p>
+    <button class="answer-btn" onclick="toggleAnswer(this)">Show Answer</button>
+    <div class="answer">SE = σ/√n, so σ = SE × √n = 1.16 × √49 = 1.16 × 7 = <strong>8.12°</strong>. This means ~68% of BC₃ trees have bud yaw angles between 9.18° and 25.42°.</div>
+  </div>
+
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<div class="slide" id="s-questions-2" data-section="questions">
+  <div class="card" style="border-top:5px solid #e65100">
+    <span class="section-badge" style="background:#e65100">❓ Section 5 – Review Questions</span>
+    <div class="slide-title">Section 2: Polygenic Inheritance & QTLs</div>
+  </div>
+
+  <div class="q-card">
+    <h3>Question 4</h3>
+    <p>In an F₂ cross, you observe that 1/64 of offspring show the most extreme phenotype. Using Method 1, how many polygenes control this trait?</p>
+    <button class="answer-btn" onclick="toggleAnswer(this)">Show Answer</button>
+    <div class="answer">Using Method 1: 1/4ⁿ = 1/64 → 4ⁿ = 64 → n = log(64)/log(4) = <strong>3 polygenes</strong>. You can verify: 4³ = 64. ✓</div>
+  </div>
+
+  <div class="q-card">
+    <h3>Question 5</h3>
+    <p>An F₂ population for a wheat color cross shows 7 distinct phenotypic categories. Using Method 2, how many polygenes control kernel color?</p>
+    <button class="answer-btn" onclick="toggleAnswer(this)">Show Answer</button>
+    <div class="answer">Using Method 2: 2n + 1 = 7 → 2n = 6 → n = <strong>3 polygenes</strong>. Remember the key assumptions: equal additive contributions per allele, and no environmental effect.</div>
+  </div>
+
+  <div class="q-card">
+    <h3>Question 6</h3>
+    <p>What is the difference between a QTL and a single gene controlling a trait? How is GWAS used to identify QTLs?</p>
+    <button class="answer-btn" onclick="toggleAnswer(this)">Show Answer</button>
+    <div class="answer">A <strong>QTL (Quantitative Trait Locus)</strong> is a chromosomal region containing one or more genes that collectively contribute to a quantitative trait — unlike a single gene controlling a qualitative trait. In <strong>GWAS</strong>, thousands of genetic markers (SNPs) are tested across the genome for statistical association with the trait. Peaks in a Manhattan plot (high –log₁₀ P values) indicate QTL regions where genetic variation correlates with phenotypic variation.</div>
+  </div>
+
+  <div class="q-card">
+    <h3>Question 7</h3>
+    <p>Tree survival after blister rust infection (0 = dead, 1 = alive) appears to be a qualitative trait. Yet % survival varies continuously among families. How do you reconcile this?</p>
+    <button class="answer-btn" onclick="toggleAnswer(this)">Show Answer</button>
+    <div class="answer">This is a <strong>threshold trait</strong> — the individual-level phenotype is categorical (alive or dead), but the underlying genetic control is polygenic. Because many genes influence susceptibility, different families carry different numbers of resistance alleles, producing a continuous range of family-level survival rates. The phenotype <em>appears</em> qualitative at the individual level, but the <em>inheritance</em> is quantitative.</div>
+  </div>
+
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<div class="slide" id="s-questions-3" data-section="questions">
+  <div class="card" style="border-top:5px solid #e65100">
+    <span class="section-badge" style="background:#e65100">❓ Section 5 – Review Questions</span>
+    <div class="slide-title">Section 3 & 4: Complex Traits & Heritability</div>
+  </div>
+
+  <div class="q-card">
+    <h3>Question 8</h3>
+    <p>Two genetically identical Port-Orford cedar trees are planted at Battle Axe (cold, high elevation) vs. Meis (warmer site). After the same number of years, the Meis tree has a DBH nearly twice that of the Battle Axe tree. What does this tell you about tree diameter as a trait?</p>
+    <button class="answer-btn" onclick="toggleAnswer(this)">Show Answer</button>
+    <div class="answer">Tree diameter is a <strong>complex (multifactorial) trait</strong> described by P ~ f(G, E). Even with the same genotype, different environments produce dramatically different phenotypes. This illustrates that the environment (E) makes a large contribution to phenotypic variance (V<sub>E</sub>), and that heritability estimates for DBH will be lower in heterogeneous field conditions than in controlled environments.</div>
+  </div>
+
+  <div class="q-card">
+    <h3>Question 9 — Heritability Calculation (Rabbit Ear Length)</h3>
+    <p>Researchers measure ear length in a rabbit population and find total phenotypic variance V<sub>P</sub> = 100. Environmental variance V<sub>E</sub> = 12. (a) What is V<sub>G</sub>? (b) What is H²? (c) Is this broad- or narrow-sense heritability?</p>
+    <button class="answer-btn" onclick="toggleAnswer(this)">Show Answer</button>
+    <div class="answer">
+      <strong>(a)</strong> V<sub>G</sub> = V<sub>P</sub> − V<sub>E</sub> = 100 − 12 = <strong>88</strong><br>
+      <strong>(b)</strong> H² = V<sub>G</sub>/V<sub>P</sub> = 88/100 = <strong>0.88</strong> — a high heritability, meaning 88% of the variation in ear length is due to genetic differences.<br>
+      <strong>(c)</strong> This is <strong>broad-sense heritability</strong> (H²), because V<sub>G</sub> includes all genetic effects (additive, dominance, epistasis). To calculate narrow-sense h², you would need V<sub>A</sub> (additive genetic variance only).
+    </div>
+  </div>
+
+  <div class="q-card">
+    <h3>Question 10 — Heritability Calculation (Disease)</h3>
+    <p>For a disease in a population, V<sub>G</sub> = 45 and V<sub>E</sub> = 25. (a) What is V<sub>P</sub>? (b) What is H²? (c) If the study is moved to a controlled lab setting that reduces V<sub>E</sub> to 5, what happens to H²?</p>
+    <button class="answer-btn" onclick="toggleAnswer(this)">Show Answer</button>
+    <div class="answer">
+      <strong>(a)</strong> V<sub>P</sub> = V<sub>G</sub> + V<sub>E</sub> = 45 + 25 = <strong>70</strong><br>
+      <strong>(b)</strong> H² = 45/70 ≈ <strong>0.64</strong><br>
+      <strong>(c)</strong> New V<sub>P</sub> = 45 + 5 = 50; new H² = 45/50 = <strong>0.90</strong>. Reducing environmental variance increases H² — this is why controlled experiments yield higher heritability estimates, and why heritability is environment-specific.
+    </div>
+  </div>
+
+  <div class="q-card">
+    <h3>Question 11 — Conceptual</h3>
+    <p>A news article claims "height has a heritability of 0.8, meaning 80% of your height is determined by your genes." Is this interpretation correct? Explain.</p>
+    <button class="answer-btn" onclick="toggleAnswer(this)">Show Answer</button>
+    <div class="answer">This is a <strong>common misinterpretation</strong>. Heritability of 0.8 does <em>not</em> mean 80% of any individual's height is genetic. It means that in the specific population and environment studied, 80% of the <em>variation</em> in height among individuals can be attributed to genetic differences. If everyone were raised in identical environments, heritability would be higher; if there were extreme environmental differences (malnutrition vs. optimal nutrition), heritability would be lower. Heritability is a population statistic, not a property of individuals.</div>
+  </div>
+
+  <div class="slide-nav">
+    <button onclick="prevSlide()">← Previous</button>
+    <span class="slide-counter"></span>
+    <button disabled>End ✓</button>
+  </div>
+</div>
+
+</div><!-- end slide-container -->
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+let cur = 0;
+
+const sectionOrder = ['intro','distributions','polygenic','complex','heritability','questions'];
+
+function updateProgress() {
+  const pct = Math.round(((cur + 1) / slides.length) * 100);
+  document.getElementById('progress').style.width = pct + '%';
+  document.querySelectorAll('.slide-counter').forEach(el => {
+    el.textContent = `Slide ${cur + 1} of ${slides.length}`;
+  });
+  // update nav btns
+  const sec = slides[cur].dataset.section;
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick').includes("'"+sec+"'"));
+  });
+}
+
+function show(idx) {
+  slides[cur].classList.remove('active');
+  cur = idx;
+  slides[cur].classList.add('active');
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function nextSlide() { if (cur < slides.length - 1) show(cur + 1); }
+function prevSlide() { if (cur > 0) show(cur - 1); }
+
+function goSection(sec) {
+  const idx = slides.findIndex(s => s.dataset.section === sec);
+  if (idx >= 0) show(idx);
+}
+
+function toggleAnswer(btn) {
+  const ans = btn.nextElementSibling;
+  const showing = ans.classList.toggle('show');
+  btn.textContent = showing ? 'Hide Answer' : 'Show Answer';
+}
+
+updateProgress();
+</script>
+</body>
+</html>
