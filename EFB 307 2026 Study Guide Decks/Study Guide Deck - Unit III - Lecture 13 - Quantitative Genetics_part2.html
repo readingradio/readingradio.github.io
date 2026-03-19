@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 13 – Heritability Part 2</title>
+<style>
+  :root {
+    --navy:#1a1a2e;--blue:#4a90d9;--blue-light:#eef4ff;--blue-mid:#c5d8f5;
+    --gold:#f0ad4e;--gold-light:#fff3cd;--green:#28a745;--green-light:#f0faf4;
+    --purple:#6f42c1;--purple-light:#f8f0ff;--red:#dc3545;--red-light:#fff0f0;
+    --gray:#6c757d;--gray-light:#f8f9fa;--border:#dee2e6;--text:#1a1a2e;--muted:#666;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;color:var(--text);min-height:100vh;}
+
+  #topnav{background:var(--navy);display:flex;align-items:center;flex-wrap:wrap;gap:2px;padding:0 10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+  #topnav .logo{color:#fff;font-weight:800;font-size:.85rem;padding:12px 10px 12px 0;border-right:1px solid #333;margin-right:4px;white-space:nowrap;}
+  #topnav button{background:none;border:none;color:#aaa;font-size:.72rem;font-weight:600;padding:12px 7px;cursor:pointer;white-space:nowrap;transition:color .2s;}
+  #topnav button:hover{color:#fff;}
+  #topnav button.active{color:var(--blue);border-bottom:2px solid var(--blue);}
+
+  .prog-wrap{height:3px;background:#2a2a3e;}
+  .prog-bar{height:3px;background:var(--blue);transition:width .3s;}
+
+  .main{max-width:880px;margin:0 auto;padding:24px 16px;}
+  .sec{display:none;}
+  .sec.on{display:block;}
+
+  .card{background:#fff;border-radius:10px;padding:22px 26px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+  .card h2{font-size:1.15rem;color:var(--navy);margin-bottom:4px;}
+  .card .sub{font-size:.82rem;color:var(--muted);margin-bottom:14px;font-style:italic;}
+  .card p{margin-bottom:10px;line-height:1.65;font-size:.92rem;}
+  .card ul{padding-left:18px;margin-bottom:10px;}
+  .card ul li{margin-bottom:6px;line-height:1.6;font-size:.92rem;}
+
+  .deck{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;margin-bottom:18px;}
+  .deck-body{padding:22px 26px;min-height:200px;}
+  .deck-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--gray-light);border-top:1px solid var(--border);}
+  .deck-nav button{background:var(--blue);color:#fff;border:none;border-radius:6px;padding:6px 16px;font-size:.82rem;font-weight:600;cursor:pointer;}
+  .deck-nav button:disabled{background:#ccc;cursor:default;}
+  .deck-nav .counter{font-size:.8rem;color:var(--muted);}
+
+  .hl{border-left:4px solid var(--blue);background:var(--blue-light);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.88rem;line-height:1.6;}
+  .hl-gold{border-left:4px solid var(--gold);background:var(--gold-light);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.88rem;line-height:1.6;}
+  .hl-green{border-left:4px solid var(--green);background:var(--green-light);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.88rem;line-height:1.6;}
+  .hl-purple{border-left:4px solid var(--purple);background:var(--purple-light);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.88rem;line-height:1.6;}
+  .hl-red{border-left:4px solid var(--red);background:var(--red-light);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.88rem;line-height:1.6;}
+
+  .formula{background:var(--navy);color:#e8f0fe;border-radius:8px;padding:14px 20px;font-family:monospace;font-size:.95rem;margin:12px 0;text-align:center;line-height:1.8;}
+
+  .defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:10px 0;}
+  .def{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:8px;padding:12px 14px;}
+  .def h4{font-size:.85rem;color:var(--blue);margin-bottom:4px;}
+  .def p{font-size:.82rem;line-height:1.5;}
+
+  .table-wrap{overflow-x:auto;margin:12px 0;}
+  table{border-collapse:collapse;width:100%;font-size:.85rem;}
+  th{background:var(--navy);color:#fff;padding:8px 12px;text-align:left;}
+  td{padding:8px 12px;border-bottom:1px solid var(--border);}
+  tr:nth-child(even) td{background:var(--gray-light);}
+  .highlight-row td{background:#fff9c4!important;font-weight:600;}
+
+  .rq{background:#fff;border-radius:10px;padding:18px 22px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.07);border-left:4px solid var(--purple);}
+  .rq p{font-size:.92rem;margin-bottom:10px;line-height:1.6;}
+  .rq button{background:var(--purple);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:.8rem;font-weight:600;cursor:pointer;}
+  .rq .ans{display:none;margin-top:12px;padding:12px;background:var(--purple-light);border-radius:6px;font-size:.88rem;line-height:1.7;}
+  .rq .ans.show{display:block;}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0;}
+  @media(max-width:600px){.two-col{grid-template-columns:1fr;}}
+
+  .method-card{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:8px;padding:14px 16px;}
+  .method-card h4{font-size:.9rem;color:var(--navy);margin-bottom:6px;}
+  .method-card p{font-size:.83rem;line-height:1.55;}
+</style>
+</head>
+<body>
+
+<div id="topnav">
+  <div class="logo">Lec 13 Pt.2</div>
+  <button onclick="go(0)" class="active">📋 Overview</button>
+  <button onclick="go(1)">§1 Review</button>
+  <button onclick="go(2)">§2 Families & Pops</button>
+  <button onclick="go(3)">§3 Estimating H²</button>
+  <button onclick="go(4)">§4 ANOVA</button>
+  <button onclick="go(5)">§5 Estimating h²</button>
+  <button onclick="go(6)">§6 EBVs</button>
+  <button onclick="go(7)">§7 Pop Diff & Q<sub>ST</sub></button>
+  <button onclick="go(8)">✅ Review Qs</button>
+</div>
+<div class="prog-wrap"><div class="prog-bar" id="prog" style="width:11%"></div></div>
+
+<div class="main">
+
+<!-- ===== SECTION 0: OVERVIEW ===== -->
+<div class="sec on" id="s0">
+  <div class="card">
+    <h2>Lecture 13 – Calculating Narrow- and Broad-Sense Heritability (Part 2)</h2>
+    <div class="sub">EFB 307 | Key topics: Variance components, H², h², ANOVA, EBVs, Q<sub>ST</sub>, population differentiation</div>
+    <p>This lecture builds on the conceptual introduction to heritability and focuses on <strong>how to actually estimate H² and h²</strong> using experimental designs — twin studies, clone trials, ANOVA, and regression methods.</p>
+    <div class="hl"><strong>Learning Objectives:</strong><br>
+    1. Review broad-sense heritability (H²) and its variance components<br>
+    2. Distinguish narrow-sense (h²) from broad-sense (H²) heritability<br>
+    3. Understand family and population structure in quantitative genetics<br>
+    4. Apply twin/clone and ANOVA methods to estimate H²<br>
+    5. Apply offspring-to-parent, midparent, and kin-to-kin regression to estimate h²<br>
+    6. Calculate and interpret EBVs<br>
+    7. Understand Q<sub>ST</sub> and population differentiation in quantitative traits</div>
+    <div class="defs">
+      <div class="def"><h4>V<sub>P</sub> = σ²<sub>P</sub></h4><p>Total phenotypic variance</p></div>
+      <div class="def"><h4>V<sub>G</sub> = σ²<sub>G</sub></h4><p>Total genetic variance (A + D + I)</p></div>
+      <div class="def"><h4>V<sub>A</sub> = σ²<sub>A</sub></h4><p>Additive genetic variance</p></div>
+      <div class="def"><h4>V<sub>D</sub> = σ²<sub>D</sub></h4><p>Dominance variance</p></div>
+      <div class="def"><h4>V<sub>I</sub> = σ²<sub>I</sub></h4><p>Epistatic (interaction) variance</p></div>
+      <div class="def"><h4>V<sub>E</sub> = σ²<sub>E</sub></h4><p>Environmental variance</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 1: REVIEW ===== -->
+<div class="sec" id="s1">
+  <div class="deck">
+    <div class="deck-body" id="d1"></div>
+    <div class="deck-nav">
+      <button id="p1" onclick="ps(1)" disabled>← Prev</button>
+      <span class="counter" id="c1"></span>
+      <button id="n1" onclick="ns(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 2: FAMILIES & POPULATIONS ===== -->
+<div class="sec" id="s2">
+  <div class="deck">
+    <div class="deck-body" id="d2"></div>
+    <div class="deck-nav">
+      <button id="p2" onclick="ps(2)" disabled>← Prev</button>
+      <span class="counter" id="c2"></span>
+      <button id="n2" onclick="ns(2)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 3: ESTIMATING H² ===== -->
+<div class="sec" id="s3">
+  <div class="deck">
+    <div class="deck-body" id="d3"></div>
+    <div class="deck-nav">
+      <button id="p3" onclick="ps(3)" disabled>← Prev</button>
+      <span class="counter" id="c3"></span>
+      <button id="n3" onclick="ns(3)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 4: ANOVA ===== -->
+<div class="sec" id="s4">
+  <div class="deck">
+    <div class="deck-body" id="d4"></div>
+    <div class="deck-nav">
+      <button id="p4" onclick="ps(4)" disabled>← Prev</button>
+      <span class="counter" id="c4"></span>
+      <button id="n4" onclick="ns(4)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 5: ESTIMATING h² ===== -->
+<div class="sec" id="s5">
+  <div class="deck">
+    <div class="deck-body" id="d5"></div>
+    <div class="deck-nav">
+      <button id="p5" onclick="ps(5)" disabled>← Prev</button>
+      <span class="counter" id="c5"></span>
+      <button id="n5" onclick="ns(5)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 6: EBVs ===== -->
+<div class="sec" id="s6">
+  <div class="deck">
+    <div class="deck-body" id="d6"></div>
+    <div class="deck-nav">
+      <button id="p6" onclick="ps(6)" disabled>← Prev</button>
+      <span class="counter" id="c6"></span>
+      <button id="n6" onclick="ns(6)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 7: QST ===== -->
+<div class="sec" id="s7">
+  <div class="deck">
+    <div class="deck-body" id="d7"></div>
+    <div class="deck-nav">
+      <button id="p7" onclick="ps(7)" disabled>← Prev</button>
+      <span class="counter" id="c7"></span>
+      <button id="n7" onclick="ns(7)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 8: REVIEW QUESTIONS ===== -->
+<div class="sec" id="s8">
+  <div class="card">
+    <h2>✅ Review Questions</h2>
+    <div class="sub">Click "Show Answer" to reveal each explanation</div>
+  </div>
+
+  <div class="rq"><p><strong>Q1.</strong> Write the full equation partitioning V<sub>P</sub> into its components. Which part does broad-sense heritability use? Which part does narrow-sense heritability use?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">V<sub>P</sub> = V<sub>A</sub> + V<sub>D</sub> + V<sub>I</sub> + V<sub>E</sub><br><br>
+    <strong>H² (broad-sense)</strong> = V<sub>G</sub> / V<sub>P</sub> = (V<sub>A</sub> + V<sub>D</sub> + V<sub>I</sub>) / V<sub>P</sub> — uses all genetic variance.<br>
+    <strong>h² (narrow-sense)</strong> = V<sub>A</sub> / V<sub>P</sub> — uses only additive genetic variance.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q2.</strong> Researchers measure a disease trait. V<sub>G</sub> = 45, V<sub>E</sub> = 25. What is V<sub>P</sub> and H²?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">V<sub>P</sub> = V<sub>G</sub> + V<sub>E</sub> = 45 + 25 = <strong>70</strong><br>H² = V<sub>G</sub> / V<sub>P</sub> = 45 / 70 ≈ <strong>0.64</strong><br><br>This means ~64% of phenotypic variation in disease incidence is due to genetic differences.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q3.</strong> What percent of alleles are shared between: identical twins, fraternal twins, full siblings, half siblings, and parent-offspring?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">
+    Identical (MZ) twins: <strong>100%</strong><br>
+    Fraternal (DZ) twins: <strong>50%</strong><br>
+    Full siblings: <strong>50%</strong><br>
+    Half siblings: <strong>25%</strong><br>
+    Parent–offspring: <strong>50%</strong><br>
+    Open-pollinated (OP) half-sibs in trees: <strong>~25–33%</strong> depending on mating system.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q4.</strong> Explain the three experimental scenarios in which H² can be calculated. What is being controlled for in each?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans"><strong>1. MZ vs. DZ twin comparison (Falconer's formula):</strong> Controls for σ²<sub>E</sub> by comparing twins raised in the same environment. H² = 2(r<sub>MZ</sub> − r<sub>DZ</sub>).<br><br>
+    <strong>2. Clone trials (ANOVA):</strong> Controls for σ²<sub>G</sub> — all ramets of a clone share 100% of their genetics, so within-clone variation is purely environmental.<br><br>
+    <strong>3. Highly inbred lines (triple test crosses):</strong> Allows direct estimation of σ²<sub>D</sub> and σ²<sub>I</sub>, isolating each genetic component.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q5.</strong> In a twin study of singing ability, r<sub>MZ</sub> = 0.75 for males and r<sub>DZ</sub> = 0.50. Calculate H² using Falconer's formula. Is H² higher for males or females (r<sub>MZ</sub> = 0.78, r<sub>DZ</sub> = 0.60)?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans"><strong>Males:</strong> H² = 2(0.75 − 0.50) = 2 × 0.25 = <strong>0.50</strong><br>
+    <strong>Females:</strong> H² = 2(0.78 − 0.60) = 2 × 0.18 = <strong>0.36</strong><br><br>
+    H² is higher for males. This means a greater proportion of variation in singing ability among males is attributable to genetic differences.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q6.</strong> Using the ANOVA table below (clone trial, 10 ramets per clone), calculate σ²<sub>Clone</sub>, σ²<sub>Error</sub>, V<sub>P</sub>, and H².<br><br>
+  Total: SS=7.37, DF=39 | Clones: SS=4.93, DF=7 | Error: SS=2.44, DF=32</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">MS<sub>Clones</sub> = 4.93/7 = 0.704 &nbsp;|&nbsp; MS<sub>Error</sub> = 2.44/32 = 0.076<br><br>
+    σ²<sub>Clone</sub> = (MS<sub>Clones</sub> − MS<sub>Error</sub>) / n = (0.704 − 0.076) / 5 = <strong>0.126</strong><br>
+    σ²<sub>Error</sub> = MS<sub>Error</sub> = <strong>0.076</strong><br>
+    V<sub>P</sub> = 0.126 + 0.076 = <strong>0.202</strong><br>
+    H² = 0.126 / 0.202 = <strong>≈ 0.62</strong><br><br>
+    Note: The published example uses 5 ramets per clone. The calculation approach is the same.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q7.</strong> Write the breeder's equation. A <em>Nicotiana</em> population has mean flower length 51.55 mm. You select plants averaging 45 mm and grow out the offspring, which average 50 mm. What is h²?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans"><strong>R = h² × S</strong> → <strong>h² = R / S</strong><br><br>
+    S = 45 − 51.55 = −6.55 mm (selection differential)<br>
+    R = 50 − 51.55 = −1.55 mm (observed response)<br>
+    h² = −1.55 / −6.55 = <strong>0.24</strong></div>
+  </div>
+
+  <div class="rq"><p><strong>Q8.</strong> In midparent regression, how is h² estimated? What does the slope represent?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">In midparent-offspring regression, <strong>h² = the slope of the regression line</strong> (b in y = a + bx), where x = midparent value (average of both parents) and y = offspring mean.<br><br>
+    The slope represents the unit change in offspring phenotype per unit change in midparent value. A slope of 1.0 means traits are perfectly inherited; a slope of 0 means offspring phenotype is unrelated to parents (no additive heritability).</div>
+  </div>
+
+  <div class="rq"><p><strong>Q9.</strong> Why is the multiplier different for full-sib vs. half-sib regression when estimating h²? What is the formula for each?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">Because h² measures the <em>additive</em> genetic contribution, which must be scaled by how much of the genome individuals share.<br><br>
+    <strong>Full siblings</strong> share 50% of alleles → h² = <strong>2 × slope</strong><br>
+    <strong>Half siblings</strong> share 25% of alleles → h² = <strong>4 × slope</strong> (or 4ρ in ANOVA)<br>
+    <strong>Open-pollinated (OP)</strong> share ~33% → h² = <strong>3 × slope</strong><br><br>
+    Dividing by the proportion of alleles shared "scales up" the observed correlation to estimate the full additive genetic variance.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q10.</strong> Using the foliage blight half-sib ANOVA (MS<sub>Fam</sub> = 25, MS<sub>Error</sub> = 2.7, n = 26), calculate h² assuming true half-siblings.</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">σ²<sub>Family</sub> = (25 − 2.7) / 26 = 22.3 / 26 = <strong>0.858</strong><br>
+    σ²<sub>Error</sub> = 2.7<br>
+    V<sub>P</sub> = 0.858 + 2.7 = <strong>3.558</strong><br>
+    ρ = 0.858 / 3.558 = <strong>0.241</strong><br>
+    h² = 4ρ = 4 × 0.241 = <strong>0.97</strong><br><br>
+    This is suspiciously high! Possible reasons: (1) <em>Biological</em>: foliage blight resistance may be under strong genetic control; (2) <em>Methodological</em>: OP families may not be true half-sibs (some may be full-sibs), inflating the family variance component and thus h².</div>
+  </div>
+
+  <div class="rq"><p><strong>Q11.</strong> A dairy cow population averages 5 gallons/day. h² = 0.25. A selected cow produces 9 gal/day. What is the EBV and expected milk production of her offspring?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">S = 9 − 5 = 4 gallons (selection differential)<br>
+    EBV = h² × S = 0.25 × 4 = <strong>1 gallon</strong><br>
+    Expected offspring production = population mean + EBV = 5 + 1 = <strong>6 gallons/day</strong></div>
+  </div>
+
+  <div class="rq"><p><strong>Q12.</strong> Write the Q<sub>ST</sub> formula and explain how comparing Q<sub>ST</sub> to F<sub>ST</sub> informs us about selection.</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans"><strong>Q<sub>ST</sub> = σ²<sub>GB</sub> / (σ²<sub>GB</sub> + 2σ²<sub>GW</sub>)</strong><br>
+    where σ²<sub>GB</sub> = genetic variance among populations, σ²<sub>GW</sub> = genetic variance within populations.<br><br>
+    <strong>Q<sub>ST</sub> &gt;&gt; F<sub>ST</sub></strong> → Divergent natural selection / local adaptation (populations differ more in the trait than neutral markers predict)<br>
+    <strong>Q<sub>ST</sub> ≈ F<sub>ST</sub></strong> → Neutral drift (differentiation consistent with chance alone)<br>
+    <strong>Q<sub>ST</sub> &lt;&lt; F<sub>ST</sub></strong> → Stabilizing selection (populations are kept similar despite drift)</div>
+  </div>
+
+  <div class="rq"><p><strong>Q13.</strong> What is a breeding zone / seed zone and why does local adaptation matter for forest management?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">A <strong>breeding zone</strong> is a geographic area within which seed can be sourced and planted while maintaining an acceptable level of local adaptation. It represents the "cutoff" on the adaptive performance curve for a provenance.<br><br>
+    <strong>Seed zones</strong> are generalized, climate-based zones that apply to multiple species simultaneously.<br><br>
+    Local adaptation matters because trees planted outside their adapted zone may grow poorly or be maladapted to local climate conditions (e.g., wrong frost timing, drought sensitivity). Under climate change, assisted gene flow decisions depend on understanding Q<sub>ST</sub> and adaptive differentiation among provenances.</div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+const SD = [
+null, // s0 static
+// s1: Review
+[
+  `<h2>§1 — Review: Phenotype, Genotype & Environment</h2>
+  <p><strong>Complex (multifactorial) traits</strong> depend on both genetics and environment:</p>
+  <div class="formula">P ~ f(G, E)</div>
+  <p>Example: Tree height — a tree may be genetically programmed for tall growth (potential), but poor soil or low light limits its realized height.</p>
+  <div class="hl"><strong>Heritability</strong> = the proportion of total phenotypic variance in a population that can be explained by genetic differences among individuals. It always falls between 0 and 1.<br><br>0 = all variation due to environment &nbsp;|&nbsp; 1 = all variation due to genetics</div>`,
+
+  `<h2>§1 — Variance Partitioning</h2>
+  <div class="formula">σ²<sub>P</sub> = σ²<sub>G</sub> + σ²<sub>E</sub></div>
+  <p>And genetic variance itself can be broken down further:</p>
+  <div class="formula">σ²<sub>G</sub> = σ²<sub>A</sub> + σ²<sub>D</sub> + σ²<sub>I</sub></div>
+  <p>So the full partition is:</p>
+  <div class="formula">V<sub>P</sub> = V<sub>A</sub> + V<sub>D</sub> + V<sub>I</sub> + V<sub>E</sub></div>
+  <div class="defs">
+    <div class="def"><h4>σ²<sub>A</sub> (V<sub>A</sub>)</h4><p>Additive — variance due to average allele effects. The part that responds to selection.</p></div>
+    <div class="def"><h4>σ²<sub>D</sub> (V<sub>D</sub>)</h4><p>Dominance — when heterozygotes don't have intermediate phenotypes.</p></div>
+    <div class="def"><h4>σ²<sub>I</sub> (V<sub>I</sub>)</h4><p>Epistasis — variance due to interactions between loci.</p></div>
+  </div>`,
+
+  `<h2>§1 — H² vs. h²: The Key Distinction</h2>
+  <div class="two-col">
+    <div class="method-card">
+      <h4>Broad-Sense (H²)</h4>
+      <div style="font-family:monospace;background:#1a1a2e;color:#e8f0fe;padding:10px;border-radius:6px;margin:8px 0;text-align:center;">H² = V<sub>G</sub> / V<sub>P</sub></div>
+      <p>Includes ALL genetic variance (additive + dominance + epistatic). Useful for clonal propagation where the whole genotype is transmitted.</p>
+    </div>
+    <div class="method-card">
+      <h4>Narrow-Sense (h²)</h4>
+      <div style="font-family:monospace;background:#1a1a2e;color:#e8f0fe;padding:10px;border-radius:6px;margin:8px 0;text-align:center;">h² = V<sub>A</sub> / V<sub>P</sub></div>
+      <p>Only ADDITIVE genetic variance. More useful for breeding because only additive effects are reliably passed from parent to offspring in sexual reproduction.</p>
+    </div>
+  </div>
+  <div class="hl-gold">h² is always ≤ H². The gap between them = V<sub>D</sub> + V<sub>I</sub>, which is present but not transmitted faithfully through seeds.</div>`,
+
+  `<h2>§1 — Worked Example: H² vs. h²</h2>
+  <p><strong>Example 1 (H²):</strong> Disease study — V<sub>G</sub> = 45, V<sub>E</sub> = 25</p>
+  <div class="formula">V<sub>P</sub> = 45 + 25 = 70 &nbsp;|&nbsp; H² = 45/70 ≈ 0.64</div>
+  <p><strong>Example 2 (h²):</strong> Same disease — V<sub>A</sub> = 2, V<sub>P</sub> = 25</p>
+  <div class="formula">h² = V<sub>A</sub>/V<sub>P</sub> = 2/25 = 0.08</div>
+  <div class="hl-gold">Notice that h² can be much lower than H². Here V<sub>A</sub> is only a small slice of the total genetic variance — most genetic variation is dominance or epistasis.</div>
+  <div class="hl">Neither h² nor H² can be estimated without controlling for environment. Because P = f(G, E), environmental variation will inflate V<sub>P</sub> and deflate heritability estimates.</div>`
+],
+// s2: Families & Populations
+[
+  `<h2>§2 — Family Structure: Full-Sibs and Half-Sibs</h2>
+  <div class="defs">
+    <div class="def"><h4>Full-sib family</h4><p>Individuals share <strong>both</strong> parents → share ~50% of alleles</p></div>
+    <div class="def"><h4>Half-sib family</h4><p>Individuals share <strong>one</strong> parent (often mother in open-pollinated systems) → share ~25% of alleles</p></div>
+    <div class="def"><h4>Open-pollinated (OP)</h4><p>Seeds from same mother, random pollen → ~25–33% shared alleles (between half- and full-sibs)</p></div>
+  </div>
+  <div class="hl">Family structure is the backbone of forest genetics trials. By knowing how much genetics individuals share, we can partition observed phenotypic variance into genetic and environmental components.</div>`,
+
+  `<h2>§2 — Allele Sharing Cheat Sheet</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Relationship</th><th>% Alleles Shared</th><th>Scaling factor for h²</th></tr>
+      <tr><td>Identical (MZ) twins / Clones</td><td>100%</td><td>Used for H²</td></tr>
+      <tr><td>Fraternal (DZ) twins / Full siblings</td><td>50%</td><td>× 2</td></tr>
+      <tr><td>Parent–offspring</td><td>50%</td><td>× 2</td></tr>
+      <tr><td>Half siblings</td><td>25%</td><td>× 4</td></tr>
+      <tr><td>Open-pollinated (OP) siblings</td><td>~33%</td><td>× 3</td></tr>
+    </table>
+  </div>
+  <div class="hl-gold"><strong>Key insight:</strong> When allele sharing is only 50%, the observed correlation between relatives is only half the additive genetic signal — so we multiply by 2 to recover h². For 25%, we multiply by 4.</div>`,
+
+  `<h2>§2 — Populations and Provenances</h2>
+  <p>A <strong>genetic population</strong> is a group of individuals sharing a gene pool — more likely to interbreed with each other than with other groups.</p>
+  <p>In forest genetics, <strong>provenances</strong> are geographic populations. They are nested within a broader species range and may be locally adapted to their climate.</p>
+  <div class="hl">Population structure in forest genetics trials typically looks like:<br><br>
+  <strong>Provenance 1 → Families (mother trees) → Progeny (offspring)</strong><br>
+  <strong>Provenance 2 → Families → Progeny</strong><br><br>
+  This nested design lets us partition variance among provenances, among families within provenances, and within families.</div>`
+],
+// s3: Estimating H²
+[
+  `<h2>§3 — Three Ways to Estimate H²</h2>
+  <p>To estimate H², you need to either control for environment or control for genetics. There are three experimental designs that allow this:</p>
+  <div style="margin:14px 0;">
+    <div class="hl-blue" style="border-left:4px solid var(--blue);background:var(--blue-light);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;font-size:.88rem;"><strong>1. Control for σ²<sub>E</sub> → MZ vs. DZ twin comparison</strong><br>Twins raised in the same environment share environment equally. MZ share all genes; DZ share 50%. The difference in similarity is due to genetic differences.</div>
+    <div class="hl-gold" style="margin-bottom:10px;"><strong>2. Control for σ²<sub>G</sub> → Clone trials (ANOVA)</strong><br>All ramets of a clone are genetically identical. Within-clone variation = pure environment. Among-clone variation = genetic.</div>
+    <div class="hl-purple"><strong>3. Estimate σ²<sub>D</sub> and σ²<sub>I</sub> directly → Triple test crosses</strong><br>Using highly inbred (homozygous) lines to directly partition dominance and epistatic variance components.</div>
+  </div>`,
+
+  `<h2>§3 — Method 1: Falconer's Formula (Twin Studies)</h2>
+  <p>MZ twins share 100% of alleles; DZ twins share 50%. If a trait were purely genetic, MZ twins would be perfectly correlated (r = 1) and DZ twins half as correlated.</p>
+  <div class="formula">H² = 2(r<sub>MZ</sub> − r<sub>DZ</sub>)</div>
+  <p>The difference in intra-twin correlation (r<sub>MZ</sub> − r<sub>DZ</sub>) reflects genetic variance. Multiplying by 2 scales it to the full genetic variance.</p>
+  <div class="hl-gold"><strong>Singing ability example</strong> (Yeom et al. 2022):<br>
+  Males: r<sub>MZ</sub> = 0.75, r<sub>DZ</sub> = 0.50 → H² = 2(0.75 − 0.50) = <strong>0.50</strong><br>
+  Females: r<sub>MZ</sub> = 0.78, r<sub>DZ</sub> = 0.60 → H² = 2(0.78 − 0.60) = <strong>0.36</strong></div>
+  <div class="hl">H² is higher for males — more of the variation in singing ability among males is attributable to genetics, while females show more environmental influence.</div>`,
+
+  `<h2>§3 — Correlation: How We Measure Similarity</h2>
+  <p>Heritability is fundamentally about <strong>how similar phenotypes are between related individuals</strong>, given their degree of relatedness.</p>
+  <p>We use <strong>regression</strong> to quantify this:</p>
+  <ul>
+    <li><strong>Residuals</strong> — vertical distances from data points to the regression line (unexplained variation)</li>
+    <li><strong>r (Pearson correlation coefficient)</strong> — strength and direction of the relationship (−1 to +1)</li>
+    <li><strong>Slope (b)</strong> — how much y changes per unit of x</li>
+  </ul>
+  <div class="two-col">
+    <div class="method-card"><h4>Twin / clone (H²)</h4><p>Use <strong>r</strong> (correlation coefficient) in Falconer's formula</p></div>
+    <div class="method-card"><h4>Parent-offspring / siblings (h²)</h4><p>Use <strong>slope</strong> of regression line, scaled by relatedness</p></div>
+  </div>`
+],
+// s4: ANOVA
+[
+  `<h2>§4 — Overview of ANOVA</h2>
+  <p>ANOVA (Analysis of Variance) <strong>partitions the total variance</strong> in a measurement into components: variance among groups and variance within groups (error).</p>
+  <div class="table-wrap"><table>
+    <tr><th>Source</th><th>SS</th><th>DF</th><th>MS = SS/DF</th></tr>
+    <tr><td><strong>Total</strong></td><td>100</td><td>N−1 = 19</td><td>100/19</td></tr>
+    <tr><td>Groups</td><td>45</td><td>K−1 = 1</td><td>45</td></tr>
+    <tr><td>Error/Residual</td><td>55</td><td>N−K = 18</td><td>55/18</td></tr>
+  </table></div>
+  <div class="hl">SS = Sum of Squares (total squared deviations)<br>DF = Degrees of freedom<br>MS = Mean Square (variance estimate) = SS/DF<br>N = total individuals, K = number of groups</div>`,
+
+  `<h2>§4 — How ANOVA Partitions Variance</h2>
+  <p>Three steps:</p>
+  <ul>
+    <li><strong>Step 1:</strong> Calculate squared differences of all individuals from the overall mean → SS<sub>Total</sub></li>
+    <li><strong>Step 2:</strong> Calculate squared differences of group means from overall mean → SS<sub>Groups</sub></li>
+    <li><strong>Step 3:</strong> SS<sub>Error</sub> = SS<sub>Total</sub> − SS<sub>Groups</sub> (unexplained within-group variation)</li>
+  </ul>
+  <div class="hl-gold">In a <strong>clone trial</strong>, groups = clones. Among-clone variance is genetic (clones share 100% of alleles). Within-clone variance is environmental.</div>`,
+
+  `<h2>§4 — H² from ANOVA (Clone Trial)</h2>
+  <p>From an ANOVA table for a clone trial with <em>n</em> ramets per clone:</p>
+  <div class="formula">σ²<sub>Clone</sub> = (MS<sub>Clones</sub> − MS<sub>Error</sub>) / n</div>
+  <div class="formula">σ²<sub>Error</sub> = MS<sub>Error</sub></div>
+  <div class="formula">V<sub>P</sub> = σ²<sub>Clone</sub> + σ²<sub>Error</sub></div>
+  <div class="formula">H² = σ²<sub>Clone</sub> / V<sub>P</sub></div>
+  <div class="hl-green"><strong>Real example — Pinus griffithii × P. strobus clone trial</strong> (Zsuffa 1975):<br>
+  n = 5 ramets/clone &nbsp;|&nbsp; MS<sub>Clones</sub> = 4.93/7 &nbsp;|&nbsp; MS<sub>Error</sub> = 2.44/32 = 0.076<br>
+  σ²<sub>Clone</sub> = (0.704 − 0.076)/5 = <strong>0.126</strong><br>
+  V<sub>P</sub> = 0.126 + 0.076 = 0.202<br>
+  H² = 0.126/0.202 = <strong>0.62</strong></div>`,
+
+  `<h2>§4 — Narrow-Sense h² from ANOVA: Scaling by Relatedness</h2>
+  <p>The same ANOVA framework can estimate h², but the genetic variance must be <strong>scaled by how much of the genome is shared</strong>:</p>
+  <div class="table-wrap"><table>
+    <tr><th>Family type</th><th>Alleles shared</th><th>h² formula</th></tr>
+    <tr><td>Full siblings</td><td>50%</td><td>h² = 2 × (σ²<sub>Family</sub> / V<sub>P</sub>)</td></tr>
+    <tr><td>Half siblings</td><td>25%</td><td>h² = 4 × (σ²<sub>Family</sub> / V<sub>P</sub>) = 4ρ</td></tr>
+    <tr><td>Open-pollinated</td><td>~33%</td><td>h² = 3 × (σ²<sub>Family</sub> / V<sub>P</sub>)</td></tr>
+  </table></div>
+  <div class="hl">Multiplying by 2, 4, or 3 is dividing by the proportion of alleles shared — this "scales up" the observed family correlation to estimate the full additive genetic contribution to V<sub>P</sub>.</div>`
+],
+// s5: Estimating h²
+[
+  `<h2>§5 — Two Approaches to Estimating h²</h2>
+  <p>Narrow-sense heritability estimates the proportion of V<sub>P</sub> due to <strong>additive allele effects only</strong>. There are two main experimental approaches:</p>
+  <div class="two-col">
+    <div class="method-card"><h4>1. Offspring-to-parent</h4><p>Compare parent phenotype to offspring phenotype. Uses the breeder's equation: h² = R/S. Also done via midparent regression (slope = h²) or single-parent regression (slope × 2 = h²).</p></div>
+    <div class="method-card"><h4>2. Kin-to-kin (sib regression)</h4><p>Compare phenotypes within sibling pairs. Full-sib: h² = 2 × slope. Half-sib: h² = 4 × slope (or 4ρ via ANOVA).</p></div>
+  </div>
+  <div class="hl-gold">Why is h² more useful for breeding than H²? Because only additive effects pass reliably from parent to offspring in sexual reproduction. V<sub>D</sub> and V<sub>I</sub> "break apart" during meiosis.</div>`,
+
+  `<h2>§5 — The Breeder's Equation</h2>
+  <div class="formula">R = h² × S</div>
+  <p><strong>R</strong> = Response to selection (observed change in mean trait value per generation)<br>
+  <strong>S</strong> = Selection differential (mean of selected parents − population mean)<br>
+  <strong>h²</strong> = Narrow-sense heritability</p>
+  <div class="hl-green"><strong>Rearranged to estimate h²:</strong> h² = R / S</div>
+  <div class="hl-gold"><strong>Example — Nicotiana flower length:</strong><br>
+  Population mean = 51.55 mm &nbsp;|&nbsp; Selected individual (L-8) mean = 45 mm<br>
+  F<sub>1</sub> offspring mean = 50 mm<br><br>
+  S = 45 − 51.55 = −6.55 &nbsp;|&nbsp; R = 50 − 51.55 = −1.55<br>
+  h² = −1.55 / −6.55 = <strong>0.24</strong></div>`,
+
+  `<h2>§5 — Midparent Regression</h2>
+  <p><strong>Midparent value</strong> = average phenotype of both parents = (father + mother) / 2</p>
+  <p>Plot offspring mean (y) against midparent value (x). The slope of the regression line equals h²:</p>
+  <div class="formula">h² = slope (b in y = a + bx)</div>
+  <ul>
+    <li>Slope = 1.0 → perfect heritability (offspring = midparent)</li>
+    <li>Slope = 0.5 → moderate heritability</li>
+    <li>Slope = 0.0 → no additive heritability</li>
+  </ul>
+  <div class="hl-gold">Midparent-offspring regression in an anthropology class showed h² ≈ 0.75 for height — a well-known result. The slope was ~15 mm offspring change per ~20 mm midparent change.</div>`,
+
+  `<h2>§5 — Single Parent & Sibling Regression</h2>
+  <p><strong>Single parent (one parent only known):</strong> h² = 2 × slope<br>
+  Why ×2? Because a single parent shares 50% of alleles, so the slope underestimates additive heritability by half.</p>
+  <p><strong>Full-sib regression:</strong> h² = 2 × slope (share 50%)<br>
+  <strong>Half-sib regression (ANOVA):</strong> h² = 4ρ (share 25%)<br>
+  <strong>Open-pollinated:</strong> h² = 3ρ (share ~33%)</p>
+  <div class="hl-purple"><strong>Maritime pine example (Pinus pinaster):</strong><br>
+  Cone weight: slope = 0.1246 → h² = 2 × 0.1246 = <strong>0.25</strong><br>
+  Seed weight: slope = 0.2925 → h² = 2 × 0.2925 = <strong>0.59</strong></div>
+  <div class="hl">Sibling correlation varies between populations for the same trait. A steeper slope = higher heritability. Differences may reflect: linkage disequilibrium, differing V<sub>D</sub>/V<sub>I</sub>, or allele fixation at QTLs between populations.</div>`
+],
+// s6: EBVs
+[
+  `<h2>§6 — Estimated Breeding Values (EBVs)</h2>
+  <p>An <strong>EBV</strong> predicts the <em>additive genetic value</em> of an individual — how much better or worse its offspring will be compared to the population mean.</p>
+  <div class="formula">EBV = h² × (μ<sub>individual or family</sub> − μ<sub>population</sub>)</div>
+  <p>This is the same as predicted R from the breeder's equation — EBV = expected genetic gain if you breed that individual.</p>
+  <div class="hl">EBVs allow breeders to rank candidates and select the best parents even without knowing the exact genotype.</div>`,
+
+  `<h2>§6 — How EBV Works Across Generations</h2>
+  <p>With h² = ~0.5, only half the selection differential is transmitted as genetic gain. The other half is environmental and "regresses back" to the population mean.</p>
+  <ul>
+    <li>Gen 1 mean → select individuals with high S → Gen 2 mean shifts by R = h²S</li>
+    <li>Gen 2 mean → select again → Gen 3 mean shifts by another R</li>
+  </ul>
+  <div class="hl-gold">Each generation, the gain <em>compounds</em>. Even with moderate h², sustained selection over many generations produces large cumulative genetic gain.</div>
+  <div class="hl-green"><strong>Dairy cow example:</strong><br>
+  Population mean = 5 gal/day &nbsp;|&nbsp; h² = 0.25 &nbsp;|&nbsp; Selected cow = 9 gal/day<br>
+  S = 4 &nbsp;|&nbsp; EBV = 0.25 × 4 = 1 &nbsp;|&nbsp; Expected offspring = <strong>6 gal/day</strong></div>`,
+
+  `<h2>§6 — Summary: h², EBVs, and Regression Methods</h2>
+  <div class="table-wrap"><table>
+    <tr><th>Method</th><th>Type</th><th>Formula</th></tr>
+    <tr><td>Twin regression (Falconer's)</td><td>H² (broad)</td><td>H² = 2(r<sub>MZ</sub> − r<sub>DZ</sub>)</td></tr>
+    <tr><td>Midparent-offspring</td><td>h² (narrow)</td><td>h² = slope</td></tr>
+    <tr><td>Single parent-offspring</td><td>h² (narrow)</td><td>h² = 2 × slope</td></tr>
+    <tr><td>Full-sib regression</td><td>h² (narrow)</td><td>h² = 2 × slope</td></tr>
+    <tr><td>Half-sib ANOVA</td><td>h² (narrow)</td><td>h² = 4ρ</td></tr>
+    <tr><td>Open-pollinated ANOVA</td><td>h² (narrow)</td><td>h² = 3ρ</td></tr>
+    <tr><td>Clone trial ANOVA</td><td>H² (broad)</td><td>H² = σ²<sub>Clone</sub> / V<sub>P</sub></td></tr>
+  </table></div>
+  <div class="hl">Key reminder: <strong>twin/clone methods use r (correlation)</strong>; <strong>parent-offspring and sib methods use slope</strong>.</div>`
+],
+// s7: QST & Population Differentiation
+[
+  `<h2>§7 — Local Adaptation and Provenances</h2>
+  <p>Trees are locally adapted — populations from different climates differ in growth, phenology, and stress tolerance. In a <strong>common garden</strong> (all provenances grown in the same location), we can compare performance across origins.</p>
+  <p>Example: Lodgepole pine provenances grown together — productivity peaks at provenances from the same temperature regime as the planting site. Too cold or too warm an origin = reduced growth.</p>
+  <div class="hl"><strong>Breeding zones (BZ)</strong>: geographic areas within which seed can be sourced and still maintain acceptable local adaptation. The zone boundary = the cutoff on the adaptive performance curve.<br><br>
+  <strong>Seed zones</strong>: broader, climate-based zones applicable to multiple species.</div>`,
+
+  `<h2>§7 — Q<sub>ST</sub>: Quantitative Differentiation Among Populations</h2>
+  <p>Q<sub>ST</sub> is the quantitative trait analog of F<sub>ST</sub> (neutral genetic drift marker). It measures how much of the total genetic variance in a trait is distributed <em>among</em> populations (vs. within).</p>
+  <div class="formula">Q<sub>ST</sub> = σ²<sub>GB</sub> / (σ²<sub>GB</sub> + 2σ²<sub>GW</sub>)</div>
+  <div class="defs">
+    <div class="def"><h4>σ²<sub>GB</sub></h4><p>Genetic variance <strong>among/between</strong> populations</p></div>
+    <div class="def"><h4>σ²<sub>GW</sub></h4><p>Genetic variance <strong>within</strong> populations</p></div>
+  </div>
+  <div class="hl">Q<sub>ST</sub> ranges from 0 (all variation within pops) to 1 (all variation among pops). Compare to F<sub>ST</sub> from neutral markers to infer whether selection or drift drove population differentiation.</div>`,
+
+  `<h2>§7 — Interpreting Q<sub>ST</sub> vs. F<sub>ST</sub></h2>
+  <div class="hl-gold"><strong>Q<sub>ST</sub> &gt;&gt; F<sub>ST</sub></strong> → Divergent natural selection (local adaptation)<br>Populations differ more in the quantitative trait than expected from neutral drift alone.</div>
+  <div class="hl"><strong>Q<sub>ST</sub> ≈ F<sub>ST</sub></strong> → Consistent with neutral drift<br>Quantitative trait differentiation is no different from neutral marker differentiation — no selection signal.</div>
+  <div class="hl-purple"><strong>Q<sub>ST</sub> &lt;&lt; F<sub>ST</sub></strong> → Stabilizing selection<br>Selection is actively maintaining similar trait values across populations despite drift pulling them apart.</div>
+  <div class="hl-green"><strong>Applications:</strong> Q<sub>ST</sub>/F<sub>ST</sub> comparisons guide seed zone delineation, assisted gene flow decisions, and conservation of locally adapted ecotypes under climate change.</div>`
+]
+];
+
+const cur = [0,0,0,0,0,0,0,0,0];
+
+function render(s) {
+  if (!SD[s]) return;
+  const d = document.getElementById('d'+s);
+  if (!d) return;
+  d.innerHTML = SD[s][cur[s]] || '';
+  document.getElementById('c'+s).textContent = (cur[s]+1) + ' / ' + SD[s].length;
+  document.getElementById('p'+s).disabled = cur[s] === 0;
+  document.getElementById('n'+s).disabled = cur[s] === SD[s].length - 1;
+}
+
+function ns(s) { if (cur[s] < SD[s].length-1) { cur[s]++; render(s); } }
+function ps(s) { if (cur[s] > 0) { cur[s]--; render(s); } }
+
+function go(i) {
+  document.querySelectorAll('.sec').forEach((el,j) => el.classList.toggle('on', j===i));
+  document.querySelectorAll('#topnav button').forEach((b,j) => b.classList.toggle('active', j===i));
+  document.getElementById('prog').style.width = Math.round(((i+1)/9)*100) + '%';
+  if (SD[i]) render(i);
+}
+
+function ta(btn) {
+  const a = btn.nextElementSibling;
+  a.classList.toggle('show');
+  btn.textContent = a.classList.contains('show') ? 'Hide Answer' : 'Show Answer';
+}
+
+for (let i = 1; i <= 7; i++) render(i);
+</script>
+</body>
+</html>
