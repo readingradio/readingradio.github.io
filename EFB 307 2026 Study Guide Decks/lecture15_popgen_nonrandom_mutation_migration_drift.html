@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 15 – Population Genetics II</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0e1117;
+    --surface: #161b26;
+    --surface2: #1e2535;
+    --border: #2a3347;
+    --accent: #4f9cf9;
+    --accent2: #f9a94f;
+    --accent3: #6ddb8e;
+    --accent4: #e06bdb;
+    --text: #e8edf5;
+    --muted: #8899b4;
+    --heading-font: 'DM Serif Display', Georgia, serif;
+    --body-font: 'DM Sans', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--body-font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.65; }
+
+  /* NAV */
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 200; display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none; }
+  .topbar::-webkit-scrollbar { display: none; }
+  .brand { font-family: var(--heading-font); color: var(--accent); font-size: 0.9rem; padding: 0 20px; display: flex; align-items: center; border-right: 1px solid var(--border); white-space: nowrap; flex-shrink: 0; }
+  .nav-tabs { display: flex; }
+  .nav-tab { background: none; border: none; color: var(--muted); font-family: var(--body-font); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 14px 16px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .progress-track { height: 2px; background: var(--border); }
+  .progress-fill { height: 100%; background: var(--accent); transition: width 0.3s; }
+
+  /* SECTIONS */
+  .section { display: none; max-width: 860px; margin: 0 auto; padding: 36px 20px 80px; }
+  .section.active { display: block; animation: rise 0.35s ease; }
+  @keyframes rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+  /* CARDS */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 30px; margin-bottom: 20px; }
+  .card.al { border-left: 3px solid var(--accent); }
+  .card.ag { border-left: 3px solid var(--accent3); }
+  .card.ao { border-left: 3px solid var(--accent2); }
+  .card.ap { border-left: 3px solid var(--accent4); }
+
+  .section-label { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .section-title { font-family: var(--heading-font); font-size: 1.9rem; color: var(--text); margin-bottom: 18px; line-height: 1.2; }
+  h3 { font-family: var(--heading-font); font-size: 1.25rem; color: var(--text); margin-bottom: 12px; }
+  h4 { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  p { color: var(--text); margin-bottom: 10px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* TERMS */
+  .terms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+  .term-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .term-name { font-family: var(--mono); font-size: 0.8rem; color: var(--accent2); margin-bottom: 5px; font-weight: 600; }
+  .term-def { font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+
+  /* FORMULAS */
+  .formula-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 18px 24px; margin: 14px 0; font-family: var(--mono); font-size: 1rem; color: var(--accent3); text-align: center; letter-spacing: 0.04em; }
+  .formula-note { font-family: var(--body-font); font-size: 0.82rem; color: var(--muted); margin-top: 8px; }
+
+  /* CALLOUTS */
+  .callout { background: rgba(79,156,249,0.08); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 14px 0; font-size: 0.9rem; }
+  .callout.green { background: rgba(109,219,142,0.08); border-left-color: var(--accent3); }
+  .callout.orange { background: rgba(249,169,79,0.08); border-left-color: var(--accent2); }
+  .callout.purple { background: rgba(224,107,219,0.08); border-left-color: var(--accent4); }
+
+  /* LISTS */
+  .styled-list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .styled-item { display: flex; gap: 12px; align-items: flex-start; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; font-size: 0.9rem; }
+  .styled-item .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 6px; }
+  .styled-item .dot.green { background: var(--accent3); }
+  .styled-item .dot.orange { background: var(--accent2); }
+  .styled-item .dot.purple { background: var(--accent4); }
+
+  /* COMPARISON TABLE */
+  .cmp-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+  .cmp-table th { background: var(--surface2); color: var(--muted); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 2px solid var(--border); }
+  .cmp-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .cmp-table tr:last-child td { border-bottom: none; }
+  .cmp-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .tag-blue { display:inline-block; font-size:0.72rem; font-weight:600; padding:2px 8px; border-radius:99px; background:rgba(79,156,249,0.15); color:var(--accent); font-family:var(--mono); }
+  .tag-orange { display:inline-block; font-size:0.72rem; font-weight:600; padding:2px 8px; border-radius:99px; background:rgba(249,169,79,0.15); color:var(--accent2); font-family:var(--mono); }
+  .tag-green { display:inline-block; font-size:0.72rem; font-weight:600; padding:2px 8px; border-radius:99px; background:rgba(109,219,142,0.15); color:var(--accent3); font-family:var(--mono); }
+
+  /* STEPS */
+  .step { display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start; }
+  .step-num { width: 28px; height: 28px; flex-shrink: 0; background: var(--accent); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.75rem; font-weight: 700; }
+  .step-body { flex: 1; }
+
+  /* CONTRAST BOX */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } .terms-grid { grid-template-columns: 1fr; } }
+
+  /* REVIEW Q */
+  .q-block { margin-bottom: 14px; }
+  .q-btn { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; color: var(--text); font-family: var(--body-font); font-size: 0.92rem; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; transition: border-color 0.2s, background 0.2s; }
+  .q-btn:hover { border-color: var(--accent); background: rgba(79,156,249,0.05); }
+  .q-btn.open { border-color: var(--accent); background: rgba(79,156,249,0.07); border-radius: 8px 8px 0 0; }
+  .q-icon { font-size: 0.75rem; flex-shrink: 0; color: var(--muted); margin-top: 3px; }
+  .q-answer { display: none; background: rgba(109,219,142,0.06); border: 1px solid var(--accent3); border-top: none; border-radius: 0 0 8px 8px; padding: 14px 18px; font-size: 0.9rem; line-height: 1.6; }
+  .q-answer.show { display: block; }
+  .q-label { font-size: 0.7rem; font-family: var(--mono); color: var(--accent3); margin-bottom: 6px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* DIVIDER + FOOTER */
+  .divider { height: 1px; background: var(--border); margin: 18px 0; }
+  .nav-footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .nav-arrow { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px; color: var(--muted); font-family: var(--body-font); font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+  .nav-arrow:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .nav-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
+  .nav-arrow.next { margin-left: auto; }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="brand">EFB 307 · Lec 15</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="goTo(0)">Overview</button>
+    <button class="nav-tab" onclick="goTo(1)">§5 Genotype Freq.</button>
+    <button class="nav-tab" onclick="goTo(2)">§6 Mutation</button>
+    <button class="nav-tab" onclick="goTo(3)">§7 Migration</button>
+    <button class="nav-tab" onclick="goTo(4)">§8 Drift</button>
+    <button class="nav-tab" onclick="goTo(5)">HWE Summary</button>
+    <button class="nav-tab" onclick="goTo(6)">Review</button>
+  </div>
+</nav>
+<div class="progress-track"><div class="progress-fill" id="prog"></div></div>
+
+<!-- ══════════ OVERVIEW ══════════ -->
+<div class="section active" id="s0">
+  <div class="section-label">Lecture 15</div>
+  <div class="section-title">Population Genetics II: Nonrandom Mating, Mutation, Migration & Drift</div>
+
+  <div class="card al">
+    <h4>Lecture Roadmap</h4>
+    <div class="terms-grid" style="margin-top:4px;">
+      <div class="term-card">
+        <div class="term-name">§5 · Genotype Frequencies</div>
+        <div class="term-def">Expected vs. observed heterozygosity. Inbreeding (H<sub>o</sub> &lt; H<sub>e</sub>) and outbreeding (H<sub>o</sub> &gt; H<sub>e</sub>). Assortative mating.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">§6 · Mutation</div>
+        <div class="term-def">Introduction of new alleles. Purifying vs. positive selection. Factors that amplify mutation's effect on allele frequencies.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">§7 · Migration</div>
+        <div class="term-def">Gene flow homogenizes populations. Isolation drives divergence. Grand Canyon squirrel example.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">§8 · Drift</div>
+        <div class="term-def">Random allele frequency change. Bottlenecks, founder effect, effective population size (N<sub>e</sub>). Tay-Sachs, Iceland, French Canadians.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Big Picture: HWE Violations Revisited</h3>
+    <p>This lecture focuses on four of the five HWE assumptions and what happens when they are broken. The key distinction remains:</p>
+    <div class="two-col" style="margin-top:14px;">
+      <div class="callout green"><strong>Genotype frequencies change only</strong><br>Assortative mating → H<sub>o</sub> ≠ H<sub>e</sub>, but allele frequencies stay constant</div>
+      <div class="callout orange"><strong>Allele frequencies change (Δq ≠ 0)</strong><br>Mutation, migration, drift, and selection can all shift allele frequencies over generations</div>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" disabled>← Prev</button>
+    <button class="nav-arrow next" onclick="goTo(1)">§5 Genotype Frequencies →</button>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 5 ══════════ -->
+<div class="section" id="s1">
+  <div class="section-label">Section 5</div>
+  <div class="section-title">Changes in Genotype Frequencies</div>
+
+  <div class="card al">
+    <h3>Heterozygosity: Expected vs. Observed</h3>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">H<sub>e</sub> (Expected)</div>
+        <div class="term-def">= 2pq. What proportion of individuals should be heterozygous under HWE given the allele frequencies</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">H<sub>o</sub> (Observed)</div>
+        <div class="term-def">= (# Aa + aA) / total individuals. The actual proportion of heterozygotes counted in the population</div>
+      </div>
+    </div>
+    <div class="formula-box" style="margin-top:16px;">
+      At HWE equilibrium: H<sub>o</sub> = H<sub>e</sub>
+      <div class="formula-note">Deviations (H<sub>o</sub> ≠ H<sub>e</sub>) imply non-random (assortative) mating — but allele frequencies are unchanged</div>
+    </div>
+  </div>
+
+  <div class="card ao">
+    <h3>Assortative Mating: Two Directions</h3>
+    <div class="two-col">
+      <div>
+        <div class="callout orange">
+          <strong>Positive Assortative Mating (Inbreeding)</strong><br>
+          "Like prefers like" — similar phenotypes mate preferentially<br><br>
+          → Homozygotes increase<br>
+          → Heterozygotes decrease<br>
+          → <strong>H<sub>o</sub> &lt; H<sub>e</sub></strong>
+        </div>
+      </div>
+      <div>
+        <div class="callout green">
+          <strong>Negative Assortative Mating (Outbreeding)</strong><br>
+          "Opposites attract" — different phenotypes mate preferentially<br><br>
+          → Heterozygotes increase<br>
+          → Homozygotes decrease<br>
+          → <strong>H<sub>o</sub> &gt; H<sub>e</sub></strong>
+        </div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:14px;">
+      <strong>Key reminder:</strong> In both cases, allele frequencies (p and q) <em>do not change</em>. Only the distribution across genotype classes is affected.
+    </div>
+  </div>
+
+  <div class="card ag">
+    <h3>Worked Example: Sickle-Cell Anemia</h3>
+    <p style="color:var(--muted); margin-bottom:14px;">Sickle-cell anemia is recessive. Frequency of the disease (zz) = 1 in 10,000. What is the frequency of asymptomatic carriers?</p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body"><strong>Find q from disease frequency</strong><br>q² = 0.0001 → q = √0.0001 = <span style="color:var(--accent);">0.01</span></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body"><strong>Find p</strong><br>p = 1 − q = 1 − 0.01 = <span style="color:var(--accent2);">0.99</span></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body"><strong>Calculate expected heterozygosity (carrier frequency)</strong><br>H<sub>e</sub> = 2pq = 2 × 0.01 × 0.99 = <span style="color:var(--accent3);">0.0198 ≈ 1.98%</span></div>
+    </div>
+    <div class="callout green">About 1 in 50 people are asymptomatic carriers — far more than the 1 in 10,000 who actually express the disease.</div>
+  </div>
+
+  <div class="card">
+    <h3>Calculating p from Observed Genotype Frequencies</h3>
+    <p>If you know how many individuals have each genotype, you can work backwards:</p>
+    <div class="formula-box">
+      p = freq(AA) + ½ × freq(Aa/aA)<br>
+      q = 1 − p
+      <div class="formula-note">AA individuals contribute 100% A gametes; heterozygotes contribute 50% A gametes</div>
+    </div>
+    <div class="callout orange">
+      <strong>Example: White-throated sparrow morphs</strong><br>
+      60% gray-white (Ww), 10% white striped (WW), 30% gray striped (ww)<br>
+      p = 0.10 + ½(0.60) = 0.40 | q = 0.60<br>
+      H<sub>e</sub> = 2(0.40)(0.60) = 0.48 | H<sub>o</sub> = 0.60 → H<sub>o</sub> &gt; H<sub>e</sub> → outbreeding
+    </div>
+  </div>
+
+  <div class="card ap">
+    <h3>Inbreeding in Detail</h3>
+    <p>Extreme positive assortative mating → <strong>inbreeding</strong>. This splits a population into homozygous sub-populations (AA and aa).</p>
+    <ul class="styled-list" style="margin-top:12px;">
+      <li class="styled-item"><div class="dot purple"></div><div>A mutation arises on one chromosome in one individual and creates a new haplotype</div></li>
+      <li class="styled-item"><div class="dot purple"></div><div>This mutation + surrounding haplotype are passed through generations</div></li>
+      <li class="styled-item"><div class="dot purple"></div><div>A descendant who mates with another carrier of that same common ancestor will be <strong>homozygous by descent</strong> — identical haplotypes on both chromosomes</div></li>
+    </ul>
+    <div class="callout purple">Real-world examples: domestic dogs (selective breeding), royal families (consanguinity), isolated human populations</div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" onclick="goTo(0)">← Overview</button>
+    <button class="nav-arrow next" onclick="goTo(2)">§6 Mutation →</button>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 6: MUTATION ══════════ -->
+<div class="section" id="s2">
+  <div class="section-label">Section 6</div>
+  <div class="section-title">Changes in Allele Frequencies: Mutation</div>
+
+  <div class="card al">
+    <h3>Mutation = Introduction of a New Allele</h3>
+    <p>Mutation is the ultimate source of all genetic variation. It introduces a brand-new allele into the gene pool — changing the total allele count and thus allele frequencies.</p>
+    <div class="callout">
+      <strong>Important:</strong> The mutation rate alone is usually <em>too low</em> to meaningfully shift allele frequencies in a large population on its own. Other forces must act together with it.
+    </div>
+  </div>
+
+  <div class="card ao">
+    <h3>Two Fates of a New Mutation</h3>
+    <div class="two-col">
+      <div class="callout orange">
+        <strong>Purifying Selection</strong><br>
+        The mutation is deleterious — reduces fitness. Natural selection filters it out. New allele stays rare or disappears.<br><br>
+        <em>Examples: monstrose (abnormal growth) mutations in conifers and cacti; fasciation in pea plants (fa frameshift)</em>
+      </div>
+      <div class="callout green">
+        <strong>Positive Selection</strong><br>
+        The mutation confers a fitness advantage. It spreads through the population and may reach fixation.<br><br>
+        <em>Example: small-stomata allele in arid-adapted Populus trichocarpa populations</em>
+      </div>
+    </div>
+  </div>
+
+  <div class="card ag">
+    <h3>Factors That Amplify Mutation's Effect on Allele Frequencies</h3>
+    <ul class="styled-list">
+      <li class="styled-item"><div class="dot green"></div><div><strong>High mutation rate</strong> → more new alleles per generation → larger effect on pool</div></li>
+      <li class="styled-item"><div class="dot green"></div><div><strong>Small population size</strong> → each new allele represents a larger fraction of the gene pool; drift can fix it</div></li>
+      <li class="styled-item"><div class="dot green"></div><div><strong>Non-random mating</strong> → inbreeding can rapidly increase frequency of a new allele through homozygosity</div></li>
+      <li class="styled-item"><div class="dot green"></div><div><strong>Limited migration</strong> → the allele can't be diluted by incoming alleles from other populations (bottleneck effect)</div></li>
+      <li class="styled-item"><div class="dot green"></div><div><strong>Positive selection / differential fertility</strong> → individuals with the allele reproduce more → allele spreads</div></li>
+    </ul>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" onclick="goTo(1)">← §5 Genotype Freq.</button>
+    <button class="nav-arrow next" onclick="goTo(3)">§7 Migration →</button>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 7: MIGRATION ══════════ -->
+<div class="section" id="s3">
+  <div class="section-label">Section 7</div>
+  <div class="section-title">Changes in Allele Frequencies: Migration</div>
+
+  <div class="card al">
+    <h3>Gene Flow vs. Isolation</h3>
+    <p>Migration (gene flow) is the movement of alleles between populations. It has opposite effects depending on whether it is allowed or blocked.</p>
+    <div class="two-col" style="margin-top:14px;">
+      <div class="callout green">
+        <strong>Migration Allowed → Homogenization</strong><br>
+        Alleles from one population enter another. Over time, allele frequencies between the populations converge — they become more similar.
+      </div>
+      <div class="callout orange">
+        <strong>Migration Blocked → Divergence</strong><br>
+        Each isolated sub-population evolves independently. Allele frequencies drift apart, and each population becomes genetically distinct.
+      </div>
+    </div>
+  </div>
+
+  <div class="card ao">
+    <h3>Worked Example: Migration Changes Frequencies</h3>
+    <p style="color:var(--muted); margin-bottom:14px;">Population 1 (200 individuals): p = 0.70, q = 0.30. Then 20 immigrants arrive with p = 0.60, q = 0.40.</p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body"><strong>Count A alleles after migration</strong><br>Original: 140 A alleles (from 200 ind.) | Migrants: 24 A alleles (from 20 ind.)<br>Total A = 140 + 24 = 164</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body"><strong>Count total alleles</strong><br>(200 + 20) × 2 = 440 total alleles</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body"><strong>New allele frequencies</strong><br>p = (140+24)/240 ≈ <span style="color:var(--accent3);">0.68</span> | q ≈ <span style="color:var(--accent3);">0.32</span> (shifted from original 0.70/0.30)</div>
+    </div>
+  </div>
+
+  <div class="card ag">
+    <h3>Real-World Example: Grand Canyon Squirrels</h3>
+    <p>The Grand Canyon acts as a geographic barrier separating two subspecies of the same squirrel, <em>Sciurus aberti</em>:</p>
+    <div class="two-col" style="margin-top:14px;">
+      <div class="term-card">
+        <div class="term-name">Abert's Squirrel (South Rim)</div>
+        <div class="term-def"><em>S. aberti aberti</em> — light coloration, gray body. Has not been isolated as long; some gene flow possible historically.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Kaibab Squirrel (North Rim)</div>
+        <div class="term-def"><em>S. aberti kaibabensis</em> — dark body, white tail. Completely isolated on the Kaibab Plateau. Has diverged substantially.</div>
+      </div>
+    </div>
+    <div class="callout green" style="margin-top:14px;">The Grand Canyon = isolation event → allele frequencies diverge → two distinct sub-populations. A classic example of isolation preventing gene flow and driving differentiation.</div>
+  </div>
+
+  <div class="card">
+    <h3>Summary: Factors Affecting Migration's Influence</h3>
+    <ul class="styled-list">
+      <li class="styled-item"><div class="dot"></div><div><strong>Intermixing</strong> → introduction of new alleles + homogenization between populations</div></li>
+      <li class="styled-item"><div class="dot orange"></div><div><strong>Isolation by migration</strong> (active separation) → differentiation over time</div></li>
+      <li class="styled-item"><div class="dot orange"></div><div><strong>Isolation by lack of migration</strong> (geographic/cultural barriers) → differentiation over time</div></li>
+    </ul>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" onclick="goTo(2)">← §6 Mutation</button>
+    <button class="nav-arrow next" onclick="goTo(4)">§8 Drift →</button>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 8: DRIFT ══════════ -->
+<div class="section" id="s4">
+  <div class="section-label">Section 8</div>
+  <div class="section-title">Changes in Allele Frequencies: Genetic Drift</div>
+
+  <div class="card al">
+    <h3>Genetic Drift & Neutral Theory</h3>
+    <p>Every population is a <strong>sample</strong> of the previous generation. In small samples, random chance causes allele frequencies to fluctuate — this is genetic drift.</p>
+    <ul class="styled-list" style="margin-top:12px;">
+      <li class="styled-item"><div class="dot"></div><div>Drift is <strong>stochastic</strong> (random) — not driven by fitness advantage</div></li>
+      <li class="styled-item"><div class="dot"></div><div>Even <strong>neutral alleles</strong> (no effect on fitness) fluctuate in frequency over generations</div></li>
+      <li class="styled-item"><div class="dot"></div><div>In small, isolated populations, alleles can become <strong>fixed</strong> (freq = 1.0) or go <strong>extinct</strong> (freq = 0) purely by chance</div></li>
+    </ul>
+    <div class="callout">Drift in simulation: starting at p = 0.5 in populations of 100, some populations showed fixation of one allele within ~30 generations — purely by chance.</div>
+  </div>
+
+  <div class="card ao">
+    <h3>Population Bottleneck</h3>
+    <p>A <strong>bottleneck</strong> occurs when a large population is dramatically reduced in size due to catastrophe (disease, disaster, climate), and then re-expands. The surviving individuals are a random, small subset of the original gene pool.</p>
+    <div class="callout orange">
+      <strong>Effect:</strong> The new, expanded population has allele frequencies that reflect the random survivors — not the original population. Rare alleles may become common; common alleles may disappear.
+    </div>
+    <div class="divider"></div>
+    <h4>Real-World Bottleneck Examples</h4>
+    <ul class="styled-list">
+      <li class="styled-item"><div class="dot orange"></div><div><strong>Iceland</strong> — 3 separate bottleneck events (Black Death, smallpox, volcanic eruption). Today, Icelandic people carry alleles at frequencies very different from other European populations.</div></li>
+      <li class="styled-item"><div class="dot orange"></div><div><strong>Europe (Black Death)</strong> — killed &gt;40% of European population in the 14th century. Altered allele frequencies across the continent, especially immune-related genes.</div></li>
+    </ul>
+  </div>
+
+  <div class="card ag">
+    <h3>Founder Effect</h3>
+    <p>A special case of bottleneck: a <strong>small founding group</strong> colonizes a new territory and becomes isolated. The founder group's allele frequencies — however non-representative — define the new population's gene pool.</p>
+    <div class="terms-grid" style="margin-top:12px;">
+      <div class="term-card">
+        <div class="term-name">Iceland (Vikings)</div>
+        <div class="term-def">Founded by ~2,000 Vikings. Population grew to ~270,000 with minimal gene flow. Now genetically distinct from mainland Europeans.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">French Canadians (Quebec)</div>
+        <div class="term-def">Isolated from British colonizers by language and religion. Genetically distinct from other North American populations. Higher frequency of Tay-Sachs (7.5 kb HexA deletion).</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Ashkenazi Jews</div>
+        <div class="term-def">Religious isolation from surrounding populations over centuries. Higher frequency of Tay-Sachs (4 bp HexA insertion), Gaucher disease, and others.</div>
+      </div>
+    </div>
+    <div class="callout green" style="margin-top:14px;">
+      <strong>Tay-Sachs comparison:</strong> French Canadians carry a <em>different</em> mutation in HexA (7.5 kb deletion) than Ashkenazi Jews (4 bp insertion) — both cause the same disease but arose independently in two separately isolated founder populations. Only one documented case of a French Canadian carrying the Ashkenazi version.
+    </div>
+  </div>
+
+  <div class="card ap">
+    <h3>Effective Population Size (N<sub>e</sub>)</h3>
+    <p>N<sub>e</sub> is the size of an <em>ideal</em> population that would experience the same amount of genetic drift as the actual population. It accounts for unequal sex ratios and variable reproductive success.</p>
+    <ul class="styled-list" style="margin-top:12px;">
+      <li class="styled-item"><div class="dot purple"></div><div>N<sub>e</sub> is almost always <strong>smaller</strong> than the census population size</div></li>
+      <li class="styled-item"><div class="dot purple"></div><div>Bottlenecks dramatically reduce N<sub>e</sub> — even temporarily small populations leave lasting genetic signatures</div></li>
+      <li class="styled-item"><div class="dot purple"></div><div><strong>50/500 rule:</strong> N<sub>e</sub> &gt; 50 to avoid short-term severe inbreeding; N<sub>e</sub> &gt; 500 to minimize drift over the long term — key benchmarks in conservation genetics</div></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Factors Determining Drift's Impact</h3>
+    <div class="two-col">
+      <div>
+        <h4>Increases Drift</h4>
+        <ul class="styled-list">
+          <li class="styled-item" style="padding:9px 12px;"><div class="dot orange"></div><div>Small N<sub>e</sub></div></li>
+          <li class="styled-item" style="padding:9px 12px;"><div class="dot orange"></div><div>Low migration / isolation</div></li>
+          <li class="styled-item" style="padding:9px 12px;"><div class="dot orange"></div><div>Bottleneck or founder event</div></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Reduces Drift</h4>
+        <ul class="styled-list">
+          <li class="styled-item" style="padding:9px 12px;"><div class="dot green"></div><div>Large N<sub>e</sub></div></li>
+          <li class="styled-item" style="padding:9px 12px;"><div class="dot green"></div><div>High gene flow / migration</div></li>
+          <li class="styled-item" style="padding:9px 12px;"><div class="dot green"></div><div>Stable, large population over time</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" onclick="goTo(3)">← §7 Migration</button>
+    <button class="nav-arrow next" onclick="goTo(5)">HWE Summary →</button>
+  </div>
+</div>
+
+<!-- ══════════ HWE FULL SUMMARY ══════════ -->
+<div class="section" id="s5">
+  <div class="section-label">Summary</div>
+  <div class="section-title">Complete HWE Violations Table</div>
+
+  <div class="card al">
+    <h3>All 5 Assumptions & Their Violations</h3>
+    <table class="cmp-table" style="margin-top:8px;">
+      <thead>
+        <tr><th>HWE Assumption</th><th>Violation</th><th>What Changes</th><th>Evolves?</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Random mating</td>
+          <td>Assortative mating (inbreeding / outbreeding)</td>
+          <td>H<sub>o</sub> ≠ H<sub>e</sub> — genotype frequencies shift; alleles don't change</td>
+          <td><span class="tag-blue">No (Δq = 0)</span></td>
+        </tr>
+        <tr>
+          <td>No mutation</td>
+          <td>Mutation introduces new allele</td>
+          <td>New allele added to gene pool; Δq &gt; 0 or &lt; 0 depending on fate</td>
+          <td><span class="tag-orange">Yes (Δq ≠ 0)</span></td>
+        </tr>
+        <tr>
+          <td>No migration</td>
+          <td>Gene flow / isolation</td>
+          <td>Migration → populations converge; isolation → divergence</td>
+          <td><span class="tag-orange">Yes (Δq ≠ 0)</span></td>
+        </tr>
+        <tr>
+          <td>Large population size</td>
+          <td>Genetic drift (N<sub>e</sub> &lt; ~500)</td>
+          <td>Random allele frequency change; risk of fixation or extinction</td>
+          <td><span class="tag-orange">Yes (Δq ≠ 0)</span></td>
+        </tr>
+        <tr>
+          <td>No natural selection</td>
+          <td>Purifying or positive selection</td>
+          <td>Deleterious alleles removed; adaptive alleles increase</td>
+          <td><span class="tag-orange">Yes (Δq ≠ 0)</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card ag">
+    <h3>Interaction of Forces</h3>
+    <p>These forces do not act in isolation — they interact to shape allele frequencies:</p>
+    <ul class="styled-list" style="margin-top:12px;">
+      <li class="styled-item"><div class="dot green"></div><div><strong>Gene flow</strong> is determined jointly by migration rate, population size, and mating pattern — more migration + larger pop + random mating = more gene flow</div></li>
+      <li class="styled-item"><div class="dot green"></div><div><strong>Restricted gene flow</strong> (from any combination of isolation, small N<sub>e</sub>, or non-random mating) leads to neutral genetic differentiation via drift</div></li>
+      <li class="styled-item"><div class="dot green"></div><div>A mutation at low frequency might normally be lost — but a bottleneck or non-random mating can dramatically amplify its frequency before selection can act</div></li>
+    </ul>
+    <div class="callout green" style="margin-top:14px;">
+      <strong>Rule of thumb:</strong> Small N<sub>e</sub> + isolation = drift dominates. Large N<sub>e</sub> + gene flow = selection dominates. Most real populations exist on a spectrum between these extremes.
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" onclick="goTo(4)">← §8 Drift</button>
+    <button class="nav-arrow next" onclick="goTo(6)">Review Questions →</button>
+  </div>
+</div>
+
+<!-- ══════════ REVIEW ══════════ -->
+<div class="section" id="s6">
+  <div class="section-label">Review</div>
+  <div class="section-title">Practice Questions</div>
+  <p style="color:var(--muted); margin-bottom:24px;">Click each question to reveal the answer.</p>
+
+  <!-- §5 -->
+  <div class="card" style="margin-bottom:24px;">
+    <h4 style="margin-bottom:14px;">§5 — Genotype Frequencies & Assortative Mating</h4>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">What does it mean when H<sub>o</sub> &lt; H<sub>e</sub>? What type of mating is occurring?
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>H<sub>o</sub> &lt; H<sub>e</sub> means the population has <em>fewer</em> heterozygotes than expected under HWE. This indicates <strong>positive assortative mating (inbreeding)</strong> — "like prefers like." Similar phenotypes preferentially mate, increasing homozygosity and decreasing heterozygosity. Allele frequencies themselves are unchanged.</div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">In the M-N blood group example: 480 MM, 440 MN, 80 NN (total = 1000). Are they in HWE? What direction is assortative mating?
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>
+        First, calculate allele frequencies:<br>
+        p (M) = [480×2 + 440] / 2000 = 1400/2000 = <strong>0.70</strong><br>
+        q (N) = [80×2 + 440] / 2000 = 600/2000 = <strong>0.30</strong><br><br>
+        Expected under HWE: MM = 0.49×1000 = 490, MN = 0.42×1000 = 420, NN = 0.09×1000 = 90<br><br>
+        Observed MN (440) &gt; Expected MN (420) → <strong>H<sub>o</sub> &gt; H<sub>e</sub></strong> → <strong>negative assortative mating (outbreeding)</strong>. More heterozygotes than expected.
+      </div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">Why does inbreeding increase the risk of expressing recessive disease alleles?
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>When close relatives mate, they are more likely to carry the same recessive alleles inherited from a common ancestor (<strong>identical by descent</strong>). As homozygosity increases, the probability that offspring receive two copies of the same recessive allele rises — making it more likely that a harmful recessive phenotype is expressed. This is why inbreeding is associated with increased prevalence of rare genetic disorders.</div>
+    </div>
+  </div>
+
+  <!-- §6 -->
+  <div class="card" style="margin-bottom:24px;">
+    <h4 style="margin-bottom:14px;">§6 — Mutation</h4>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">Why is mutation alone usually insufficient to change allele frequencies in a large population?
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>Mutation rates are typically very low — on the order of 10⁻⁶ to 10⁻⁸ per base pair per generation. In a large population, a single new mutation represents an infinitesimally small fraction of the total gene pool. Without additional forces (selection, drift, non-random mating, or limited migration) to amplify or spread it, the mutation's effect on population-level allele frequencies is negligible in the short term.</div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">What is purifying selection and how does it relate to "monstrose" mutations?
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>Purifying (negative) selection removes deleterious alleles from the population — alleles that reduce fitness are selected against and typically disappear over generations. "Monstrose" mutations (like crested cacti or abnormal cedar growth forms) are examples of somatic mutations that produce fitness-reducing phenotypes. They arise rarely, don't typically make it into the germline, and are filtered out by purifying selection, which is why they remain extremely rare in nature.</div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">Describe a scenario where a new mutation rapidly increases in frequency in a population.
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>A mutation that confers a strong fitness advantage (positive selection) in combination with a small, isolated population would rapidly increase in frequency. For example: a new drought-resistance mutation arises in a small isolated tree population during a prolonged drought. Trees carrying the allele survive and reproduce better (positive selection). Because the population is small, even a few extra offspring make a large proportional difference. Limited migration prevents dilution of the allele, and over generations it can sweep to fixation.</div>
+    </div>
+  </div>
+
+  <!-- §7 -->
+  <div class="card" style="margin-bottom:24px;">
+    <h4 style="margin-bottom:14px;">§7 — Migration & Isolation</h4>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">Population A has p = 0.70. 20 immigrants join from Population B (p = 0.50). The original population had 100 individuals. What is the new allele frequency for A?
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>
+        Original A alleles: 100 × 2 × 0.70 = 140<br>
+        Immigrant A alleles: 20 × 2 × 0.50 = 20<br>
+        Total A alleles: 140 + 20 = 160<br>
+        Total alleles: (100 + 20) × 2 = 240<br>
+        New p = 160/240 ≈ <strong>0.667</strong> (shifted from 0.70 toward 0.50 of the immigrant source population)
+      </div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">How do the Kaibab and Abert's squirrels illustrate the effect of isolation on allele frequencies?
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>Both squirrel subspecies descended from the same ancestral <em>Sciurus aberti</em> population. The formation of the Grand Canyon created a geographic barrier, completely blocking gene flow between the north and south rim populations. Over time, each sub-population evolved independently — accumulating different mutations, experiencing different drift events, and potentially experiencing different selection pressures. The result is two visually and genetically distinct subspecies, despite sharing a recent common ancestor.</div>
+    </div>
+  </div>
+
+  <!-- §8 -->
+  <div class="card" style="margin-bottom:24px;">
+    <h4 style="margin-bottom:14px;">§8 — Genetic Drift, Bottleneck & Founder Effect</h4>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">What is the difference between a population bottleneck and a founder effect?
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>Both involve a dramatic reduction to a small number of individuals, but the context differs. A <strong>bottleneck</strong> occurs when an existing population is suddenly reduced by a catastrophic event (disease, disaster) and then re-expands in the same location. A <strong>founder effect</strong> occurs when a small group of individuals <em>colonizes a new territory</em> and becomes isolated — the founding group's allele frequencies define the new population. Both result in reduced genetic diversity and allele frequencies that may differ substantially from the original population.</div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">Why do French Canadians and Ashkenazi Jews both have elevated Tay-Sachs frequencies, yet carry different mutations?
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>Both populations experienced <strong>independent founder effects</strong>. The Tay-Sachs allele that became common in each population arose as a separate mutation in a separate founding individual. In French Canadians, it is a 7.5 kb deletion in HexA; in Ashkenazi Jews, it is a 4 bp insertion — different molecular lesions producing the same disease. Each population was subsequently isolated (French Canadians by language/religion from the British; Ashkenazi Jews by religious practice and culture), so each mutation rose in frequency within its own founding gene pool through drift, without being diluted by gene flow from other populations.</div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">What is the 50/500 rule and why does it matter for conservation genetics?
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>The 50/500 rule provides practical population size thresholds for conservation management: <strong>N<sub>e</sub> &gt; 50</strong> is needed to prevent severe short-term inbreeding depression; <strong>N<sub>e</sub> &gt; 500</strong> is needed to maintain long-term evolutionary potential by minimizing drift. Below N<sub>e</sub> = 50, inbreeding rapidly increases and fitness-reducing alleles can become fixed. Below N<sub>e</sub> = 500, even neutral alleles are lost through drift faster than mutation can replenish diversity. These thresholds guide minimum viable population assessments for endangered species.</div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">Rapa Nui (Easter Island) — the population crashed from ~15,000 to just 111 people by 1877. What effects would this have on the gene pool?
+        <span class="q-icon">▼</span></button>
+      <div class="q-answer"><div class="q-label">Answer</div>This extreme bottleneck would have: (1) <strong>Reduced genetic diversity</strong> — many alleles present in the pre-crash population were likely lost entirely; (2) <strong>Shifted allele frequencies</strong> — the 111 survivors were a random, unrepresentative sample, so rare alleles may have been lost while others became disproportionately common; (3) <strong>Increased inbreeding</strong> — with only 111 individuals, all subsequent breeding involved close relatives, rapidly increasing homozygosity; (4) <strong>Amplified drift</strong> — allele frequencies continued to drift strongly as the small population recovered. The GWAS evidence (76% Polynesian, 16% European, 8% Native American ancestry) also records the migration (gene flow) events that introduced foreign alleles into the post-bottleneck population.</div>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" onclick="goTo(5)">← HWE Summary</button>
+    <button class="nav-arrow" disabled>End of Deck</button>
+  </div>
+</div>
+
+<script>
+  let cur = 0;
+  const secs = document.querySelectorAll('.section');
+  const tabs = document.querySelectorAll('.nav-tab');
+  const prog = document.getElementById('prog');
+
+  function goTo(i) {
+    secs[cur].classList.remove('active');
+    tabs[cur].classList.remove('active');
+    cur = i;
+    secs[cur].classList.add('active');
+    tabs[cur].classList.add('active');
+    prog.style.width = ((i / (secs.length - 1)) * 100) + '%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleQ(btn) {
+    const ans = btn.nextElementSibling;
+    const open = ans.classList.contains('show');
+    const card = btn.closest('.card');
+    card.querySelectorAll('.q-answer').forEach(a => a.classList.remove('show'));
+    card.querySelectorAll('.q-btn').forEach(b => { b.classList.remove('open'); b.querySelector('.q-icon').textContent = '▼'; });
+    if (!open) { ans.classList.add('show'); btn.classList.add('open'); btn.querySelector('.q-icon').textContent = '▲'; }
+  }
+
+  prog.style.width = '0%';
+</script>
+</body>
+</html>
