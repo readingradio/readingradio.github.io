@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 16 – Population Genetics III: Selection</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Sora:wght@400;600;700;800&display=swap');
+
+  :root {
+    --navy:#0f1724;--bg:#111827;--surface:#1a2336;--surface2:#1e2a3d;
+    --blue:#4a9eff;--blue-dim:#1e3a5f;--blue-glow:rgba(74,158,255,0.15);
+    --green:#39d98a;--green-dim:#0d3024;
+    --gold:#f5c842;--gold-dim:#3a2e08;
+    --red:#ff6b6b;--red-dim:#3a1010;
+    --purple:#b980ff;--purple-dim:#2a1545;
+    --text:#e8eef8;--muted:#7a8ba8;--border:#2a3a52;
+    --mono:'IBM Plex Mono',monospace;
+    --sans:'Sora',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
+
+  /* TOP NAV */
+  #topnav{
+    background:rgba(15,23,36,0.97);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;flex-wrap:wrap;gap:0;
+    padding:0 16px;position:sticky;top:0;z-index:200;
+  }
+  #topnav .logo{
+    font-family:var(--mono);font-size:.75rem;font-weight:600;
+    color:var(--blue);padding:14px 14px 14px 0;border-right:1px solid var(--border);
+    margin-right:4px;white-space:nowrap;letter-spacing:.05em;
+  }
+  #topnav button{
+    background:none;border:none;border-bottom:2px solid transparent;
+    color:var(--muted);font-family:var(--sans);font-size:.72rem;font-weight:600;
+    padding:14px 9px;cursor:pointer;white-space:nowrap;
+    transition:color .2s,border-color .2s;letter-spacing:.03em;
+  }
+  #topnav button:hover{color:var(--text);}
+  #topnav button.active{color:var(--blue);border-bottom-color:var(--blue);}
+
+  /* PROGRESS BAR */
+  .prog-wrap{height:2px;background:var(--border);}
+  .prog-bar{height:2px;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .3s;}
+
+  /* MAIN */
+  .main{max-width:900px;margin:0 auto;padding:32px 20px 60px;}
+  .sec{display:none;}
+  .sec.on{display:block;}
+
+  /* SECTION HEADER */
+  .sec-header{margin-bottom:28px;}
+  .sec-label{font-family:var(--mono);font-size:.7rem;color:var(--blue);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+  .sec-title{font-size:1.7rem;font-weight:800;color:var(--text);line-height:1.2;}
+  .sec-sub{font-size:.9rem;color:var(--muted);margin-top:6px;}
+
+  /* CARDS */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin-bottom:16px;}
+  .card h3{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:10px;}
+  .card p{font-size:.88rem;color:#c5d0e0;line-height:1.7;margin-bottom:8px;}
+  .card p:last-child{margin-bottom:0;}
+  .card ul{padding-left:18px;margin-bottom:8px;}
+  .card ul li{font-size:.88rem;color:#c5d0e0;line-height:1.7;margin-bottom:4px;}
+
+  /* HIGHLIGHTS */
+  .hl{border-left:3px solid var(--blue);background:var(--blue-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.86rem;color:#b8d4f5;line-height:1.65;}
+  .hl-green{border-left:3px solid var(--green);background:var(--green-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.86rem;color:#a0f0c8;line-height:1.65;}
+  .hl-gold{border-left:3px solid var(--gold);background:var(--gold-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.86rem;color:#f0d880;line-height:1.65;}
+  .hl-red{border-left:3px solid var(--red);background:var(--red-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.86rem;color:#ffb0b0;line-height:1.65;}
+  .hl-purple{border-left:3px solid var(--purple);background:var(--purple-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.86rem;color:#d8b0ff;line-height:1.65;}
+
+  /* FORMULA BOX */
+  .formula{background:#0a1020;border:1px solid var(--blue-dim);border-radius:10px;padding:16px 20px;margin:12px 0;text-align:center;}
+  .formula .eq{font-family:var(--mono);font-size:1.1rem;color:var(--blue);font-weight:600;letter-spacing:.03em;}
+  .formula .desc{font-size:.8rem;color:var(--muted);margin-top:6px;}
+
+  /* SLIDE DECK */
+  .deck{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+  .deck-title{background:var(--surface2);padding:12px 20px;font-family:var(--mono);font-size:.72rem;color:var(--blue);letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--border);}
+  .deck-body{padding:24px 28px;min-height:180px;}
+  .deck-body h4{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:12px;}
+  .deck-body p{font-size:.88rem;color:#c5d0e0;line-height:1.7;margin-bottom:8px;}
+  .deck-body ul{padding-left:18px;margin-bottom:8px;}
+  .deck-body ul li{font-size:.88rem;color:#c5d0e0;line-height:1.7;margin-bottom:4px;}
+  .slide{display:none;}
+  .slide.on{display:block;}
+  .deck-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:#0d1520;border-top:1px solid var(--border);}
+  .deck-nav button{background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue-dim);border-radius:6px;padding:5px 16px;font-family:var(--mono);font-size:.72rem;font-weight:600;cursor:pointer;transition:background .2s,color .2s;}
+  .deck-nav button:hover:not(:disabled){background:var(--blue);color:#fff;}
+  .deck-nav button:disabled{opacity:.3;cursor:default;}
+  .deck-nav .counter{font-family:var(--mono);font-size:.72rem;color:var(--muted);}
+
+  /* COMPARISON TABLE */
+  .ctable{width:100%;border-collapse:collapse;margin:12px 0;font-size:.83rem;}
+  .ctable th{background:var(--surface2);color:var(--blue);font-family:var(--mono);font-weight:600;padding:9px 14px;text-align:left;border:1px solid var(--border);letter-spacing:.04em;font-size:.75rem;}
+  .ctable td{padding:8px 14px;border:1px solid var(--border);color:#c5d0e0;vertical-align:top;}
+  .ctable tr:nth-child(even) td{background:rgba(26,35,54,.5);}
+  .ctable .tag{display:inline-block;background:var(--blue-dim);color:var(--blue);border-radius:4px;padding:1px 7px;font-family:var(--mono);font-size:.7rem;font-weight:600;}
+  .ctable .tag-green{background:var(--green-dim);color:var(--green);}
+  .ctable .tag-gold{background:var(--gold-dim);color:var(--gold);}
+  .ctable .tag-purple{background:var(--purple-dim);color:var(--purple);}
+  .ctable .tag-red{background:var(--red-dim);color:var(--red);}
+
+  /* REVIEW QUESTIONS */
+  .qbox{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;}
+  .qbox .qnum{font-family:var(--mono);font-size:.7rem;color:var(--blue);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+  .qbox .qtext{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:12px;line-height:1.55;}
+  .qbox .toggle-btn{background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue-dim);border-radius:6px;padding:6px 16px;font-family:var(--mono);font-size:.72rem;font-weight:600;cursor:pointer;transition:background .2s,color .2s;}
+  .qbox .toggle-btn:hover{background:var(--blue);color:#fff;}
+  .qbox .answer{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:.87rem;color:#b0c8e8;line-height:1.7;}
+  .qbox .answer.show{display:block;}
+
+  /* GRID */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+
+  /* BADGE */
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.06em;margin-left:6px;vertical-align:middle;}
+  .badge-blue{background:var(--blue-dim);color:var(--blue);}
+  .badge-green{background:var(--green-dim);color:var(--green);}
+  .badge-gold{background:var(--gold-dim);color:var(--gold);}
+  .badge-red{background:var(--red-dim);color:var(--red);}
+  .badge-purple{background:var(--purple-dim);color:var(--purple);}
+
+  /* QUOTE BOX */
+  .quote{border:1px solid var(--purple-dim);background:var(--purple-dim);border-radius:10px;padding:16px 20px;margin:12px 0;font-style:italic;font-size:.88rem;color:#d0b0ff;line-height:1.7;}
+  .quote cite{display:block;margin-top:8px;font-style:normal;font-family:var(--mono);font-size:.72rem;color:var(--purple);}
+</style>
+</head>
+<body>
+
+<nav id="topnav">
+  <div class="logo">EFB 307 · L16</div>
+  <button onclick="show('overview')" id="btn-overview" class="active">📋 Overview</button>
+  <button onclick="show('hwe-review')" id="btn-hwe-review">🔁 HWE Review</button>
+  <button onclick="show('directional')" id="btn-directional">→ Directional</button>
+  <button onclick="show('balancing')" id="btn-balancing">⚖ Balancing</button>
+  <button onclick="show('disruptive')" id="btn-disruptive">↔ Disruptive</button>
+  <button onclick="show('fst')" id="btn-fst">📊 F<sub>ST</sub></button>
+  <button onclick="show('jukes')" id="btn-jukes">🧬 dN/dS</button>
+  <button onclick="show('freq-dep')" id="btn-freq-dep">🔄 Freq-Dep</button>
+  <button onclick="show('other')" id="btn-other">➕ Other</button>
+  <button onclick="show('review')" id="btn-review">✅ Review Qs</button>
+</nav>
+<div class="prog-wrap"><div class="prog-bar" id="prog" style="width:10%"></div></div>
+
+<div class="main">
+
+<!-- ============================================================ OVERVIEW -->
+<section class="sec on" id="overview">
+  <div class="sec-header">
+    <div class="sec-label">Lecture 16</div>
+    <div class="sec-title">Population Genetics III: Selection</div>
+    <div class="sec-sub">How natural selection violates HWE and shapes allele frequencies over time</div>
+  </div>
+
+  <div class="card">
+    <h3>📚 Learning Objectives</h3>
+    <ul>
+      <li>Define a population in a genetic context and understand the gene pool concept</li>
+      <li>Apply Hardy-Weinberg Equilibrium as a null hypothesis</li>
+      <li>Identify and interpret HWE violations — including selection and its types</li>
+      <li>Distinguish directional, balancing, disruptive, and frequency-dependent selection</li>
+      <li>Understand F<sub>ST</sub> and Q<sub>ST</sub> and how to compare them</li>
+      <li>Apply the Jukes-Cantor model (dN/dS) to detect selection from genome sequences</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Key Concepts at a Glance</h3>
+    <table class="ctable">
+      <tr><th>Concept</th><th>What it means</th><th>Key value/range</th></tr>
+      <tr><td><strong>Fitness</strong></td><td>Ability to survive to reproducing age and successfully reproduce</td><td>—</td></tr>
+      <tr><td><strong>Differential reproduction</strong></td><td>Unequal chance at reproducing; violates HWE</td><td>Δq ≠ 0</td></tr>
+      <tr><td><strong>F<sub>ST</sub></strong></td><td>Fixation index — genetic differentiation among populations</td><td>0 to 1</td></tr>
+      <tr><td><strong>Q<sub>ST</sub></strong></td><td>Quantitative trait differentiation among populations</td><td>0 to 1</td></tr>
+      <tr><td><strong>dN/dS</strong></td><td>Ratio of non-synonymous to synonymous substitution rates</td><td>&lt;1, =1, or &gt;1</td></tr>
+      <tr><td><strong>h²</strong></td><td>Heritability (proportion of phenotypic variance due to additive genetics)</td><td>0 to 1</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ Types of Selection Covered</h3>
+    <div class="grid2">
+      <div class="hl"><strong>i. Directional</strong><br>One allele increases in frequency; population shifts toward one extreme phenotype</div>
+      <div class="hl-green"><strong>ii. Balancing / Stabilizing</strong><br>Intermediate phenotypes favored; heterozygote advantage maintains variation</div>
+      <div class="hl-gold"><strong>iii. Disruptive / Diversifying</strong><br>Extreme phenotypes favored; intermediate phenotypes selected against</div>
+      <div class="hl-purple"><strong>iv. Frequency-Dependent</strong><br>Fitness of an allele depends on its frequency; drives coevolution (Red Queen)</div>
+    </div>
+    <div class="hl-red"><strong>v. Sexual Selection</strong> — traits that increase mating success &nbsp;|&nbsp; <strong>vi. Kin Selection</strong> — inclusive fitness</div>
+  </div>
+</section>
+
+<!-- ============================================================ HWE REVIEW -->
+<section class="sec" id="hwe-review">
+  <div class="sec-header">
+    <div class="sec-label">Section 0</div>
+    <div class="sec-title">Review of HWE Violations</div>
+    <div class="sec-sub">Selection is the last HWE assumption — alleles are not neutral</div>
+  </div>
+
+  <div class="card">
+    <h3>HWE Assumptions vs. Violations</h3>
+    <table class="ctable">
+      <tr><th>HWE Assumption</th><th>Expectation</th><th>HWE Violation</th><th>Effect</th></tr>
+      <tr><td>Random mating</td><td>H<sub>E</sub> = H<sub>O</sub></td><td>Assortative mating</td><td>H<sub>E</sub> ≠ H<sub>O</sub></td></tr>
+      <tr><td>No mutation</td><td>Δq = 0</td><td>New alleles arise</td><td>Δq &gt; or &lt; 0</td></tr>
+      <tr><td>No migration</td><td>Δq = 0</td><td>Gene flow</td><td>Δq &gt; or &lt; 0</td></tr>
+      <tr><td>Large population (N<sub>e</sub> &gt;&gt; 0)</td><td>Δq ≈ 0</td><td>Genetic drift</td><td>N<sub>e</sub> &lt; ~500</td></tr>
+      <tr><td><strong>Alleles are neutral</strong></td><td><strong>Δq = 0</strong></td><td><strong>Selection</strong></td><td><strong>Δq &gt; or &lt; 0</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Selection and Fitness</h3>
+    <div class="hl"><strong>Fitness</strong> = the ability to survive to reproducing age and successfully reproduce. Traits that improve the fitness of a genotype are called <strong>adaptive</strong>.</div>
+    <p>The last HWE assumption is that all individuals have an <strong>equal chance at reproducing</strong>. Darwin's natural selection violates this in real populations through <strong>differential reproduction</strong>.</p>
+  </div>
+</section>
+
+<!-- ============================================================ DIRECTIONAL -->
+<section class="sec" id="directional">
+  <div class="sec-header">
+    <div class="sec-label">Section i</div>
+    <div class="sec-title">Directional Selection</div>
+    <div class="sec-sub">One allele is consistently favored; the population shifts toward one phenotypic extreme</div>
+  </div>
+
+  <div class="deck">
+    <div class="deck-title">Directional Selection — Slide Deck</div>
+    <div class="deck-body" id="dir-body">
+
+      <div class="slide on" id="dir-0">
+        <h4>What is Directional Selection?</h4>
+        <p>Directional selection occurs when <strong>one allele consistently confers a fitness advantage</strong> over alternative alleles. Over generations, that allele increases in frequency — possibly reaching fixation (p = 1).</p>
+        <div class="hl">The population mean phenotype <strong>shifts in one direction</strong> over time. Think of the distribution curve sliding left or right.</div>
+        <p>Key features: allele frequency change is <strong>directional and monotonic</strong> (keeps going the same way over time).</p>
+      </div>
+
+      <div class="slide" id="dir-1">
+        <h4>Classic Example: Allele A under Positive Selection</h4>
+        <p>Starting from a heterozygous parent (Aa) with p = 0.5:</p>
+        <table class="ctable">
+          <tr><th>Generation</th><th>Frequency of A allele (p)</th></tr>
+          <tr><td>F₁</td><td>0.5</td></tr>
+          <tr><td>F₂</td><td>0.625</td></tr>
+          <tr><td>F₃</td><td>0.78</td></tr>
+          <tr><td>F₄</td><td>0.89</td></tr>
+        </table>
+        <div class="hl-green">AA individuals reproduce more successfully → AA offspring proportion grows each generation → A allele becomes increasingly common</div>
+      </div>
+
+      <div class="slide" id="dir-2">
+        <h4>Human Example: Lactase Persistence (LCT)</h4>
+        <p>Normally, the lactase enzyme (LCT) stops being produced after infancy. <strong>Lactase persistence</strong> — continuing LCT production into adulthood — is a <em>derived mutation</em>.</p>
+        <div class="hl">Some human populations show strong positive selection for lactase persistence. Why? Populations that were <strong>traditionally pastoralists</strong> (herding cattle, goats, camels) had a major nutritional advantage from being able to digest milk as adults.</div>
+        <p>The frequency of LCT persistence is highest in <strong>Northern Europe and pastoral African populations</strong> — precisely where livestock herding was historically most common.</p>
+      </div>
+
+      <div class="slide" id="dir-3">
+        <h4>Peppered Moth: Directional Selection in Action</h4>
+        <p>Before the Industrial Revolution: light-colored moths were better camouflaged on pale lichen-covered trees → selected for.</p>
+        <p>During the Industrial Revolution: soot darkened trees → <strong>dark-colored moths became better camouflaged</strong> and were selected for.</p>
+        <div class="hl-gold">The phenotype distribution shifted from predominantly light to predominantly dark — a textbook example of directional selection driven by a changing environment.</div>
+        <p>This also illustrates that <strong>the direction of selection can reverse</strong> if the environment changes (after pollution controls, light moths increased again).</p>
+      </div>
+
+    </div>
+    <div class="deck-nav">
+      <button id="dir-prev" onclick="slide('dir',false)" disabled>← Prev</button>
+      <span class="counter" id="dir-counter">1 / 4</span>
+      <button id="dir-next" onclick="slide('dir',true)">Next →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ BALANCING -->
+<section class="sec" id="balancing">
+  <div class="sec-header">
+    <div class="sec-label">Section ii</div>
+    <div class="sec-title">Balancing / Stabilizing Selection</div>
+    <div class="sec-sub">Intermediate phenotypes or heterozygotes have highest fitness — variation is maintained</div>
+  </div>
+
+  <div class="deck">
+    <div class="deck-title">Balancing & Stabilizing Selection — Slide Deck</div>
+    <div class="deck-body" id="bal-body">
+
+      <div class="slide on" id="bal-0">
+        <h4>Balancing Selection: Heterozygote Advantage</h4>
+        <p>In balancing selection, the <strong>heterozygote (Aa) has higher fitness</strong> than either homozygote. This is called <em>overdominance</em> or <strong>heterozygote advantage</strong>.</p>
+        <div class="hl-green">Result: <strong>Both alleles are maintained in the population</strong> at stable equilibrium frequencies. Neither allele is driven to fixation.</div>
+        <p>The allele frequency still increases over generations, but more slowly than directional selection — and stabilizes rather than going to fixation.</p>
+      </div>
+
+      <div class="slide" id="bal-1">
+        <h4>Classic Example: Sickle Cell Anemia (HbS)</h4>
+        <table class="ctable">
+          <tr><th>Genotype</th><th>Phenotype</th><th>Fitness in malaria zones</th></tr>
+          <tr><td>HbS/HbS (homozygous)</td><td>Sickle cell disease</td><td class="tag tag-red">Low ✗</td></tr>
+          <tr><td>Hb/Hb (wild type)</td><td>Normal hemoglobin</td><td class="tag tag-red">Susceptible to malaria ✗</td></tr>
+          <tr><td>Hb/HbS (heterozygous)</td><td>Carrier</td><td class="tag tag-green">Resistant to malaria + no sickle cell ✓</td></tr>
+        </table>
+        <div class="hl">The HbS allele is <strong>deleterious in homozygotes</strong> but <strong>advantageous in heterozygotes</strong> in malaria-endemic regions. This is why it persists — natural selection maintains it through heterozygote advantage.</div>
+      </div>
+
+      <div class="slide" id="bal-2">
+        <h4>Stabilizing Selection</h4>
+        <p>Closely related to balancing selection — but operating on <strong>quantitative / continuous traits</strong>. The <strong>intermediate phenotype</strong> is favored; both extremes are selected against.</p>
+        <div class="hl-gold"><strong>Classic example — Robin clutch size:</strong> Robins typically lay 4 eggs. Larger clutches produce malnourished chicks; smaller clutches mean fewer or no viable offspring. The intermediate size (4) is optimal.</div>
+        <p>Effect on the distribution: the bell curve gets <strong>taller and narrower</strong> — variance decreases but the mean stays the same.</p>
+      </div>
+
+      <div class="slide" id="bal-3">
+        <h4>Haplotype Length as Evidence of Selection</h4>
+        <p>Haplotypes shorten over generations due to <strong>recombination</strong> breaking up linked SNPs. Therefore:</p>
+        <div class="hl">A <strong>long haplotype</strong> indicates: (1) <strong>recent origin</strong> of the mutation, and (2) <strong>strong selection</strong> — the region hasn't had time to be broken up by recombination because selection spread it so fast.</div>
+        <p>SNPs that remained linked on a common haplotype must have experienced strong selection. QTLs for quantitative traits can be maintained as haplotype blocks too.</p>
+      </div>
+
+      <div class="slide" id="bal-4">
+        <h4>EDAR Variant — Han Chinese Example</h4>
+        <p>A variant in the <em>EDAR</em> gene is <strong>nearly fixed (~90% frequency)</strong> among Han Chinese but absent in other populations.</p>
+        <p>EDAR affects: hair thickness, sweat gland production, and tooth shape.</p>
+        <div class="hl-green">The EDAR haplotype is <strong>very long</strong> → positive selection happened <em>recently</em>. The allele spread so quickly through the population that recombination hasn't had time to shorten the surrounding haplotype.</div>
+      </div>
+
+    </div>
+    <div class="deck-nav">
+      <button id="bal-prev" onclick="slide('bal',false)" disabled>← Prev</button>
+      <span class="counter" id="bal-counter">1 / 5</span>
+      <button id="bal-next" onclick="slide('bal',true)">Next →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ DISRUPTIVE -->
+<section class="sec" id="disruptive">
+  <div class="sec-header">
+    <div class="sec-label">Section iii</div>
+    <div class="sec-title">Disruptive / Diversifying Selection</div>
+    <div class="sec-sub">Extreme phenotypes are favored; intermediate phenotypes are selected against — can drive speciation</div>
+  </div>
+
+  <div class="deck">
+    <div class="deck-title">Disruptive Selection — Slide Deck</div>
+    <div class="deck-body" id="dis-body">
+
+      <div class="slide on" id="dis-0">
+        <h4>What is Disruptive Selection?</h4>
+        <p>The <strong>opposite of stabilizing selection</strong>. Both extreme phenotypes have higher fitness than the intermediate phenotype.</p>
+        <div class="hl-gold">Result: The population distribution becomes <strong>bimodal</strong> — two peaks, one at each extreme, with a valley in the middle. Over time, this can lead to <strong>speciation</strong> if the two groups become reproductively isolated.</div>
+        <p>Also called <strong>diversifying selection</strong> because it increases phenotypic diversity within a population.</p>
+      </div>
+
+      <div class="slide" id="dis-1">
+        <h4>Example: Rabbit Coat Color</h4>
+        <p>In a rocky environment, <strong>gray rabbits</strong> (blending with rock) and <strong>Himalayan (gray-and-white) rabbits</strong> (blending with patches of snow and rock) are better camouflaged than <strong>white rabbits</strong> (stand out against rock).</p>
+        <div class="hl">White rabbits (intermediate between dark gray and Himalayan pattern) are <strong>most visible to predators</strong> → selected against. The two extreme color morphs survive better → bimodal distribution.</div>
+      </div>
+
+      <div class="slide" id="dis-2">
+        <h4>Example: Galápagos Finches — Beak Depth</h4>
+        <p>In environments with two distinct food sources (small soft seeds and large hard seeds), birds with <strong>small beaks</strong> (good for small seeds) and birds with <strong>large beaks</strong> (good for hard seeds) both succeed.</p>
+        <div class="hl-green">Birds with <strong>intermediate beak depth</strong> are less efficient at either food source → selected against. Over time, the beak depth distribution becomes bimodal (8mm and 21mm peaks), with a trough in between (~13mm).</div>
+        <p>This is a real-world example that shows how disruptive selection can drive divergence and eventually speciation.</p>
+      </div>
+
+    </div>
+    <div class="deck-nav">
+      <button id="dis-prev" onclick="slide('dis',false)" disabled>← Prev</button>
+      <span class="counter" id="dis-counter">1 / 3</span>
+      <button id="dis-next" onclick="slide('dis',true)">Next →</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Comparison: All Three Types of Selection on Phenotype Distribution</h3>
+    <table class="ctable">
+      <tr><th>Type</th><th>What's favored</th><th>Effect on distribution</th><th>Effect on variance</th></tr>
+      <tr><td><span class="tag">Directional</span></td><td>One extreme</td><td>Mean shifts left or right</td><td>Roughly unchanged</td></tr>
+      <tr><td><span class="tag tag-green">Stabilizing</span></td><td>Intermediate</td><td>Mean stays, distribution narrows</td><td>Decreases</td></tr>
+      <tr><td><span class="tag tag-gold">Disruptive</span></td><td>Both extremes</td><td>Bimodal — two peaks form</td><td>Increases</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ FST -->
+<section class="sec" id="fst">
+  <div class="sec-header">
+    <div class="sec-label">Section iv</div>
+    <div class="sec-title">Population Structure: F<sub>ST</sub> and Q<sub>ST</sub></div>
+    <div class="sec-sub">Quantifying genetic differentiation among populations and comparing neutral vs. adaptive divergence</div>
+  </div>
+
+  <div class="card">
+    <h3>F<sub>ST</sub> — The Fixation Index</h3>
+    <div class="formula">
+      <div class="eq">F<sub>ST</sub> = 1 – H<sub>S</sub> / H<sub>T</sub></div>
+      <div class="desc">H<sub>S</sub> = average heterozygosity within subpopulations &nbsp;|&nbsp; H<sub>T</sub> = heterozygosity of the total population</div>
+    </div>
+    <p>F<sub>ST</sub> ranges from 0 to 1 and quantifies how genetically different subpopulations are from each other.</p>
+    <table class="ctable">
+      <tr><th>F<sub>ST</sub> value</th><th>Interpretation</th></tr>
+      <tr><td>= 0.0</td><td>No genetic differences between populations — all share the same allele frequencies</td></tr>
+      <tr><td>0 – 0.05</td><td>Very small/insignificant differences</td></tr>
+      <tr><td>0.05 – 0.15</td><td>Moderate genetic differences</td></tr>
+      <tr><td>0.15 – 0.25</td><td>Large genetic differences; may have formed differently</td></tr>
+      <tr><td>0.25 – 0.5</td><td>Very large differences; populations quite distinct</td></tr>
+      <tr><td>0.5 – 1.0</td><td>Stage of subspecies; genetic similarity near zero</td></tr>
+      <tr><td>= 1.0</td><td>Complete fixation of different alleles; effectively different species</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Q<sub>ST</sub> — Quantitative Trait Differentiation</h3>
+    <p>Q<sub>ST</sub> is the analog of F<sub>ST</sub> but for <strong>quantitative (polygenic) traits</strong> rather than neutral molecular markers. It measures how much more (or less) differentiated a trait is between populations compared to neutral expectation.</p>
+    <div class="hl">Comparing F<sub>ST</sub> to Q<sub>ST</sub> reveals whether selection is driving trait differentiation:</div>
+    <table class="ctable">
+      <tr><th>Comparison</th><th>Interpretation</th></tr>
+      <tr><td><span class="tag">F<sub>ST</sub> = Q<sub>ST</sub></span></td><td>Trait differentiation consistent with genetic drift alone — no evidence for selection</td></tr>
+      <tr><td><span class="tag tag-gold">F<sub>ST</sub> &lt; Q<sub>ST</sub></span></td><td><strong>Divergent selection</strong> — traits are MORE differentiated than neutral markers → local adaptation</td></tr>
+      <tr><td><span class="tag tag-green">F<sub>ST</sub> &gt; Q<sub>ST</sub></span></td><td><strong>Stabilizing selection</strong> — similar phenotypes maintained across populations despite genetic differentiation</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Applied Example: F<sub>ST</sub> &lt; Q<sub>ST</sub> — Climate Adaptation in Trees</h3>
+    <p>When Q<sub>ST</sub> exceeds F<sub>ST</sub> for climate-related traits (e.g., bud set timing, cold hardiness), it indicates that <strong>local populations have adapted their quantitative traits to local climates</strong> more than would be expected from neutral drift alone.</p>
+    <div class="hl-gold">This "genomic offset" approach is used to quantify how mismatched a population is to its climate — important for conservation genetics and predicting how species will respond to climate change.</div>
+  </div>
+</section>
+
+<!-- ============================================================ JUKES-CANTOR -->
+<section class="sec" id="jukes">
+  <div class="sec-header">
+    <div class="sec-label">Section v</div>
+    <div class="sec-title">Detecting Selection: Jukes-Cantor (dN/dS)</div>
+    <div class="sec-sub">Comparing synonymous and non-synonymous substitution rates to infer selection from genome sequences</div>
+  </div>
+
+  <div class="deck">
+    <div class="deck-title">Jukes-Cantor Model — Slide Deck</div>
+    <div class="deck-body" id="jc-body">
+
+      <div class="slide on" id="jc-0">
+        <h4>Key Definitions</h4>
+        <table class="ctable">
+          <tr><th>Term</th><th>Definition</th></tr>
+          <tr><td><strong>Synonymous substitution (dS)</strong></td><td>Change in the 3rd base of a codon that does <em>NOT</em> change the amino acid produced (silent mutation — "synonymous" with original)</td></tr>
+          <tr><td><strong>Non-synonymous substitution (dN)</strong></td><td>Change in a codon that DOES result in a different amino acid being produced (changes protein structure/function)</td></tr>
+        </table>
+        <div class="hl">The Jukes-Cantor model compares <strong>dN/dS</strong> to determine whether a gene is under positive selection, neutral, or negative/purifying selection.</div>
+      </div>
+
+      <div class="slide" id="jc-1">
+        <h4>Interpreting dN/dS</h4>
+        <table class="ctable">
+          <tr><th>dN/dS ratio</th><th>Interpretation</th><th>Selection type</th></tr>
+          <tr><td>= 1</td><td>Non-synonymous and synonymous rates are equal; mutation is neither advantageous nor deleterious</td><td><span class="tag">Neutral</span></td></tr>
+          <tr><td>&gt; 1</td><td>More non-synonymous substitutions than expected — protein changes are being <em>retained</em> → mutation is advantageous</td><td><span class="tag tag-green">Positive selection</span></td></tr>
+          <tr><td>&lt; 1</td><td>Fewer non-synonymous substitutions — protein changes are being <em>removed</em> → most mutations are deleterious</td><td><span class="tag tag-red">Negative (purifying) selection</span></td></tr>
+        </table>
+        <div class="hl-gold"><strong>Most genes have dN/dS &lt; 1</strong> — most mutations are deleterious and are purged by selection. Only a small subset of genes or regions show dN/dS &gt; 1 (adaptive evolution).</div>
+      </div>
+
+      <div class="slide" id="jc-2">
+        <h4>How It Works: Comparing Two Genomes</h4>
+        <p>Two genome sequences are aligned. At each codon, substitutions are classified as synonymous or non-synonymous.</p>
+        <p>The dN/dS ratio is calculated for each region of the genome. Regions where dN/dS spikes above 1 indicate a locus where mutations have been <strong>positively selected</strong>.</p>
+        <div class="hl-green">This lets us scan entire genomes for signatures of selection — without knowing in advance <em>which</em> genes might be under selection. The genome sequence itself tells us where selection has acted.</div>
+      </div>
+
+      <div class="slide" id="jc-3">
+        <h4>Connection to HWE: When Would dN/dS ≈ 1?</h4>
+        <p>dN/dS = 1 (neutrality) corresponds to the HWE assumption that <strong>alleles are neutral</strong> (Δq = 0). If mutations have no effect on fitness, non-synonymous changes accumulate at the same rate as synonymous ones.</p>
+        <div class="hl">Departures from dN/dS = 1 are molecular evidence of selection — exactly the kind of HWE violation we study in population genetics.</div>
+        <p>dN/dS &gt; 1 → positive selection → adaptive evolution (the "useful" mutations are being kept)<br>
+        dN/dS &lt; 1 → purifying selection → functional constraint (the "harmful" mutations are being removed)</p>
+      </div>
+
+    </div>
+    <div class="deck-nav">
+      <button id="jc-prev" onclick="slide('jc',false)" disabled>← Prev</button>
+      <span class="counter" id="jc-counter">1 / 4</span>
+      <button id="jc-next" onclick="slide('jc',true)">Next →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ FREQ-DEP -->
+<section class="sec" id="freq-dep">
+  <div class="sec-header">
+    <div class="sec-label">Section vi</div>
+    <div class="sec-title">Frequency-Dependent Selection</div>
+    <div class="sec-sub">Fitness of an allele depends on how common it is — drives host-pathogen coevolution and the Red Queen hypothesis</div>
+  </div>
+
+  <div class="deck">
+    <div class="deck-title">Frequency-Dependent Selection — Slide Deck</div>
+    <div class="deck-body" id="fd-body">
+
+      <div class="slide on" id="fd-0">
+        <h4>What is Frequency-Dependent Selection?</h4>
+        <p>The <strong>fitness of an allele changes depending on how common it is</strong> in the population. This is distinct from other types of selection where fitness is fixed.</p>
+        <div class="hl-purple">Key tradeoff: Carrying a resistance allele always has a cost (e.g., growth vs. defense). The benefit of the allele depends on the pathogen population — which in turn depends on the frequency of the resistance allele in hosts.</div>
+        <p>Result: Allele frequencies <strong>oscillate</strong> over time rather than going to fixation. Neither allele fully wins.</p>
+      </div>
+
+      <div class="slide" id="fd-1">
+        <h4>Host-Pathogen Coevolution: The Cycle</h4>
+        <ol style="padding-left:18px;font-size:.88rem;color:#c5d0e0;line-height:1.9;">
+          <li>An infrequent resistance allele (<em>a</em>) confers protection against the pathogen</li>
+          <li>Resistance allele increases in frequency (selected for)</li>
+          <li>Pathogen evolves (mutates) to infect the now-common resistance allele</li>
+          <li>Original allele (AA) now confers resistance to the new pathogen → increases in frequency again</li>
+          <li>Cycle repeats → <strong>oscillating allele frequencies</strong></li>
+        </ol>
+        <div class="hl-gold">This creates the classic oscillating pattern seen in the host allele A vs. parasite allele A frequency graph — both cycling over hundreds of generations.</div>
+      </div>
+
+      <div class="slide" id="fd-2">
+        <h4>Gene-for-Gene Interactions in Plants & Pathogens</h4>
+        <p>Host plants carry <strong>Resistance (R) genes</strong>. Pathogens carry <strong>Avirulence (Avr) genes</strong> that produce elicitors recognized by R proteins.</p>
+        <table class="ctable">
+          <tr><th>Host R gene</th><th>Pathogen Avr gene (AA/Aa)</th><th>Pathogen avr gene (aa)</th></tr>
+          <tr><td>RR/Rr (resistant)</td><td>RESISTANCE (incompatible reaction)</td><td>SUSCEPTIBILITY (compatible reaction)</td></tr>
+          <tr><td>rr (susceptible)</td><td>SUSCEPTIBILITY (compatible reaction)</td><td>SUSCEPTIBILITY (compatible reaction)</td></tr>
+        </table>
+        <div class="hl">Resistance only occurs when the host has a functional R gene AND the pathogen has the matching Avr gene. This is the <strong>gene-for-gene model</strong>.</div>
+      </div>
+
+      <div class="slide" id="fd-3">
+        <h4>Real Example: White Pine Blister Rust</h4>
+        <p><em>Cronartium ribicola</em> is a pathogen that cycles between <em>Pinus monticola</em> (western white pine) and <em>Ribes</em> (currants/gooseberries).</p>
+        <p>The major resistance gene <strong>Cr2</strong> is distributed unevenly across Pacific Northwest populations. Where the virulent strain (vcr2) of the fungus is common, the Cr2 resistance allele is more frequent.</p>
+        <div class="hl-purple">This geographic mosaic of host resistance and pathogen virulence is a real-world snapshot of ongoing frequency-dependent coevolution.</div>
+      </div>
+
+      <div class="slide" id="fd-4">
+        <h4>Consequences of Frequency-Dependent Selection</h4>
+        <ul>
+          <li>Leads to <strong>stable variation in resistance</strong> within a population — not fixed at 0% or 100%</li>
+          <li>Some individuals "freeload" — they lack costly resistance alleles but benefit when pathogens are rare</li>
+          <li>Promotes <strong>diversity and coevolution</strong> between interacting species</li>
+          <li>Explains why parasites often <strong>evolve toward lower virulence</strong> over time (killing hosts too fast = less transmission)</li>
+        </ul>
+        <div class="hl-green">Key principle: <em>You can't win forever.</em> Whatever allele is common becomes a target for pathogens to adapt to. This keeps genetic variation alive in the population.</div>
+      </div>
+
+    </div>
+    <div class="deck-nav">
+      <button id="fd-prev" onclick="slide('fd',false)" disabled>← Prev</button>
+      <span class="counter" id="fd-counter">1 / 5</span>
+      <button id="fd-next" onclick="slide('fd',true)">Next →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ OTHER SELECTION -->
+<section class="sec" id="other">
+  <div class="sec-header">
+    <div class="sec-label">Section vii</div>
+    <div class="sec-title">Sexual Selection, Kin Selection & Why Diversity Exists</div>
+    <div class="sec-sub">Additional selection mechanisms and the big-picture explanation for maintained genetic variation</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>v. Sexual Selection 🦚</h3>
+      <p>Selection for <strong>traits that increase mating success</strong>, not just survival. Can sometimes favor traits that reduce survival (e.g., peacock tail — conspicuous to predators but attractive to females).</p>
+      <div class="hl">Sexual selection can drive extreme dimorphism between sexes and rapid trait evolution, even when the trait reduces survival fitness.</div>
+    </div>
+    <div class="card">
+      <h3>vi. Kin Selection 🐒</h3>
+      <p>Selection that favors <strong>inclusive fitness</strong> — individuals behave in ways that increase the reproductive success of relatives who share their genes.</p>
+      <div class="hl-green">Hamilton's rule: altruism evolves when <strong>r·B &gt; C</strong> (relatedness × benefit &gt; cost). Explains eusociality in bees, wasps, ants, and cooperative behaviors in primates.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🔴 The Red Queen Hypothesis</h3>
+    <div class="quote">
+      "Here, you see, it takes all the running you can do, to keep in the same place."
+      <cite>— The Red Queen, <em>Through the Looking Glass</em>, Lewis Carroll</cite>
+    </div>
+    <p>Hosts and pathogens <strong>coevolve in an arms race</strong>. To maintain resistance against ever-adapting pathogens, hosts must continually evolve — just to stay in the same place (not go extinct).</p>
+    <div class="hl-purple">The Red Queen hypothesis also predicts that <strong>sexual reproduction</strong> and mechanisms that increase genetic diversity are favored — because diversity makes it harder for pathogens to find a universal attack strategy.</div>
+  </div>
+
+  <div class="card">
+    <h3>Why Does Genetic Diversity Persist?</h3>
+    <ul>
+      <li>The favorable allele may be increasing but hasn't fixed yet — <strong>insufficient time</strong></li>
+      <li>Genetic drift and migration counteract selection</li>
+      <li>Fitness of an individual depends on <strong>many loci simultaneously</strong></li>
+      <li>The environment is not constant — a favorable allele now may not be favorable later</li>
+      <li>Multiple types of selection operating at once (frequency-dependent, stabilizing, etc.)</li>
+      <li>Constant coevolutionary interactions keep allele frequencies oscillating</li>
+    </ul>
+    <div class="hl-gold">Core relationship: <strong>Phenotype ≈ Genotype × Environment</strong> → Fitness ≈ Phenotype × Environment → Selection ≈ Fitness → Changes in allele & genotype frequencies</div>
+  </div>
+
+  <div class="card">
+    <h3>Bark & Ambrosia Beetles: Applying Multiple Selection Types</h3>
+    <p>A rich case study for applying multiple selection frameworks:</p>
+    <ul>
+      <li><strong>Haplodiploidy + kin selection:</strong> In haplodiploid Xyleborini, sisters share 75% of genes → strong kin selection pressure toward eusociality and cooperation</li>
+      <li><strong>Sexual selection:</strong> In polyandrous species, male parental care and repeated copulation keep males engaged in rearing — could evolve through kin selection (males are related to offspring) or sexual selection (male investment signals quality)</li>
+      <li><strong>Disruptive/sexual selection in <em>Gnathotrupes</em>:</strong> Highly diverse declivity and facial hair morphology — likely driven by <strong>assortative mating + sexual selection</strong> in single-file tunnels where face-to-declivity contact occurs between mates</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ REVIEW QUESTIONS -->
+<section class="sec" id="review">
+  <div class="sec-header">
+    <div class="sec-label">Review</div>
+    <div class="sec-title">Review Questions</div>
+    <div class="sec-sub">Click "Show Answer" to reveal — try answering first!</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q1</div>
+    <div class="qtext">What is the last HWE assumption, and how does selection violate it?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">The last HWE assumption is that <strong>all alleles are neutral</strong> (Δq = 0) — meaning all individuals have an equal chance of reproducing. Selection violates this through <strong>differential reproduction</strong>: genotypes with higher fitness reproduce more, changing allele frequencies across generations (Δq ≠ 0).</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q2</div>
+    <div class="qtext">Compare and contrast directional, stabilizing, and disruptive selection in terms of what is favored and the effect on the phenotype distribution.</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer"><strong>Directional:</strong> One extreme phenotype is favored → the mean shifts in one direction, variance roughly unchanged.<br><br><strong>Stabilizing:</strong> The intermediate phenotype is favored → the mean stays the same but variance decreases (distribution narrows/sharpens).<br><br><strong>Disruptive:</strong> Both extremes are favored, intermediate is selected against → bimodal distribution forms, variance increases. Can lead to speciation.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q3</div>
+    <div class="qtext">Explain heterozygote advantage using sickle cell anemia as your example. Why does the HbS allele persist in malaria-endemic populations?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">The HbS allele causes sickle cell disease in <strong>homozygotes (HbS/HbS)</strong> — a fitness disadvantage. However, <strong>wild-type homozygotes (Hb/Hb)</strong> are susceptible to malaria. <strong>Heterozygotes (Hb/HbS)</strong> are resistant to malaria AND don't have sickle cell disease — giving them the highest fitness in malaria zones. Because the heterozygote is the most fit, <strong>both alleles are maintained at stable frequencies</strong> — this is balancing selection via heterozygote advantage.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q4</div>
+    <div class="qtext">What does a long haplotype block indicate about the history of selection on that region of the genome?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">A <strong>long haplotype</strong> indicates: (1) <strong>recent origin</strong> — the mutation arose recently, so recombination hasn't had much time to break up surrounding SNPs, and (2) <strong>strong positive selection</strong> — the allele swept through the population so rapidly that nearby linked SNPs "hitchhiked" along before recombination could separate them. The EDAR gene variant in Han Chinese is a prime example: nearly fixed at 90%, with a very long haplotype indicating recent rapid positive selection.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q5</div>
+    <div class="qtext">What does F<sub>ST</sub> = 1 – H<sub>S</sub>/H<sub>T</sub> measure? If H<sub>S</sub> = 0.2 and H<sub>T</sub> = 0.4, calculate F<sub>ST</sub> and interpret it.</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">F<sub>ST</sub> measures <strong>genetic differentiation among populations</strong>. A high F<sub>ST</sub> means populations are very genetically distinct; low F<sub>ST</sub> means they're similar.<br><br><strong>Calculation:</strong> F<sub>ST</sub> = 1 – 0.2/0.4 = 1 – 0.5 = <strong>0.5</strong><br><br><strong>Interpretation:</strong> F<sub>ST</sub> = 0.5 falls in the 0.5–1.0 range — indicating stage of <em>subspecies</em> level differentiation. Genetic similarity is very low; populations have largely different allele compositions.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q6</div>
+    <div class="qtext">What does F<sub>ST</sub> &lt; Q<sub>ST</sub> tell you about selection on a quantitative trait? Give a real-world context.</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">F<sub>ST</sub> &lt; Q<sub>ST</sub> means quantitative traits are <strong>more differentiated between populations than neutral molecular markers</strong>. This indicates <strong>divergent / disruptive selection</strong> — populations have locally adapted their phenotypes beyond what random drift alone would produce. Real-world example: tree populations adapting bud-set timing or cold hardiness to local climates. The phenotypic divergence exceeds neutral expectations → local adaptation (adaptive divergence).</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q7</div>
+    <div class="qtext">Explain the Jukes-Cantor dN/dS ratio. What does each scenario (dN/dS &lt; 1, = 1, &gt; 1) mean?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer"><strong>dN</strong> = rate of non-synonymous substitutions (amino acid changes); <strong>dS</strong> = rate of synonymous substitutions (silent changes).<br><br><strong>dN/dS = 1:</strong> Equal rates → gene is neutral, not under selection<br><strong>dN/dS &gt; 1:</strong> More amino acid changes retained than expected → protein changes are advantageous → <em>positive selection</em><br><strong>dN/dS &lt; 1:</strong> Fewer amino acid changes than synonymous → most protein changes are harmful and removed → <em>purifying / negative selection</em><br><br>Most genes have dN/dS &lt; 1 because most mutations are deleterious.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q8</div>
+    <div class="qtext">Describe frequency-dependent selection and explain why it leads to oscillating allele frequencies rather than fixation of one allele.</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">In frequency-dependent selection, the <strong>fitness of an allele depends on how common it is</strong>. In host-pathogen systems: a rare resistance allele provides protection (pathogens haven't evolved to overcome it) → it increases in frequency → pathogens evolve to infect it → the allele's advantage disappears → pathogens tracking the now-common allele become common → the original allele becomes advantageous again → cycle repeats.<br><br>This creates a <strong>negative feedback loop</strong>: whichever allele is most common becomes the pathogen target, giving the rarer allele an advantage. This prevents either allele from ever fully fixing — both oscillate indefinitely.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q9</div>
+    <div class="qtext">What is the Red Queen hypothesis, and how does it relate to frequency-dependent selection and the maintenance of sexual reproduction?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">The Red Queen hypothesis (named from Lewis Carroll) states that <strong>hosts and pathogens coevolve in an arms race</strong> — each must continuously evolve just to maintain their current fitness against an ever-adapting opponent ("it takes all the running you can do, to keep in the same place").<br><br>Connection to <strong>frequency-dependent selection</strong>: pathogens track the most common host genotype → rare genotypes are favored → allele frequencies oscillate → genetic diversity is maintained.<br><br>Connection to <strong>sexual reproduction</strong>: sexual reproduction creates new genotype combinations each generation, making it harder for pathogens to find a "master key" that infects all hosts. This explains why sexual reproduction has evolved and persisted despite its costs.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q10</div>
+    <div class="qtext">Why does genetic diversity persist in populations despite selection? Name at least four reasons.</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">Genetic diversity persists because: (1) The favorable allele may still be <strong>increasing but hasn't fixed yet</strong> — selection takes time; (2) <strong>Genetic drift and migration</strong> counteract selection, especially in small populations; (3) Fitness depends on <strong>many loci simultaneously</strong> — no single allele determines everything; (4) The <strong>environment is not constant</strong> — what's favorable today may not be tomorrow; (5) <strong>Multiple forms of selection</strong> act simultaneously (e.g., stabilizing in one trait, directional in another); (6) <strong>Frequency-dependent selection</strong> (Red Queen dynamics) keeps alleles cycling without fixation; (7) <strong>Balancing selection</strong> actively maintains multiple alleles.</div>
+  </div>
+
+</section>
+
+</div><!-- end main -->
+
+<script>
+  const sections = ['overview','hwe-review','directional','balancing','disruptive','fst','jukes','freq-dep','other','review'];
+  const progPcts = {'overview':10,'hwe-review':20,'directional':32,'balancing':44,'disruptive':56,'fst':65,'jukes':74,'freq-dep':84,'other':92,'review':100};
+
+  function show(id){
+    sections.forEach(s=>{
+      document.getElementById(s).classList.remove('on');
+      document.getElementById('btn-'+s).classList.remove('active');
+    });
+    document.getElementById(id).classList.add('on');
+    document.getElementById('btn-'+id).classList.add('active');
+    document.getElementById('prog').style.width = progPcts[id]+'%';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  const decks = {
+    dir:{count:4,idx:0},
+    bal:{count:5,idx:0},
+    dis:{count:3,idx:0},
+    jc:{count:4,idx:0},
+    fd:{count:5,idx:0}
+  };
+
+  function slide(deck, forward){
+    const d = decks[deck];
+    document.getElementById(deck+'-'+d.idx).classList.remove('on');
+    if(forward) d.idx = Math.min(d.idx+1, d.count-1);
+    else d.idx = Math.max(d.idx-1, 0);
+    document.getElementById(deck+'-'+d.idx).classList.add('on');
+    document.getElementById(deck+'-counter').textContent = (d.idx+1)+' / '+d.count;
+    document.getElementById(deck+'-prev').disabled = d.idx===0;
+    document.getElementById(deck+'-next').disabled = d.idx===d.count-1;
+  }
+
+  function toggle(btn){
+    const ans = btn.nextElementSibling;
+    const showing = ans.classList.contains('show');
+    ans.classList.toggle('show');
+    btn.textContent = showing ? 'Show Answer' : 'Hide Answer';
+  }
+</script>
+
+</body>
+</html>
