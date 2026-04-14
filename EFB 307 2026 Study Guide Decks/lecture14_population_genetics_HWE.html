@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 14 – Population Genetics & HWE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0e1117;
+    --surface: #161b26;
+    --surface2: #1e2535;
+    --border: #2a3347;
+    --accent: #4f9cf9;
+    --accent2: #f9a94f;
+    --accent3: #6ddb8e;
+    --text: #e8edf5;
+    --muted: #8899b4;
+    --heading-font: 'DM Serif Display', Georgia, serif;
+    --body-font: 'DM Sans', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--body-font);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* ── TOP NAV ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 200;
+    display: flex; align-items: stretch;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .topbar::-webkit-scrollbar { display: none; }
+  .brand {
+    font-family: var(--heading-font);
+    color: var(--accent);
+    font-size: 0.9rem;
+    padding: 0 20px;
+    display: flex; align-items: center;
+    border-right: 1px solid var(--border);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .nav-tabs { display: flex; }
+  .nav-tab {
+    background: none; border: none;
+    color: var(--muted);
+    font-family: var(--body-font);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 14px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── PROGRESS ── */
+  .progress-track { height: 2px; background: var(--border); }
+  .progress-fill { height: 100%; background: var(--accent); transition: width 0.3s; }
+
+  /* ── SECTIONS ── */
+  .section { display: none; max-width: 860px; margin: 0 auto; padding: 36px 20px 80px; }
+  .section.active { display: block; animation: rise 0.35s ease; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 30px;
+    margin-bottom: 20px;
+  }
+  .card.accent-left { border-left: 3px solid var(--accent); }
+  .card.accent-green { border-left: 3px solid var(--accent3); }
+  .card.accent-orange { border-left: 3px solid var(--accent2); }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-family: var(--heading-font);
+    font-size: 1.9rem;
+    color: var(--text);
+    margin-bottom: 18px;
+    line-height: 1.2;
+  }
+  h3 {
+    font-family: var(--heading-font);
+    font-size: 1.25rem;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  h4 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  p { color: var(--text); margin-bottom: 10px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── LEARNING OBJECTIVES ── */
+  .obj-list { list-style: none; }
+  .obj-list li {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.92rem;
+  }
+  .obj-list li:last-child { border-bottom: none; }
+  .obj-num {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    background: rgba(79,156,249,0.1);
+    border-radius: 4px;
+    padding: 2px 7px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── KEY TERMS GRID ── */
+  .terms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .term-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .term-name {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--accent2);
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+  .term-def { font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── FORMULA BLOCK ── */
+  .formula-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    color: var(--accent3);
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+  .formula-note { font-family: var(--body-font); font-size: 0.82rem; color: var(--muted); margin-top: 8px; }
+
+  /* ── HWE TABLE ── */
+  .hwe-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .hwe-table th {
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .hwe-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); }
+  .hwe-table tr:last-child td { border-bottom: none; }
+  .hwe-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .chip {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-family: var(--mono);
+  }
+  .chip-blue { background: rgba(79,156,249,0.15); color: var(--accent); }
+  .chip-orange { background: rgba(249,169,79,0.15); color: var(--accent2); }
+
+  /* ── ASSUMPTIONS LIST ── */
+  .assume-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .assume-item {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .assume-num {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--accent3);
+    font-weight: 600;
+    flex-shrink: 0;
+    width: 22px;
+  }
+  .assume-text { font-size: 0.9rem; }
+  .assume-sub { font-size: 0.8rem; color: var(--muted); margin-top: 3px; }
+
+  /* ── REVIEW QUESTIONS ── */
+  .q-block { margin-bottom: 14px; }
+  .q-btn {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: var(--body-font);
+    font-size: 0.92rem;
+    text-align: left;
+    cursor: pointer;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .q-btn:hover { border-color: var(--accent); background: rgba(79,156,249,0.05); }
+  .q-btn.open { border-color: var(--accent); background: rgba(79,156,249,0.07); border-radius: 8px 8px 0 0; }
+  .q-icon { font-size: 0.75rem; flex-shrink: 0; color: var(--muted); margin-top: 3px; }
+  .q-answer {
+    display: none;
+    background: rgba(109,219,142,0.06);
+    border: 1px solid var(--accent3);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 14px 18px;
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .q-answer.show { display: block; }
+  .q-label { font-size: 0.7rem; font-family: var(--mono); color: var(--accent3); margin-bottom: 6px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ── WORKED EXAMPLE ── */
+  .step { display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start; }
+  .step-num {
+    width: 28px; height: 28px; flex-shrink: 0;
+    background: var(--accent);
+    color: #000;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .step-body { flex: 1; }
+  .step-body strong { color: var(--accent2); }
+
+  /* ── VIOLATIONS TABLE ── */
+  .viol-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .viol-table th {
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+  }
+  .viol-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .viol-table tr:last-child td { border-bottom: none; }
+  .viol-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .viol-table .evolves { color: var(--accent2); font-weight: 600; font-size: 0.78rem; }
+  .viol-table .equil { color: var(--accent3); font-weight: 600; font-size: 0.78rem; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: rgba(79,156,249,0.08);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+  .callout.green { background: rgba(109,219,142,0.08); border-left-color: var(--accent3); }
+  .callout.orange { background: rgba(249,169,79,0.08); border-left-color: var(--accent2); }
+
+  /* ── NAV FOOTER ── */
+  .nav-footer {
+    display: flex; justify-content: space-between; gap: 12px;
+    margin-top: 40px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .nav-arrow {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: var(--muted);
+    font-family: var(--body-font);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-arrow:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .nav-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
+  .nav-arrow.next { margin-left: auto; }
+
+  /* ── MISC ── */
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } .terms-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="brand">EFB 307 · Lec 14</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="goTo(0)">Overview</button>
+    <button class="nav-tab" onclick="goTo(1)">§1 Populations</button>
+    <button class="nav-tab" onclick="goTo(2)">§2 Gene Pool</button>
+    <button class="nav-tab" onclick="goTo(3)">§3 HWE</button>
+    <button class="nav-tab" onclick="goTo(4)">§4 Violations</button>
+    <button class="nav-tab" onclick="goTo(5)">Review</button>
+  </div>
+</nav>
+<div class="progress-track"><div class="progress-fill" id="prog"></div></div>
+
+<!-- ══════════════════════════════════════════ OVERVIEW ══════════════════════════════════════════ -->
+<div class="section active" id="s0">
+  <div class="section-label">Lecture 14</div>
+  <div class="section-title">Introduction to Population Genetics & Hardy-Weinberg Equilibrium</div>
+
+  <div class="card accent-left">
+    <h4>Learning Objectives</h4>
+    <ul class="obj-list">
+      <li><span class="obj-num">LO1</span>Define a population in the context of genetics</li>
+      <li><span class="obj-num">LO2</span>Understand the concept of a gene pool and effective population size</li>
+      <li><span class="obj-num">LO3</span>Apply the null hypothesis of population genetics: Hardy-Weinberg Equilibrium (HWE)</li>
+      <li><span class="obj-num">LO4a</span>Identify and interpret HWE violations in genotype frequencies</li>
+      <li><span class="obj-num">LO4b</span>Identify and interpret HWE violations in allele frequencies</li>
+      <li><span class="obj-num">LO4c</span>Understand drift in the context of neutral variation and fixation</li>
+      <li><span class="obj-num">LO4d</span>Describe selection and its types</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Sections at a Glance</h3>
+    <div class="terms-grid" style="margin-top:4px;">
+      <div class="term-card">
+        <div class="term-name">§1 · Defining a Population</div>
+        <div class="term-def">What is a population? Effective vs. census size, polymorphic loci, haplotypes, haplotype networks, structure plots</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">§2 · The Gene Pool</div>
+        <div class="term-def">Gene pool, allele frequencies (p + q = 1), genotype frequencies (AA, Aa, aa)</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">§3 · Hardy-Weinberg Equilibrium</div>
+        <div class="term-def">The null model. p² + 2pq + q² = 1. 5 assumptions, tracking frequencies over generations</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">§4 · HWE Violations</div>
+        <div class="term-def">What deviations mean. Genotype-only changes vs. allele frequency changes. Forces of evolution</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" disabled>← Prev</button>
+    <button class="nav-arrow next" onclick="goTo(1)">§1 Defining a Population →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ SECTION 1 ══════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-label">Section 1</div>
+  <div class="section-title">Defining a Population</div>
+
+  <div class="card accent-left">
+    <h3>What Is a Population?</h3>
+    <p>A population is a group of organisms that:</p>
+    <ul style="margin: 10px 0 10px 20px; color: var(--text); line-height:1.9;">
+      <li>Can <strong style="color:var(--accent)">exchange genetic material</strong></li>
+      <li>Occupy a <strong style="color:var(--accent)">specific place</strong></li>
+      <li>At a <strong style="color:var(--accent)">specific time</strong></li>
+      <li>With a <strong style="color:var(--accent)">boundary</strong> (fixed or flexible)</li>
+    </ul>
+    <div class="callout">
+      <strong>Effective population (N<sub>e</sub>)</strong> includes only individuals that can breed and exchange genetic information — often smaller than the census (actual) population size.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Why Population Genetics?</h3>
+    <div class="two-col">
+      <div>
+        <h4>The Problem</h4>
+        <p>Populations can range from thousands to hundreds of thousands of individuals. Tracking every cross is impossible.</p>
+      </div>
+      <div>
+        <h4>The Solution</h4>
+        <p>Instead of looking at crosses, look at <strong style="color:var(--accent2)">outcomes</strong>. Track how <strong style="color:var(--accent2)">allele frequencies</strong> change over time across the population.</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h4>Real-World Applications</h4>
+    <div class="terms-grid" style="margin-top: 4px;">
+      <div class="term-card"><div class="term-name">Conservation</div><div class="term-def">Assessing genetic diversity and extinction risk</div></div>
+      <div class="term-card"><div class="term-name">Evolution</div><div class="term-def">Tracking adaptive changes across generations</div></div>
+      <div class="term-card"><div class="term-name">Breeding</div><div class="term-def">Diversity, adaptation in managed species</div></div>
+      <div class="term-card"><div class="term-name">Anthropology</div><div class="term-def">Human migrations, ancestry, history</div></div>
+    </div>
+  </div>
+
+  <div class="card accent-green">
+    <h3>Polymorphic Loci & Haplotypes</h3>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">Polymorphic Locus</div>
+        <div class="term-def">A locus with more than one allele, where each allele occurs at frequency &gt; 1%</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Haplotype</div>
+        <div class="term-def">A version of a polymorphic locus — e.g., a block of SNPs. Analogous to an allele at a larger scale</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Haplotype Network</div>
+        <div class="term-def">Diagram connecting haplotypes. Pie size = # samples; branch nodes = mutational steps between haplotypes</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Structure Plot</div>
+        <div class="term-def">Bar chart where each bar = one individual. Colors show the proportion of ancestry from each haplotype group</div>
+      </div>
+    </div>
+    <div class="callout green" style="margin-top:16px;">
+      <strong>Reading a haplotype network:</strong> Pie <em>colors</em> show geographic origin of samples in that haplotype. Pie <em>size</em> shows how many samples share it. Each branch node = one mutational change between haplotypes.
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" onclick="goTo(0)">← Overview</button>
+    <button class="nav-arrow next" onclick="goTo(2)">§2 Gene Pool →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ SECTION 2 ══════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-label">Section 2</div>
+  <div class="section-title">The Gene Pool</div>
+
+  <div class="card accent-left">
+    <h3>Key Concepts</h3>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">Gene Pool</div>
+        <div class="term-def">The total diversity of all genes and alleles present across all individuals in a population</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Allele Frequency</div>
+        <div class="term-def">How common a particular allele is in the gene pool — measured at the gamete level</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Genotype Frequency</div>
+        <div class="term-def">How common each combination of alleles (AA, Aa, aa) is among individuals in the population</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card accent-orange">
+    <h3>Allele Frequencies: p and q</h3>
+    <p>For a locus with two alleles (A and a):</p>
+    <div class="formula-box">
+      p = frequency of allele A (in gametes)<br>
+      q = frequency of allele a (in gametes)<br><br>
+      <span style="font-size:1.2em;">p + q = 1</span>
+      <div class="formula-note">All alleles must account for 100% of the gene pool</div>
+    </div>
+    <div class="callout orange">
+      <strong>Example:</strong> If 70 out of 100 gametes carry allele A, then p = 0.70 and q = 0.30.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Genotype Frequencies</h3>
+    <p>Every individual in a diploid population is one of three genotype classes:</p>
+    <div style="margin: 14px 0; display: flex; flex-direction: column; gap: 10px;">
+      <div class="assume-item">
+        <div class="assume-num" style="color:var(--accent); width:auto; padding: 0 8px;">AA</div>
+        <div class="assume-text">Homozygous dominant — carries two copies of allele A</div>
+      </div>
+      <div class="assume-item">
+        <div class="assume-num" style="color:var(--accent2); width:auto; padding: 0 8px;">Aa</div>
+        <div class="assume-text">Heterozygous — carries one copy of each allele (Aa = aA, same genotype)</div>
+      </div>
+      <div class="assume-item">
+        <div class="assume-num" style="color:var(--muted); width:auto; padding: 0 8px;">aa</div>
+        <div class="assume-text">Homozygous recessive — carries two copies of allele a</div>
+      </div>
+    </div>
+    <div class="formula-box">freq(AA) + freq(Aa) + freq(aa) = 1</div>
+    <div class="callout">
+      <strong>Important distinction:</strong> Allele frequencies are measured in <em>gametes</em>; genotype frequencies are measured in <em>individuals</em>. These are related but not the same thing.
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" onclick="goTo(1)">← §1 Populations</button>
+    <button class="nav-arrow next" onclick="goTo(3)">§3 HWE →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ SECTION 3 ══════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="section-label">Section 3</div>
+  <div class="section-title">Hardy-Weinberg Equilibrium</div>
+
+  <div class="card accent-left">
+    <h3>HWE as a Null Model</h3>
+    <p>HWE is the <strong style="color:var(--accent)">null hypothesis</strong> of population genetics. It describes what we <em>expect</em> if nothing interesting is happening — if the population is not evolving.</p>
+    <div class="callout" style="margin-top:14px;">
+      A population is in HWE when:<br>
+      <strong>1.</strong> Genotype frequencies can be predicted from allele frequencies<br>
+      <strong>2.</strong> Allele and genotype frequencies do <em>not</em> change generation to generation
+    </div>
+  </div>
+
+  <div class="card accent-orange">
+    <h3>The HWE Equation</h3>
+    <div class="formula-box">
+      p² + 2pq + q² = 1<br>
+      (p + q)² = 1
+    </div>
+    <table class="hwe-table" style="margin-top:16px;">
+      <thead>
+        <tr><th>Genotype</th><th>Frequency</th><th>Meaning</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="chip chip-blue">AA</span></td>
+          <td><span style="font-family:var(--mono); color:var(--accent);">p²</span></td>
+          <td>% of individuals homozygous dominant</td>
+        </tr>
+        <tr>
+          <td><span class="chip chip-orange">Aa</span></td>
+          <td><span style="font-family:var(--mono); color:var(--accent2);">2pq</span></td>
+          <td>% of individuals heterozygous (Aa = aA, so ×2)</td>
+        </tr>
+        <tr>
+          <td><span style="font-family:var(--mono); color:var(--muted);">aa</span></td>
+          <td><span style="font-family:var(--mono); color:var(--muted);">q²</span></td>
+          <td>% of individuals homozygous recessive</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout orange" style="margin-top:16px;">
+      <strong>Why the "2" in 2pq?</strong> Because Aa and aA are the same genotype — there are two ways to be heterozygous (get A from mom + a from dad, or vice versa).
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Worked Example</h3>
+    <p style="color:var(--muted); margin-bottom:16px;">A population has marker Z at frequency 25%. What are the allele and genotype frequencies under HWE?</p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Set up allele frequencies</strong><br>
+        p (freq. of Z) = 0.25 &nbsp;|&nbsp; q (freq. of z) = 1 − 0.25 = 0.75<br>
+        Check: 0.25 + 0.75 = 1 ✓
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Calculate genotype frequencies</strong><br>
+        ZZ (p²) = 0.25² = <span style="color:var(--accent);">0.0625</span><br>
+        zz (q²) = 0.75² = <span style="color:var(--muted);">0.5625</span><br>
+        Zz (2pq) = 2 × 0.25 × 0.75 = <span style="color:var(--accent2);">0.3750</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Verify they sum to 1</strong><br>
+        0.0625 + 0.5625 + 0.3750 = <span style="color:var(--accent3);">1.0 ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card accent-green">
+    <h3>5 Assumptions of HWE</h3>
+    <ul class="assume-list">
+      <li class="assume-item">
+        <div class="assume-num">1</div>
+        <div>
+          <div class="assume-text"><strong>Random mating</strong></div>
+          <div class="assume-sub">All individuals equally likely to mate with any other individual</div>
+        </div>
+      </li>
+      <li class="assume-item">
+        <div class="assume-num">2</div>
+        <div>
+          <div class="assume-text"><strong>No mutation</strong></div>
+          <div class="assume-sub">No new alleles are introduced into the gene pool</div>
+        </div>
+      </li>
+      <li class="assume-item">
+        <div class="assume-num">3</div>
+        <div>
+          <div class="assume-text"><strong>No migration</strong></div>
+          <div class="assume-sub">No gene flow into or out of the population</div>
+        </div>
+      </li>
+      <li class="assume-item">
+        <div class="assume-num">4</div>
+        <div>
+          <div class="assume-text"><strong>Large population size</strong></div>
+          <div class="assume-sub">Prevents random allele frequency shifts (genetic drift)</div>
+        </div>
+      </li>
+      <li class="assume-item">
+        <div class="assume-num">5</div>
+        <div>
+          <div class="assume-text"><strong>No natural selection</strong></div>
+          <div class="assume-sub">All alleles are neutral — none confers a fitness advantage or disadvantage</div>
+        </div>
+      </li>
+    </ul>
+    <div class="callout green" style="margin-top:16px;">
+      These 5 assumptions define a population that is <strong>not evolving</strong>. Any violation signals that something biological is happening.
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" onclick="goTo(2)">← §2 Gene Pool</button>
+    <button class="nav-arrow next" onclick="goTo(4)">§4 Violations →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ SECTION 4 ══════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="section-label">Section 4</div>
+  <div class="section-title">Deviations (Violations) from HWE</div>
+
+  <div class="card accent-left">
+    <h3>Why Violations Matter</h3>
+    <p>HWE is a <strong style="color:var(--accent)">null hypothesis</strong>. When observed frequencies differ from expected, it means a biological force is acting on the population.</p>
+    <div class="two-col" style="margin-top:16px;">
+      <div class="callout green">
+        <strong>Genotype frequency changes only</strong><br>
+        Allele frequencies stay the same → population at equilibrium (not truly evolving)
+      </div>
+      <div class="callout orange">
+        <strong>Allele frequency changes (Δq &gt; 0)</strong><br>
+        Alleles are gained or lost over time → population is <strong>evolving</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>HWE Assumptions vs. Violations</h3>
+    <table class="viol-table">
+      <thead>
+        <tr>
+          <th>Assumption</th>
+          <th>Violation</th>
+          <th>Impact on Population</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Random mating</td>
+          <td>Non-random / assortative mating</td>
+          <td>Changes genotype ratios only; stratification or shifts in heterozygosity</td>
+          <td><span class="equil">Equilibrium</span></td>
+        </tr>
+        <tr>
+          <td>No mutation</td>
+          <td>Mutation occurs</td>
+          <td>New alleles arise in the gene pool</td>
+          <td><span class="evolves">Evolves</span></td>
+        </tr>
+        <tr>
+          <td>No migration</td>
+          <td>Gene flow occurs</td>
+          <td>Blocked migration → populations diverge; migration → populations converge</td>
+          <td><span class="evolves">Evolves</span></td>
+        </tr>
+        <tr>
+          <td>Large population</td>
+          <td>Genetic drift</td>
+          <td>Allele frequencies change at random; small pops risk fixation or loss</td>
+          <td><span class="evolves">Evolves</span></td>
+        </tr>
+        <tr>
+          <td>No differential reproduction</td>
+          <td>Natural selection</td>
+          <td>Varies by selection type (directional, stabilizing, disruptive)</td>
+          <td><span class="evolves">Evolves</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card accent-green">
+    <h3>Key Concepts in Violations</h3>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">Genetic Drift</div>
+        <div class="term-def">Random changes in allele frequency due to small population size. Can lead to fixation (allele reaches 100%) or loss (0%)</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Fixation</div>
+        <div class="term-def">When one allele reaches a frequency of 1.0 (100%) and all other alleles are eliminated</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Neutral Variation</div>
+        <div class="term-def">Alleles that have no fitness effect — their frequency changes are driven by drift, not selection</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Selection</div>
+        <div class="term-def">Differential survival/reproduction based on genotype. Types: directional, stabilizing, disruptive</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" onclick="goTo(3)">← §3 HWE</button>
+    <button class="nav-arrow next" onclick="goTo(5)">Review Questions →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ REVIEW ══════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="section-label">Review</div>
+  <div class="section-title">Practice Questions</div>
+  <p style="color:var(--muted); margin-bottom:24px;">Click each question to reveal the answer.</p>
+
+  <!-- Section 1 -->
+  <div class="card" style="margin-bottom:24px;">
+    <h4 style="margin-bottom:14px;">§1 — Defining a Population</h4>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        What distinguishes an effective population (N<sub>e</sub>) from a census population?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        The census population is the total headcount of all individuals. The effective population (N<sub>e</sub>) counts only those individuals that actually breed and exchange genetic information. N<sub>e</sub> is almost always smaller than the census size and is the number that matters for how allele frequencies change over time.
+      </div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        What is a haplotype, and how does it differ from an allele?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        A haplotype is a version of a polymorphic locus defined by a combination of linked variants — typically a block of SNPs inherited together. It is analogous to an allele, but at a larger genomic scale. Each haplotype represents a distinct version of a region rather than a single base-pair difference.
+      </div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        In a haplotype network diagram, what do the size and colors of the pie charts represent?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        The <strong>size</strong> of each pie reflects how many samples carry that haplotype. The <strong>colors</strong> show what proportion of those samples originate from different geographic regions. Branch nodes between pies indicate the number of mutational steps separating the haplotypes.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="card" style="margin-bottom:24px;">
+    <h4 style="margin-bottom:14px;">§2 — The Gene Pool</h4>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        In a population, allele A has a frequency of 0.4. What is the frequency of allele a, and what are the expected genotype frequencies under HWE?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        p = 0.4, so q = 1 − 0.4 = 0.6.<br><br>
+        Under HWE:<br>
+        AA (p²) = 0.16<br>
+        Aa (2pq) = 2 × 0.4 × 0.6 = 0.48<br>
+        aa (q²) = 0.36<br>
+        Check: 0.16 + 0.48 + 0.36 = 1.0 ✓
+      </div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        Why is the frequency of heterozygotes (Aa) written as 2pq rather than just pq?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        Because there are two ways to be heterozygous: inheriting A from parent 1 and a from parent 2 (frequency p × q), or inheriting a from parent 1 and A from parent 2 (frequency q × p). Since Aa and aA produce the same genotype, we combine them: pq + qp = 2pq.
+      </div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        What is the difference between allele frequency and genotype frequency?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        Allele frequencies (p and q) are measured at the <strong>gamete level</strong> — they describe how common each allele is across the entire gene pool. Genotype frequencies (p², 2pq, q²) are measured at the <strong>individual level</strong> — they describe what proportion of individuals carry each combination of alleles (AA, Aa, or aa).
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="card" style="margin-bottom:24px;">
+    <h4 style="margin-bottom:14px;">§3 — Hardy-Weinberg Equilibrium</h4>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        What are the 5 assumptions required for a population to be in HWE?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        1. <strong>Random mating</strong> — individuals pair randomly with respect to genotype<br>
+        2. <strong>No mutation</strong> — no new alleles are introduced<br>
+        3. <strong>No migration</strong> — no gene flow in or out<br>
+        4. <strong>Large population</strong> — minimizes the effects of random drift<br>
+        5. <strong>No natural selection</strong> — all alleles are neutral with equal fitness
+      </div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        Why is HWE described as a "null model" or "null hypothesis"?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        HWE describes a baseline expectation — what allele and genotype frequencies <em>should</em> look like if no evolutionary forces are acting. It is a null model in the statistical sense: we assume nothing interesting is happening, and then test whether real data deviate significantly from this expectation. Deviations indicate some biological process (selection, drift, gene flow, etc.) is at work.
+      </div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        If a population is at HWE, what do you expect to happen to allele frequencies over many generations?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        Nothing — allele and genotype frequencies remain <strong>constant</strong> from generation to generation. This is the defining property of equilibrium. Even after one generation of random mating, if all 5 assumptions hold, frequencies stabilize and remain unchanged indefinitely.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="card" style="margin-bottom:24px;">
+    <h4 style="margin-bottom:14px;">§4 — HWE Violations</h4>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        Which HWE violations result in changes to genotype frequencies only, versus changes to allele frequencies?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        <strong>Genotype frequencies only (population still at equilibrium):</strong> Non-random mating (assortative mating) — it shuffles genotype combinations without changing which alleles exist in the pool.<br><br>
+        <strong>Allele frequencies change (population evolves):</strong> Mutation (new alleles), migration (gene flow), genetic drift (random loss/fixation), and natural selection (differential survival) all directly change what alleles are present and how common they are.
+      </div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        What is genetic drift, and why is it more powerful in small populations?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        Genetic drift is the random change in allele frequencies that occurs because reproduction involves sampling — and sampling error is larger in small samples. In a small population, chance events (who survives, who reproduces) can dramatically shift allele frequencies, potentially leading to <strong>fixation</strong> (an allele reaches 100%) or <strong>loss</strong> (an allele disappears). In large populations, these random fluctuations average out and have little net effect.
+      </div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        How does migration (gene flow) affect population differentiation?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        Migration has two contrasting effects: if it is <strong>blocked or prevented</strong>, populations become isolated and diverge over time, accumulating different alleles. If <strong>gene flow occurs</strong>, alleles are shared between populations, making them more genetically similar to one another. This is why isolated populations (like island species) tend to be genetically distinct, while connected populations tend to converge.
+      </div>
+    </div>
+
+    <div class="q-block">
+      <button class="q-btn" onclick="toggleQ(this)">
+        A population survey reveals far more homozygotes than expected under HWE, but allele frequencies haven't changed. What HWE assumption is likely being violated?
+        <span class="q-icon">▼</span>
+      </button>
+      <div class="q-answer">
+        <div class="q-label">Answer</div>
+        The <strong>random mating assumption</strong> is likely being violated. Non-random mating (e.g., inbreeding or assortative mating) tends to increase homozygosity and decrease heterozygosity relative to HWE expectations — without changing allele frequencies. This is a genotype-only violation.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-arrow" onclick="goTo(4)">← §4 Violations</button>
+    <button class="nav-arrow" disabled>End of Deck</button>
+  </div>
+</div>
+
+<script>
+  let current = 0;
+  const sections = document.querySelectorAll('.section');
+  const tabs = document.querySelectorAll('.nav-tab');
+  const prog = document.getElementById('prog');
+
+  function goTo(i) {
+    sections[current].classList.remove('active');
+    tabs[current].classList.remove('active');
+    current = i;
+    sections[current].classList.add('active');
+    tabs[current].classList.add('active');
+    prog.style.width = ((i / (sections.length - 1)) * 100) + '%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleQ(btn) {
+    const answer = btn.nextElementSibling;
+    const isOpen = answer.classList.contains('show');
+    // Close all in same card
+    const card = btn.closest('.card');
+    card.querySelectorAll('.q-answer').forEach(a => a.classList.remove('show'));
+    card.querySelectorAll('.q-btn').forEach(b => { b.classList.remove('open'); b.querySelector('.q-icon').textContent = '▼'; });
+    if (!isOpen) {
+      answer.classList.add('show');
+      btn.classList.add('open');
+      btn.querySelector('.q-icon').textContent = '▲';
+    }
+  }
+
+  // Init progress
+  prog.style.width = '0%';
+</script>
+</body>
+</html>
