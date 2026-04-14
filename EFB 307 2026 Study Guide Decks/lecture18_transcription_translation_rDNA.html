@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 18 — Transcription, Translation & Recombinant DNA</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg: #0d1117;
+  --surface: #161c26;
+  --surface2: #1e2737;
+  --border: #2a3549;
+  --accent: #4eb8a0;
+  --accent2: #f0a062;
+  --accent3: #7b9ef0;
+  --accent4: #d46fa8;
+  --text: #e8edf5;
+  --muted: #7a8aa0;
+  --gold: #f0c060;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ---- TOP NAV ---- */
+#topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+#topbar::-webkit-scrollbar { display: none; }
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: .85rem;
+  color: var(--accent);
+  padding: 14px 20px;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: .03em;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: .78rem;
+  font-weight: 600;
+  padding: 14px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .2s;
+  border-bottom: 2px solid transparent;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ---- PROGRESS ---- */
+#progress-bar {
+  height: 2px;
+  background: var(--border);
+}
+#progress-fill {
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+  width: 0%;
+  transition: width .4s ease;
+}
+
+/* ---- MAIN ---- */
+.section { display: none; }
+.section.active { display: block; }
+.main { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* ---- HERO HEADER ---- */
+.section-hero {
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+.section-tag {
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+.section-sub {
+  color: var(--muted);
+  font-size: .95rem;
+  max-width: 600px;
+}
+
+/* ---- CARD ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+}
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  color: var(--text);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-icon {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem;
+  flex-shrink: 0;
+}
+.card p { color: var(--muted); margin-bottom: 10px; font-size: .93rem; }
+.card p:last-child { margin-bottom: 0; }
+.card ul, .card ol { color: var(--muted); padding-left: 20px; font-size: .93rem; }
+.card li { margin-bottom: 6px; }
+
+/* tags / chips */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid;
+}
+.chip-g { color: var(--accent); border-color: var(--accent); background: rgba(78,184,160,.08); }
+.chip-o { color: var(--accent2); border-color: var(--accent2); background: rgba(240,160,98,.08); }
+.chip-b { color: var(--accent3); border-color: var(--accent3); background: rgba(123,158,240,.08); }
+.chip-p { color: var(--accent4); border-color: var(--accent4); background: rgba(212,111,168,.08); }
+.chip-y { color: var(--gold); border-color: var(--gold); background: rgba(240,192,96,.08); }
+
+/* emphasis / highlight boxes */
+.note {
+  border-left: 3px solid var(--accent2);
+  padding: 12px 16px;
+  background: rgba(240,160,98,.06);
+  border-radius: 0 6px 6px 0;
+  margin: 14px 0;
+  font-size: .9rem;
+  color: var(--text);
+}
+.note strong { color: var(--accent2); }
+
+.note-blue {
+  border-left-color: var(--accent3);
+  background: rgba(123,158,240,.06);
+}
+.note-blue strong { color: var(--accent3); }
+
+.note-green {
+  border-left-color: var(--accent);
+  background: rgba(78,184,160,.06);
+}
+.note-green strong { color: var(--accent); }
+
+.note-pink {
+  border-left-color: var(--accent4);
+  background: rgba(212,111,168,.06);
+}
+.note-pink strong { color: var(--accent4); }
+
+/* key term */
+.kterm {
+  color: var(--accent);
+  font-weight: 600;
+}
+.kterm2 { color: var(--accent2); font-weight: 600; }
+.kterm3 { color: var(--accent3); font-weight: 600; }
+.kterm4 { color: var(--accent4); font-weight: 600; }
+
+/* ---- TWO-COL ---- */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+@media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ---- STEP LIST ---- */
+.steps { counter-reset: step; }
+.step-item {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+.step-num {
+  counter-increment: step;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-item p { margin: 0; color: var(--muted); font-size: .92rem; }
+.step-item p strong { color: var(--text); }
+
+/* ---- COMPARISON TABLE ---- */
+.comp-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 14px 0; }
+.comp-table th {
+  background: var(--surface2);
+  color: var(--accent);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+.comp-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+}
+.comp-table tr:last-child td { border-bottom: none; }
+.comp-table td:first-child { color: var(--text); font-weight: 600; }
+
+/* ---- Q&A SECTION ---- */
+.qa-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.qa-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 18px 22px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  color: var(--text);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: .93rem;
+  font-weight: 600;
+  transition: background .15s;
+}
+.qa-btn:hover { background: var(--surface2); }
+.qa-icon {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .65rem;
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: transform .3s;
+}
+.qa-btn.open .qa-icon { transform: rotate(180deg); }
+.qa-answer {
+  display: none;
+  padding: 0 22px 18px 58px;
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.65;
+}
+.qa-answer.show { display: block; }
+.qa-answer ul { padding-left: 18px; }
+.qa-answer li { margin-bottom: 5px; }
+
+/* ---- MONO SEQUENCE ---- */
+.seq {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem;
+  color: var(--accent);
+  background: rgba(78,184,160,.06);
+  border: 1px solid rgba(78,184,160,.2);
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin: 10px 0;
+  letter-spacing: .05em;
+}
+
+/* ---- GRID CARDS ---- */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+@media (max-width: 680px) { .grid-3 { grid-template-columns: 1fr; } }
+
+.mini-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+.mini-card .mc-label {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.mini-card .mc-val {
+  font-size: .88rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.mini-card .mc-val strong { color: var(--text); }
+
+/* inline code */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82em;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--accent3);
+}
+
+/* ---- DIVIDER ---- */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 28px 0;
+}
+
+/* ---- FADE-IN ---- */
+.section.active .card,
+.section.active .qa-card,
+.section.active .mini-card,
+.section.active .two-col {
+  animation: fadeUp .35s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* stagger */
+.card:nth-child(1) { animation-delay: .04s; }
+.card:nth-child(2) { animation-delay: .08s; }
+.card:nth-child(3) { animation-delay: .12s; }
+.card:nth-child(4) { animation-delay: .16s; }
+.card:nth-child(5) { animation-delay: .20s; }
+
+.qa-card:nth-child(1) { animation-delay: .05s; }
+.qa-card:nth-child(2) { animation-delay: .10s; }
+.qa-card:nth-child(3) { animation-delay: .15s; }
+.qa-card:nth-child(4) { animation-delay: .20s; }
+.qa-card:nth-child(5) { animation-delay: .25s; }
+.qa-card:nth-child(6) { animation-delay: .30s; }
+.qa-card:nth-child(7) { animation-delay: .35s; }
+.qa-card:nth-child(8) { animation-delay: .40s; }
+.qa-card:nth-child(9) { animation-delay: .45s; }
+.qa-card:nth-child(10) { animation-delay: .50s; }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="logo">Lec 18</div>
+  <button class="tab-btn active" onclick="go(0)">§1 Gene Structure</button>
+  <button class="tab-btn" onclick="go(1)">§2 Transcription</button>
+  <button class="tab-btn" onclick="go(2)">§3 Translation</button>
+  <button class="tab-btn" onclick="go(3)">§4 Prokaryotes & rDNA</button>
+  <button class="tab-btn" onclick="go(4)">✦ Review Q's</button>
+</div>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+
+<!-- ===================== SECTION 1: GENE STRUCTURE ===================== -->
+<div class="section active" id="s0">
+<div class="main">
+  <div class="section-hero">
+    <div class="section-tag">Section 1 of 4</div>
+    <div class="section-title">Structure of the Eukaryotic Gene</div>
+    <div class="section-sub">How genes are organized — from regulatory regions upstream to coding sequence to the downstream 3′ end.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(78,184,160,.15)">🧬</div>Central Dogma — Review</div>
+    <p>The flow of genetic information: <span class="kterm">DNA → RNA → Protein</span>. Transcription copies the same nucleotide alphabet; translation converts it to a new alphabet (amino acids).</p>
+    <div class="note"><strong>Key rule:</strong> The 5′ end of the mRNA becomes the <strong>N-terminus</strong> of the polypeptide. Three bases = one codon = one amino acid.</div>
+    <div class="two-col">
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent)">Bacteria</div>
+        <div class="mc-val">mRNA is translated <strong>as it is being transcribed</strong> — transcription and translation occur simultaneously.</div>
+      </div>
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent3)">Eukaryotes</div>
+        <div class="mc-val">Transcription and translation occur at <strong>different times and locations</strong> (nucleus vs. cytoplasm).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(240,160,98,.15)">🗺</div>Three Regions of the Gene</div>
+    <table class="comp-table">
+      <tr><th>Region</th><th>Location</th><th>Function</th></tr>
+      <tr><td>Upstream (5′)</td><td>Before TSS</td><td>Regulatory / promoter region: <em>when &amp; where</em> the gene is expressed</td></tr>
+      <tr><td>Coding region</td><td>TSS → stop codon</td><td>Exons + introns; encodes the protein product</td></tr>
+      <tr><td>Downstream (3′)</td><td>After stop codon</td><td>3′ UTR; mRNA stability, export, translation controls</td></tr>
+    </table>
+    <div class="note"><strong>Note:</strong> The original transcript begins upstream of the translational start, includes both exons and introns, and ends downstream of the translation stop.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(78,184,160,.15)">⬆</div>Upstream of the TSS — The Promoter</div>
+    <div class="two-col">
+      <div>
+        <p><span class="kterm">Cis-regulatory modules (CRMs)</span></p>
+        <ul>
+          <li>100s–10,000s bp upstream of TSS</li>
+          <li>Binding sites (enhancers) for sequence-specific transcription factors</li>
+          <li>Control <em>where and when</em> the gene is transcribed</li>
+          <li><strong>Highly variable</strong> for different genes</li>
+          <li>Sequences 6–12 bp; some palindromes</li>
+        </ul>
+      </div>
+      <div>
+        <p><span class="kterm2">Core promoter</span></p>
+        <ul>
+          <li>25–30 bp upstream of TSS</li>
+          <li>Contains the <strong>TATA box</strong> (~position −25)</li>
+          <li>Determines <em>if</em> the gene can be transcribed</li>
+          <li><strong>Generally similar</strong> across different genes</li>
+          <li>~25% of human genes have a TATA sequence; others use alternative initiator sequences</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note note-green"><strong>Key contrast:</strong> CRMs are gene-specific (variable); the core promoter is broadly shared (similar). Mutations in CRMs change the <em>pattern</em> of expression; mutations in the core promoter can silence the gene entirely.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(123,158,240,.15)">🔤</div>TF Binding — Consensus Sequences</div>
+    <p>Each transcription factor has a specific DNA-binding domain that recognizes a <span class="kterm3">consensus sequence</span>. These sequences are:</p>
+    <ul>
+      <li>6–12 bp long</li>
+      <li>Some positions are <strong>invariant</strong>; others can vary</li>
+      <li>Some are <strong>palindromes</strong> (recognized by dimeric TFs)</li>
+      <li>Similar but not identical across related species</li>
+    </ul>
+    <div class="seq">Antp (Drosophila, helix-turn-helix):  TTAATGA<br>MEFA (Human, MADS α-helix):         CTATTATAG<br>AP1 Fos/Jun (Leucine zipper):         TGASTCA</div>
+    <p>Each TF also has an <span class="kterm">interacting domain</span> that contacts the Mediator complex — this domain is more similar <em>across</em> TFs.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(212,111,168,.15)">🪲</div>Hox Genes — CRMs in Action</div>
+    <p>Hox genes encode transcription factors that specify body regions. They are co-linear: the <em>order</em> of Hox genes along the chromosome mirrors the body regions they control.</p>
+    <ul>
+      <li>Drosophila: 1 cluster (HOM-C)</li>
+      <li>Humans: 4 clusters (A–D), 13 genes each</li>
+      <li>Mutations in <strong>CRMs</strong> change <em>where</em> a Hox gene is expressed → dramatic homeotic transformations</li>
+    </ul>
+    <div class="note note-pink"><strong>Antennapedia example:</strong> A CRM mutation causes the <em>Antp</em> gene to be expressed in the head → forelegs grow where antennae should be. The coding region is unchanged; only the regulatory region mutated.</div>
+    <p style="font-size:.88rem; color:var(--muted)">This illustrates the broader principle: regulatory (non-coding) mutations can be major drivers of morphological evolution.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(240,192,96,.15)">↔</div>Coding Region — UTRs & Exon/Intron Structure</div>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><p><strong>TSS (Transcriptional Start Site)</strong> — where RNA polymerase begins transcription</p></div>
+      <div class="step-item"><div class="step-num">2</div><p><strong>5′ UTR</strong> — untranslated; binding site for translational regulators (e.g., IRP)</p></div>
+      <div class="step-item"><div class="step-num">3</div><p><strong>Start codon (AUG)</strong> — beginning of the open reading frame</p></div>
+      <div class="step-item"><div class="step-num">4</div><p><strong>Exons &amp; Introns</strong> — exons = coding; introns = intervening sequences removed during splicing</p></div>
+      <div class="step-item"><div class="step-num">5</div><p><strong>Stop codon (UAA, UAG, UGA)</strong> — end of translation</p></div>
+      <div class="step-item"><div class="step-num">6</div><p><strong>3′ UTR</strong> — site for microRNA binding, mRNA stability signals, poly-A signal</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(78,184,160,.15)">🧫</div>Cell Type Differences</div>
+    <p>All cells in an organism carry the <strong>same genome</strong>. Differences in cell type (neurons, muscle, red blood cells…) arise because <em>different genes are transcribed</em>. The CRMs are what determine this specificity — different cell types express different transcription factors that bind different CRMs.</p>
+    <div class="chip-row">
+      <span class="chip chip-g">Same genome</span>
+      <span class="chip chip-o">Different TFs per cell type</span>
+      <span class="chip chip-b">Different genes transcribed</span>
+      <span class="chip chip-p">Different proteins → different function</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SECTION 2: TRANSCRIPTION ===================== -->
+<div class="section" id="s1">
+<div class="main">
+  <div class="section-hero">
+    <div class="section-tag">Section 2 of 4</div>
+    <div class="section-title">Transcription</div>
+    <div class="section-sub">From chromatin remodeling and TF binding to RNA synthesis, splicing, and post-transcriptional regulation.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(240,192,96,.15)">🔓</div>Pre-initiation: Open Chromatin</div>
+    <p>Before transcription can begin, the chromatin must be accessible. Heterochromatin (tightly packed) is <span class="kterm2">refractory to TF binding</span>; euchromatin (open) is available.</p>
+    <div class="two-col">
+      <div>
+        <p><strong style="color:var(--accent4)">Histone modifications</strong> can "lock up" or open chromatin by affecting:</p>
+        <ul>
+          <li>Histone–histone interactions</li>
+          <li>Histone–DNA interactions</li>
+        </ul>
+      </div>
+      <div>
+        <p><strong style="color:var(--accent)">Common modifications:</strong></p>
+        <ul>
+          <li>Acetyl group (–COCH₃)</li>
+          <li>Phosphate group</li>
+          <li>Methyl group (–CH₃)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note"><strong>Epigenetic inheritance:</strong> Histone modifications can be heritable — passed to daughter cells without changing the DNA sequence. "Pioneer" TFs can open closed chromatin.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(78,184,160,.15)">🧩</div>Pre-initiation Complex Assembly</div>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><p><strong>Regulatory TFs</strong> bind to their recognition sequences in the CRMs — determines <em>whether and where</em> the gene is activated.</p></div>
+      <div class="step-item"><div class="step-num">2</div><p><strong>TBP</strong> (TATA-binding protein, part of TFIID) binds the TATA box of the core promoter — this is the "general" TF common to all protein-coding genes.</p></div>
+      <div class="step-item"><div class="step-num">3</div><p><strong>Mediator complex</strong> bridges the distant regulatory TFs and RNA Pol II at the promoter. Chromatin loops bring these regions together.</p></div>
+      <div class="step-item"><div class="step-num">4</div><p><strong>RNA Polymerase II holoenzyme</strong> is recruited — the full preinitiation complex forms and transcription begins.</p></div>
+    </div>
+    <div class="note note-blue"><strong>Key logic:</strong> Regulatory TFs are gene-specific (variable). TBP + RNA Pol II are used by <em>all</em> protein-coding genes. The Mediator physically connects them.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(123,158,240,.15)">⚙️</div>RNAP Types by RNA Product</div>
+    <table class="comp-table">
+      <tr><th>RNA Product</th><th>RNA Polymerase</th><th>General TF</th></tr>
+      <tr><td>mRNA (protein-coding)</td><td>RNAP II</td><td>TFIID (TBP)</td></tr>
+      <tr><td>tRNA</td><td>RNAP III</td><td>TFIIIB</td></tr>
+      <tr><td>rRNA</td><td>RNAP I</td><td>SL1</td></tr>
+    </table>
+    <p style="font-size:.88rem">Note: the table in the slides uses Roman numerals differently — the conceptual point is that mRNA, tRNA, and rRNA each use a distinct polymerase.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(240,160,98,.15)">✂️</div>Post-transcription: RNA Processing</div>
+    <p>The primary transcript (pre-mRNA) must be processed before export and translation:</p>
+    <div class="grid-3">
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent)">5′ Cap</div>
+        <div class="mc-val">7-methylguanosine cap added co-transcriptionally. Required for <strong>export and translation</strong>.</div>
+      </div>
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent3)">Poly-A Tail</div>
+        <div class="mc-val">String of A's added to 3′ end. Affects <strong>transcript stability</strong> and translation efficiency.</div>
+      </div>
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent2)">Splicing</div>
+        <div class="mc-val">Introns removed, exons joined. Mediated by <strong>snRNPs (snRNAs + proteins)</strong>.</div>
+      </div>
+    </div>
+    <div class="note"><strong>Intron =</strong> <strong>int</strong>ervening sequence. Introns are degraded; exons are ligated.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(212,111,168,.15)">🔀</div>Alternative Splicing</div>
+    <p>The same primary transcript can be spliced in multiple ways, generating different protein isoforms from a single gene:</p>
+    <table class="comp-table">
+      <tr><th>Type</th><th>What happens</th></tr>
+      <tr><td>Exon skipping</td><td>An exon is included in some transcripts but not others</td></tr>
+      <tr><td>Alternative 5′ site</td><td>Different 5′ splice site; extends or shortens exon 1</td></tr>
+      <tr><td>Alternative 3′ site</td><td>Different 3′ splice site; extends or shortens exon 2</td></tr>
+      <tr><td>Mutually exclusive exons</td><td>Either exon 2 or exon 3 included — never both</td></tr>
+    </table>
+    <div class="note note-pink"><strong>Context:</strong> Alternatively spliced isoforms are often present in different <em>cell types</em> or at different <em>developmental stages</em> — a major source of protein diversity without extra genes.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(123,158,240,.15)">🔇</div>Non-coding RNAs</div>
+    <div class="two-col">
+      <div>
+        <p><span class="kterm3">snRNAs</span></p>
+        <ul>
+          <li>Small nuclear RNAs</li>
+          <li>Part of the spliceosome</li>
+          <li>Base-pair with pre-mRNA to direct splice site choice</li>
+        </ul>
+        <p style="margin-top:12px"><span class="kterm3">Long ncRNAs</span></p>
+        <ul>
+          <li>Diverse functions</li>
+          <li>Can affect transcriptional initiation</li>
+          <li>Many functions still unknown</li>
+        </ul>
+      </div>
+      <div>
+        <p><span class="kterm2">microRNAs (miRNAs)</span></p>
+        <ul>
+          <li>~22 nt small RNAs</li>
+          <li>Base-pair with target mRNA (usually 3′ UTR in animals)</li>
+          <li>Block translation <em>or</em> target mRNA for degradation</li>
+          <li>One mRNA can have multiple miRNA target sites</li>
+          <li>Target site locations are variable in plants</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SECTION 3: TRANSLATION ===================== -->
+<div class="section" id="s2">
+<div class="main">
+  <div class="section-hero">
+    <div class="section-tag">Section 3 of 4</div>
+    <div class="section-title">Translation</div>
+    <div class="section-sub">The ribosome decodes mRNA into protein — initiation, elongation, termination — plus translational and post-translational regulation.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(78,184,160,.15)">🔤</div>The Three RNA Players</div>
+    <div class="grid-3">
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent)">mRNA</div>
+        <div class="mc-val">The <strong>transcript</strong>. Carries the codon sequence. Threaded between ribosomal subunits 5′→3′.</div>
+      </div>
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent3)">tRNA (~90 nt)</div>
+        <div class="mc-val"><strong>Carries amino acids.</strong> Aminoacyl-tRNA synthetases attach the correct AA to the 3′ end based on the anticodon. Anticodon is exposed in the 3-D cloverleaf structure.</div>
+      </div>
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent2)">rRNA</div>
+        <div class="mc-val"><strong>Site of translation.</strong> Forms the ribosome structure with ribosomal proteins. Catalyzes peptide bond formation (ribozyme activity).</div>
+      </div>
+    </div>
+    <div class="note"><strong>Crick's prediction:</strong> Before tRNA was discovered, Crick proposed an "adaptor" molecule with an RNA sequence and an amino acid portion — confirmed to be tRNA.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(240,160,98,.15)">🧪</div>The Ribosome</div>
+    <p>Composed of protein and rRNA. Three functional sites:</p>
+    <div class="grid-3">
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent2)">A site</div>
+        <div class="mc-val"><strong>A</strong>minoacyl — incoming charged tRNA enters here. One codon exposed at a time.</div>
+      </div>
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent)">P site</div>
+        <div class="mc-val"><strong>P</strong>eptidyl — tRNA carrying the growing polypeptide chain. Start codon (AUG) enters here first.</div>
+      </div>
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--muted)">E site</div>
+        <div class="mc-val"><strong>E</strong>xit — uncharged (empty) tRNA leaves the ribosome from here.</div>
+      </div>
+    </div>
+    <div class="note note-blue">Prokaryote ribosomes: 30S + 50S = 70S. Eukaryote: 40S + 60S = 80S. This size difference is exploited by many antibiotics.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(78,184,160,.15)">▶</div>Initiation, Elongation, Termination</div>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><p><strong>Initiation:</strong> The AUG start codon is brought to the <em>P site</em> (not A site) by initiation factor proteins. Met-tRNA occupies P site; second codon is read at A site.</p></div>
+      <div class="step-item"><div class="step-num">2</div><p><strong>Elongation cycle:</strong> (a) New charged tRNA enters A site. (b) Peptide bond forms — growing chain transferred to A-site tRNA. (c) Ribosome translocates one codon (E → P → A). Uncharged tRNA exits E site.</p></div>
+      <div class="step-item"><div class="step-num">3</div><p><strong>Termination:</strong> Stop codon (UAA, UAG, UGA) enters A site — no tRNA recognizes it. <strong>Release factor proteins</strong> bind and hydrolyze the peptide chain, releasing the polypeptide.</p></div>
+    </div>
+    <div class="note"><strong>Direction:</strong> Amino acids are added to the <em>C-terminus</em> stepwise. Codons and anticodons are antiparallel.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(212,111,168,.15)">⚖️</div>Translational Regulation — Ferritin & Transferrin</div>
+    <p>Translation can be regulated by proteins that bind to the <span class="kterm4">5′ or 3′ UTR</span>. Classic iron-sensing example:</p>
+    <div class="two-col">
+      <div>
+        <p><strong style="color:var(--accent)">Ferritin</strong> (iron storage)</p>
+        <ul>
+          <li><strong>Low iron:</strong> IRP binds to <code>IRE</code> in <em>5′ UTR</em> → blocks ribosome access → no ferritin made</li>
+          <li><strong>High iron:</strong> IRP + Fe cannot bind IRE → ribosome translates ferritin → sequesters free iron</li>
+        </ul>
+      </div>
+      <div>
+        <p><strong style="color:var(--accent3)">Transferrin</strong> (iron import)</p>
+        <ul>
+          <li><strong>Low iron:</strong> IRP binds <code>IRE</code> in <em>3′ UTR</em> → stabilizes mRNA → transferrin made → imports iron</li>
+          <li><strong>High iron:</strong> IRP + Fe cannot bind → mRNA degraded → no transferrin → no iron import</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note note-pink"><strong>Elegant logic:</strong> The same IRP protein, the same binding motif (IRE), but opposite effects depending on whether the IRE is in the 5′ or 3′ UTR — a single sensor coordinating two opposing responses.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(240,160,98,.15)">🪰</div>Translational Regulation — Drosophila Body Axis</div>
+    <p><em>hb</em> (hunchback) mRNA is deposited uniformly by the mother. <span class="kterm2">Nanos (Nos) protein</span> forms a posterior-to-anterior gradient and blocks <em>hb</em> translation via the NRE in its 3′ UTR.</p>
+    <ul>
+      <li><strong>Anterior:</strong> low Nos → <em>hb</em> translated → Hunchback protein made</li>
+      <li><strong>Posterior:</strong> high Nos → <em>hb</em> not translated → no Hunchback</li>
+    </ul>
+    <div class="note">Result: Hb protein forms an anterior-to-posterior gradient even though <em>hb mRNA</em> is uniformly distributed. This gradient specifies anterior structures. Homeotic genes then translate these gradients into specific body parts.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(123,158,240,.15)">🔧</div>Post-translational Modification</div>
+    <table class="comp-table">
+      <tr><th>Modification</th><th>Example</th><th>Purpose</th></tr>
+      <tr><td>Removal of Met</td><td>Most proteins</td><td>N-terminal methionine cleaved after synthesis</td></tr>
+      <tr><td>Glycosylation</td><td>ABO blood group antigens</td><td>A/B enzymes add different sugars to the O antigen</td></tr>
+      <tr><td>Prosthetic group</td><td>Heme in hemoglobin</td><td>Adds iron-binding function; required for O₂ transport</td></tr>
+      <tr><td>Subunit assembly</td><td>Hemoglobin (2α + 2β)</td><td>Active protein complex from separate polypeptides</td></tr>
+      <tr><td>Proteolytic cleavage</td><td>Insulin (preproinsulin → proinsulin → insulin)</td><td>Two cleavage events activate the hormone</td></tr>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SECTION 4: PROKARYOTES & RDNA ===================== -->
+<div class="section" id="s3">
+<div class="main">
+  <div class="section-hero">
+    <div class="section-tag">Section 4 of 4</div>
+    <div class="section-title">Prokaryotes &amp; Recombinant DNA Technology</div>
+    <div class="section-sub">Operons, reporter genes, restriction enzymes, cloning vectors, and libraries.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(78,184,160,.15)">📊</div>Gene Regulation: Bacteria vs. Eukaryotes</div>
+    <div class="two-col">
+      <div>
+        <p><strong style="color:var(--accent)">Bacteria</strong></p>
+        <ul>
+          <li>Regulation primarily at <em>initiation of transcription</em></li>
+          <li>No nuclear envelope — transcription &amp; translation simultaneous</li>
+          <li>No introns; no splicing</li>
+        </ul>
+      </div>
+      <div>
+        <p><strong style="color:var(--accent3)">Eukaryotes</strong></p>
+        <ul>
+          <li>Regulation at <em>pre-initiation</em> of transcription</li>
+          <li>Plus: RNA splicing, microRNAs, other ncRNAs, translational controls</li>
+          <li>Many more regulatory layers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(240,160,98,.15)">🧫</div>Operons — Prokaryotic Gene Clusters</div>
+    <p>In bacteria, functionally related genes are often co-localized and co-transcribed as a single long mRNA — this is an <span class="kterm2">operon</span>.</p>
+    <div class="note note-green"><strong>trp operon example:</strong> Genes <em>trpE–trpD–trpC–trpB–trpA</em> encode enzymes for tryptophan biosynthesis. One upstream promoter drives transcription of all five; each has its own start and stop codon on the single polycistronic mRNA, producing five separate proteins.</div>
+    <div class="chip-row">
+      <span class="chip chip-g">One promoter</span>
+      <span class="chip chip-o">Single long transcript</span>
+      <span class="chip chip-b">Multiple stop codons</span>
+      <span class="chip chip-p">Multiple separate proteins</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(123,158,240,.15)">💡</div>Reporter Genes</div>
+    <p>A reporter gene is placed under control of a gene's regulatory region to reveal <em>when and where</em> that gene is expressed.</p>
+    <div class="two-col">
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent)">Transcriptional reporter</div>
+        <div class="mc-val">Regulatory region + reporter coding sequence only. Answers: <strong>where/when is the gene transcribed?</strong></div>
+      </div>
+      <div class="mini-card">
+        <div class="mc-label" style="color:var(--accent3)">Translational reporter</div>
+        <div class="mc-val">Full gene + reporter fused in-frame. Answers: <strong>where/when is the protein found?</strong></div>
+      </div>
+    </div>
+    <p style="font-size:.88rem; color:var(--muted); margin-top:12px">Common reporters: <strong>GFP</strong> (fluorescence), <strong>lacZ</strong> (β-galactosidase, produces blue color), antibiotic resistance genes.</p>
+    <div class="note note-blue"><strong>eat-4 / GFP example:</strong> All neurons have the <em>eat-4</em> gene, but GFP reporter shows it is only transcribed in ~38 specific neurons in <em>C. elegans</em> — governed by 3 distinct CRMs, each controlling expression in different neuronal subsets.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(212,111,168,.15)">✂️</div>Tool 1: Restriction Enzymes</div>
+    <p>Bacterial defense against viruses — over 200 kinds known. Cut double-stranded DNA at specific recognition sequences (usually <span class="kterm4">palindromes</span>).</p>
+    <div class="two-col">
+      <div>
+        <p><strong>Cohesive (sticky) ends</strong> — staggered cuts (HindIII, BamHI): leave single-stranded overhangs that can anneal with complementary fragments. Enable joining of DNA from different sources.</p>
+      </div>
+      <div>
+        <p><strong>Blunt ends</strong> — cuts both strands at same position (AluI): no overhang; can still be ligated but with lower efficiency.</p>
+      </div>
+    </div>
+    <div class="seq">HindIII cuts:  5'–A↓AGCTT–3'  →  5'–A     AGCTT–3'
+               3'–TTCGA↑A–5'  →  3'–TTCGA     A–5'</div>
+    <div class="note"><strong>Ligation:</strong> Complementary sticky ends anneal by base pairing. <strong>DNA ligase</strong> seals the gaps, forming covalent phosphodiester bonds. This joins DNA from any two sources cut with the same enzyme.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(78,184,160,.15)">⭕</div>Tool 2: Cloning Vectors (Plasmids)</div>
+    <p>Plasmid vectors must have three features:</p>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><p><strong>Multiple cloning site (MCS)</strong> — a cluster of unique restriction enzyme sites where foreign DNA can be inserted.</p></div>
+      <div class="step-item"><div class="step-num">2</div><p><strong>Origin of replication (ori)</strong> — allows the plasmid to replicate independently using host cell enzymes. Plasmid copies are distributed to daughter cells at division.</p></div>
+      <div class="step-item"><div class="step-num">3</div><p><strong>Selectable marker</strong> — typically an antibiotic resistance gene (e.g., ampR) to identify cells that took up the plasmid, plus <em>lacZ</em> for <strong>blue-white screening</strong>: cells with insert disrupt lacZ → white colonies; cells with intact plasmid → blue colonies.</p></div>
+    </div>
+    <p style="font-size:.88rem; color:var(--muted); margin-top:8px"><strong>Phage vectors</strong> (e.g., λ phage) can carry inserts up to 45 kb — much larger than typical plasmids.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(240,160,98,.15)">📚</div>DNA Libraries</div>
+    <table class="comp-table">
+      <tr><th>Library Type</th><th>Source DNA</th><th>Use</th></tr>
+      <tr><td>Genomic library</td><td>Total genomic DNA cut with restriction enzymes</td><td>Contains all sequences including introns, regulatory regions</td></tr>
+      <tr><td>cDNA library</td><td>mRNA → cDNA via reverse transcriptase</td><td>Represents expressed genes only; no introns; used for expression profiling</td></tr>
+      <tr><td>Metagenomic library</td><td>Environmental DNA (mixed organisms)</td><td>Access to unculturable microbe genomes; microbiome studies</td></tr>
+    </table>
+    <div class="note note-green"><strong>cDNA construction:</strong> mRNA → reverse transcriptase → single-stranded cDNA → DNA polymerase → double-stranded cDNA → insert into vector. Because it comes from mRNA, it lacks introns and contains only the expressed sequence.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-icon" style="background:rgba(123,158,240,.15)">🍔</div>Real-World Application: Impossible Burger™</div>
+    <p>A concrete example of recombinant DNA technology in food production:</p>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><p>Legumes produce <strong>leghemoglobin</strong> in root nodules (anaerobic environment) to bind O₂ during nitrogen fixation — structurally similar to animal hemoglobin.</p></div>
+      <div class="step-item"><div class="step-num">2</div><p>The <strong>soy leghemoglobin gene</strong> is isolated and inserted into a plasmid vector.</p></div>
+      <div class="step-item"><div class="step-num">3</div><p>The recombinant plasmid is introduced into <em>Pichia pastoris</em> (yeast), which is grown in bioreactors.</p></div>
+      <div class="step-item"><div class="step-num">4</div><p>Yeast secretes leghemoglobin → purified → added to plant-based burgers to impart meaty flavor, texture, and bioavailable iron.</p></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SECTION 5: REVIEW Q's ===================== -->
+<div class="section" id="s4">
+<div class="main">
+  <div class="section-hero">
+    <div class="section-tag">Review Questions</div>
+    <div class="section-title">Test Your Understanding</div>
+    <div class="section-sub">Click each question to reveal the answer. Work through them without peeking first!</div>
+  </div>
+
+  <div class="qa-card">
+    <button class="qa-btn" onclick="toggleQ(this)"><div class="qa-icon">▼</div>What are the three main regions of a eukaryotic gene, and what does each do?</button>
+    <div class="qa-answer"><ul>
+      <li><strong>Upstream (5′ / promoter region):</strong> Contains cis-regulatory modules (CRMs) and the core promoter. CRMs control where and when the gene is transcribed; the core promoter (TATA box) determines if it can be transcribed.</li>
+      <li><strong>Coding region:</strong> From the TSS through the stop codon. Includes 5′ UTR, AUG start, exons &amp; introns, stop codon, and 3′ UTR. Encodes the protein product; UTRs control translation and mRNA stability.</li>
+      <li><strong>Downstream (3′):</strong> The downstream region beyond the stop codon. Includes part of the 3′ UTR and beyond; involved in transcription termination signals.</li>
+    </ul></div>
+  </div>
+
+  <div class="qa-card">
+    <button class="qa-btn" onclick="toggleQ(this)"><div class="qa-icon">▼</div>What is the difference between a cis-regulatory module (CRM) and a core promoter? How are they different in terms of variability?</button>
+    <div class="qa-answer"><p><strong>CRMs</strong> are binding sites for sequence-specific (regulatory) transcription factors, located 100s–10,000s bp upstream of the TSS. They determine <em>where and when</em> a gene is expressed and are <strong>highly variable</strong> across different genes — each gene has a unique combination of binding sites.</p>
+    <p><strong>Core promoter</strong> is 25–30 bp upstream of the TSS, contains the TATA box, and is recognized by TBP (part of TFIID). It determines <em>if</em> the gene can be transcribed and is <strong>generally similar</strong> across different genes — the same TBP and RNA Pol II are used for all protein-coding genes.</p></div>
+  </div>
+
+  <div class="qa-card">
+    <button class="qa-btn" onclick="toggleQ(this)"><div class="qa-icon">▼</div>Explain the Antennapedia phenotype in terms of gene regulation. What component of the gene was mutated?</button>
+    <div class="qa-answer"><p>In <em>Antennapedia</em> mutants, legs grow where antennae should be. This is caused by a mutation in the <strong>CRM (cis-regulatory module)</strong> of the <em>Antp</em> gene — specifically, a CRM that normally restricts <em>Antp</em> expression to the thorax becomes expressed in the head.</p>
+    <p>The protein-coding sequence of Antp is <em>unchanged</em> — the protein still has the same function. The mutation changed <em>where</em> the gene is transcribed (the pattern of expression), not <em>what</em> the protein does. Target genes in head cells are now transcribed as they would be in a foreleg cell → legs form in the head.</p></div>
+  </div>
+
+  <div class="qa-card">
+    <button class="qa-btn" onclick="toggleQ(this)"><div class="qa-icon">▼</div>What are the steps of pre-initiation and transcription initiation in eukaryotes, in order?</button>
+    <div class="qa-answer"><ol>
+      <li>Chromatin must be <strong>open</strong> (euchromatic) — heterochromatin is refractory to TF binding. Pioneer TFs or histone-modifying enzymes remodel chromatin.</li>
+      <li><strong>Regulatory TFs</strong> bind their recognition sequences in the CRMs.</li>
+      <li><strong>TBP</strong> (part of TFIID) binds the TATA box of the core promoter.</li>
+      <li>The <strong>Mediator complex</strong> physically bridges the distant regulatory TFs and the core promoter complex. Chromatin loops to bring these regions into proximity.</li>
+      <li><strong>RNA Polymerase II</strong> is recruited; the preinitiation complex forms.</li>
+      <li>RNA Pol II begins transcription at the TSS.</li>
+    </ol></div>
+  </div>
+
+  <div class="qa-card">
+    <button class="qa-btn" onclick="toggleQ(this)"><div class="qa-icon">▼</div>What are the three post-transcriptional modifications to pre-mRNA and why is each important?</button>
+    <div class="qa-answer"><ul>
+      <li><strong>5′ cap (7-methylguanosine):</strong> Added co-transcriptionally. Required for nuclear export, ribosome binding, and protection of the 5′ end from degradation.</li>
+      <li><strong>Poly-A tail:</strong> String of adenosines added to the 3′ end. Affects mRNA stability (longer tail = more stable) and translation efficiency.</li>
+      <li><strong>Splicing:</strong> Introns are removed and exons are joined by the spliceosome (snRNAs + proteins). Generates a shorter, mature mRNA. Alternative splicing can generate multiple protein isoforms from one gene.</li>
+    </ul></div>
+  </div>
+
+  <div class="qa-card">
+    <button class="qa-btn" onclick="toggleQ(this)"><div class="qa-icon">▼</div>Describe the elongation cycle of translation step by step.</button>
+    <div class="qa-answer"><ol>
+      <li><strong>Entry:</strong> A new aminoacyl-tRNA with an anticodon complementary to the A-site codon enters the A site.</li>
+      <li><strong>Peptide bond formation:</strong> The ribosome (rRNA, ribozyme activity) catalyzes formation of a peptide bond between the growing chain (on P-site tRNA) and the new amino acid (on A-site tRNA). The growing chain is transferred to the A-site tRNA.</li>
+      <li><strong>Translocation:</strong> The ribosome shifts one codon (3 nt) toward the 3′ end of the mRNA. The tRNA carrying the growing chain moves from A→P; the empty (uncharged) tRNA moves from P→E and exits. A new codon is now at the A site.</li>
+      <li>Cycle repeats until a stop codon enters the A site.</li>
+    </ol></div>
+  </div>
+
+  <div class="qa-card">
+    <button class="qa-btn" onclick="toggleQ(this)"><div class="qa-icon">▼</div>How does the ferritin / transferrin system illustrate translational regulation through UTRs?</button>
+    <div class="qa-answer"><p>Both ferritin and transferrin mRNAs contain Iron Response Elements (IREs) that are bound by IRP (Iron Regulatory Protein). The <em>location</em> of the IRE determines the outcome:</p>
+    <ul>
+      <li><strong>Ferritin (5′ UTR):</strong> Low iron → IRP binds IRE in 5′ UTR → blocks ribosome access → no ferritin (no need to store iron). High iron → IRP-Fe can't bind → ferritin translated → sequesters excess iron.</li>
+      <li><strong>Transferrin (3′ UTR):</strong> Low iron → IRP binds IREs in 3′ UTR → stabilizes mRNA → transferrin made → imports more iron. High iron → IRP-Fe can't bind → mRNA degraded → no transferrin → no iron import.</li>
+    </ul>
+    <p>The same IRP sensor, the same IRE motif, but opposite functional outcomes — determined by whether the binding site is in the 5′ or 3′ UTR.</p></div>
+  </div>
+
+  <div class="qa-card">
+    <button class="qa-btn" onclick="toggleQ(this)"><div class="qa-icon">▼</div>What is an operon? How does it differ from a eukaryotic gene organization?</button>
+    <div class="qa-answer"><p>An <strong>operon</strong> is a cluster of functionally related genes in bacteria (and archaea) that share a single promoter and are transcribed together as one polycistronic mRNA. Each coding region on the mRNA has its own start and stop codon and produces a separate protein.</p>
+    <p>Differences from eukaryotes:</p>
+    <ul>
+      <li>Eukaryotes have one promoter per gene (monocistronic mRNAs)</li>
+      <li>Eukaryotic genes contain introns; bacterial genes do not</li>
+      <li>Eukaryotes have elaborate pre-initiation with Mediator, CRMs, chromatin; bacterial regulation is simpler (sigma factors, repressors/activators)</li>
+      <li>No nuclear compartmentalization in bacteria — translation occurs simultaneously with transcription</li>
+    </ul></div>
+  </div>
+
+  <div class="qa-card">
+    <button class="qa-btn" onclick="toggleQ(this)"><div class="qa-icon">▼</div>What three features must a plasmid cloning vector have, and why is each necessary?</button>
+    <div class="qa-answer"><ol>
+      <li><strong>Multiple cloning site (MCS):</strong> A cluster of unique restriction enzyme recognition sequences. Allows the same enzyme to cut both the vector and the insert, generating complementary sticky ends that can be ligated together. Without this, you can't insert foreign DNA at a defined location.</li>
+      <li><strong>Origin of replication (ori):</strong> Allows the plasmid to replicate using the host cell's replication enzymes, independently of the host chromosome. This ensures the inserted DNA is copied and passed to daughter cells without needing to integrate into the genome.</li>
+      <li><strong>Selectable marker:</strong> Typically an antibiotic resistance gene (e.g., ampicillin resistance). Allows you to select only bacteria that successfully took up a plasmid (colonies on ampicillin plates) vs. those that didn't. LacZ provides blue-white screening to distinguish vectors with vs. without insert.</li>
+    </ol></div>
+  </div>
+
+  <div class="qa-card">
+    <button class="qa-btn" onclick="toggleQ(this)"><div class="qa-icon">▼</div>What is the difference between a genomic library and a cDNA library? When would you use each?</button>
+    <div class="qa-answer"><p><strong>Genomic library:</strong> Made from total genomic DNA cut with restriction enzymes and cloned into vectors. Contains <em>everything</em> — all genes, introns, regulatory regions, repetitive sequences. Use when studying gene structure, regulatory sequences, or when you want to capture all sequences including non-coding regions.</p>
+    <p><strong>cDNA library:</strong> Made from mRNA (reverse-transcribed to cDNA). Represents only <em>expressed genes</em> at a given time and in a given tissue. Contains no introns. Use when studying gene expression profiles, when you want to express a eukaryotic gene in bacteria (bacteria can't splice introns), or for identifying genes active in specific cell types.</p>
+    <p><strong>Metagenomic library:</strong> From environmental DNA of mixed organisms — used to study unculturable microbes or community diversity.</p></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+const sections = document.querySelectorAll('.section');
+const tabs = document.querySelectorAll('.tab-btn');
+const fill = document.getElementById('progress-fill');
+
+function go(i) {
+  sections.forEach(s => s.classList.remove('active'));
+  tabs.forEach(t => t.classList.remove('active'));
+  sections[i].classList.add('active');
+  tabs[i].classList.add('active');
+  fill.style.width = ((i / (sections.length - 1)) * 100) + '%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleQ(btn) {
+  const ans = btn.nextElementSibling;
+  const open = ans.classList.toggle('show');
+  btn.classList.toggle('open', open);
+}
+</script>
+</body>
+</html>
