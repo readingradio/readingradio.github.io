@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lec 19 – Gene Regulation & CRISPR | EFB 307</title>
+<style>
+  :root{
+    --navy:#1a2744;--blue:#2d5be3;--blue-mid:#6b8ee8;--blue-light:#eef2fd;
+    --gold:#c8921a;--gold-light:#fdf6e7;
+    --green:#1f7a4a;--green-light:#e8f6ee;
+    --purple:#6b3fa0;--purple-light:#f3eefa;
+    --red:#c0392b;--red-light:#fdf0ee;
+    --gray-light:#f5f6f8;--border:#e2e6ef;--muted:#6b7285;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Georgia',serif;background:var(--gray-light);color:#1e2233;font-size:15px;}
+
+  /* ── top nav ── */
+  #topnav{
+    position:sticky;top:0;z-index:100;
+    background:var(--navy);
+    display:flex;align-items:center;gap:4px;
+    padding:8px 14px;overflow-x:auto;
+  }
+  #topnav .logo{
+    font-family:'Georgia',serif;font-weight:700;
+    color:#fff;font-size:.95rem;white-space:nowrap;
+    margin-right:10px;letter-spacing:.02em;
+  }
+  #topnav button{
+    background:transparent;color:#b8c4e0;
+    border:1px solid #3a4a70;border-radius:5px;
+    padding:5px 10px;font-size:.75rem;cursor:pointer;
+    white-space:nowrap;transition:background .2s,color .2s;
+    font-family:'Georgia',serif;
+  }
+  #topnav button:hover{background:#2a3a5c;color:#fff;}
+  #topnav button.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+  /* ── progress bar ── */
+  .prog-wrap{height:3px;background:#dde2ef;}
+  .prog-bar{height:3px;background:var(--blue);transition:width .3s;}
+
+  .main{max-width:880px;margin:0 auto;padding:24px 16px;}
+  .sec{display:none;}
+  .sec.on{display:block;}
+
+  /* ── cards ── */
+  .card{background:#fff;border-radius:10px;padding:22px 26px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+  .card h2{font-size:1.15rem;color:var(--navy);margin-bottom:4px;}
+  .card .sub{font-size:.82rem;color:var(--muted);margin-bottom:14px;font-style:italic;}
+  .card p{margin-bottom:10px;line-height:1.65;font-size:.92rem;}
+  .card ul{padding-left:18px;margin-bottom:10px;}
+  .card ul li{margin-bottom:6px;line-height:1.6;font-size:.92rem;}
+
+  /* ── deck / slides ── */
+  .deck{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;margin-bottom:18px;}
+  .deck-body{padding:22px 26px;min-height:200px;}
+  .deck-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--gray-light);border-top:1px solid var(--border);}
+  .deck-nav button{background:var(--blue);color:#fff;border:none;border-radius:6px;padding:6px 16px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Georgia',serif;}
+  .deck-nav button:disabled{background:#ccc;cursor:default;}
+  .deck-nav .counter{font-size:.8rem;color:var(--muted);}
+
+  /* ── slide content ── */
+  .slide-card h3{font-size:1.05rem;color:var(--navy);margin-bottom:6px;}
+  .slide-card .slide-title{font-size:1.08rem;font-weight:700;color:var(--navy);margin-bottom:3px;}
+  .slide-card .slide-subtitle{font-size:.8rem;color:var(--muted);margin-bottom:14px;font-style:italic;}
+  .section-badge{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:20px;background:var(--blue-light);color:var(--blue);margin-bottom:8px;letter-spacing:.04em;text-transform:uppercase;}
+  .badge-gold{background:var(--gold-light);color:var(--gold);}
+  .badge-green{background:var(--green-light);color:var(--green);}
+  .badge-purple{background:var(--purple-light);color:var(--purple);}
+  .badge-red{background:var(--red-light);color:var(--red);}
+
+  /* ── highlights ── */
+  .hl{border-left:4px solid var(--blue);background:var(--blue-light);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.88rem;line-height:1.6;}
+  .hl-gold{border-left:4px solid var(--gold);background:var(--gold-light);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.88rem;line-height:1.6;}
+  .hl-green{border-left:4px solid var(--green);background:var(--green-light);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.88rem;line-height:1.6;}
+  .hl-purple{border-left:4px solid var(--purple);background:var(--purple-light);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.88rem;line-height:1.6;}
+  .hl-red{border-left:4px solid var(--red);background:var(--red-light);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.88rem;line-height:1.6;}
+
+  /* ── lists in slides ── */
+  .content ul{padding-left:18px;margin:8px 0;}
+  .content ul li{margin-bottom:6px;line-height:1.6;font-size:.9rem;}
+  .content p{font-size:.9rem;line-height:1.65;margin-bottom:8px;}
+
+  /* ── two-col ── */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0;}
+  @media(max-width:600px){.two-col{grid-template-columns:1fr;}}
+
+  /* ── compare cards ── */
+  .cmp-card{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:8px;padding:13px 15px;}
+  .cmp-card h4{font-size:.88rem;color:var(--navy);margin-bottom:6px;}
+  .cmp-card p,.cmp-card ul{font-size:.83rem;line-height:1.5;}
+  .cmp-card ul{padding-left:16px;}
+  .cmp-card ul li{margin-bottom:4px;}
+  .cmp-card.gold{background:var(--gold-light);border-color:#e8b84b;}
+  .cmp-card.green{background:var(--green-light);border-color:#5aaf80;}
+  .cmp-card.purple{background:var(--purple-light);border-color:#a97fd4;}
+  .cmp-card.red{background:var(--red-light);border-color:#e07a72;}
+
+  /* ── defs grid ── */
+  .defs{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin:14px 0;}
+  .def{background:var(--blue-light);border-radius:8px;padding:11px 14px;}
+  .def h4{font-size:.85rem;color:var(--navy);margin-bottom:4px;}
+  .def p{font-size:.8rem;color:var(--muted);line-height:1.45;}
+
+  /* ── table ── */
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.84rem;}
+  th{background:var(--navy);color:#fff;padding:7px 10px;text-align:left;}
+  td{padding:6px 10px;border-bottom:1px solid var(--border);}
+  tr:nth-child(even) td{background:var(--gray-light);}
+
+  /* ── review questions ── */
+  .rq{background:#fff;border-radius:8px;padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+  .rq p{font-size:.9rem;line-height:1.6;margin-bottom:10px;}
+  .rq button{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:5px 14px;font-size:.8rem;cursor:pointer;font-family:'Georgia',serif;}
+  .rq button:hover{background:#1f45b5;}
+  .ans{display:none;margin-top:12px;padding:12px 14px;background:var(--green-light);border-radius:6px;font-size:.87rem;line-height:1.65;border-left:3px solid var(--green);}
+  .ans.show{display:block;}
+</style>
+</head>
+<body>
+
+<div id="topnav">
+  <div class="logo">Lec 19</div>
+  <button onclick="go(0)" class="active">📋 Overview</button>
+  <button onclick="go(1)">§1 Operon Regulation</button>
+  <button onclick="go(2)">§2 Gene Networks</button>
+  <button onclick="go(3)">§3 Genetic Analysis</button>
+  <button onclick="go(4)">§4 CRISPR</button>
+  <button onclick="go(5)">§5 Classic Examples</button>
+  <button onclick="go(6)">✅ Review Qs</button>
+</div>
+<div class="prog-wrap"><div class="prog-bar" id="prog" style="width:12%"></div></div>
+
+<div class="main">
+
+<!-- ===== SECTION 0: OVERVIEW ===== -->
+<div class="sec on" id="s0">
+  <div class="card">
+    <h2>Lecture 19 – Gene Regulation & Analysis (& CRISPR)</h2>
+    <div class="sub">EFB 307 | Key topics: Operons, gene networks, ChIP, forward/reverse genetics, CRISPR, classic Nobel-prize screens</div>
+    <p>This lecture ties together how genes are turned on and off in prokaryotes, how those regulatory interactions form networks, and how geneticists use screens and tools like CRISPR to figure out what genes <em>do</em>.</p>
+    <div class="hl"><strong>Learning Objectives:</strong><br>
+    1. Understand positive and negative regulation of operons (Ch. 14)<br>
+    2. Understand gene regulatory networks and interpret network graphs (Ch. 14)<br>
+    3. Compare forward vs. reverse genetics and genome-wide mutant screens (Ch. 15)<br>
+    4. Understand how CRISPR works and its applications (Ch. 11)<br>
+    5. Apply genetic screening principles to three classic examples (Ch. 15)</div>
+    <div class="defs">
+      <div class="def"><h4>Inducible</h4><p>Expression triggered/stopped by a signal</p></div>
+      <div class="def"><h4>Constitutive</h4><p>Always "on" — no signal needed</p></div>
+      <div class="def"><h4>Operon</h4><p>Cluster of genes sharing a single promoter</p></div>
+      <div class="def"><h4>Operator</h4><p>DNA sequence within promoter where repressor binds</p></div>
+      <div class="def"><h4>Polycistronic</h4><p>Single mRNA encoding multiple polypeptides</p></div>
+      <div class="def"><h4>Auxotroph</h4><p>Organism that cannot synthesize a required molecule</p></div>
+      <div class="def"><h4>Corepressor</h4><p>Small molecule that activates a repressor</p></div>
+      <div class="def"><h4>Effector gene</h4><p>Gene encoding a functional protein — endpoint of a network</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 1: OPERON REGULATION ===== -->
+<div class="sec" id="s1">
+  <div class="deck">
+    <div class="deck-body" id="d1"></div>
+    <div class="deck-nav">
+      <button id="p1" onclick="ps(1)" disabled>← Prev</button>
+      <span class="counter" id="c1"></span>
+      <button id="n1" onclick="ns(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 2: GENE NETWORKS ===== -->
+<div class="sec" id="s2">
+  <div class="deck">
+    <div class="deck-body" id="d2"></div>
+    <div class="deck-nav">
+      <button id="p2" onclick="ps(2)" disabled>← Prev</button>
+      <span class="counter" id="c2"></span>
+      <button id="n2" onclick="ns(2)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 3: GENETIC ANALYSIS ===== -->
+<div class="sec" id="s3">
+  <div class="deck">
+    <div class="deck-body" id="d3"></div>
+    <div class="deck-nav">
+      <button id="p3" onclick="ps(3)" disabled>← Prev</button>
+      <span class="counter" id="c3"></span>
+      <button id="n3" onclick="ns(3)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 4: CRISPR ===== -->
+<div class="sec" id="s4">
+  <div class="deck">
+    <div class="deck-body" id="d4"></div>
+    <div class="deck-nav">
+      <button id="p4" onclick="ps(4)" disabled>← Prev</button>
+      <span class="counter" id="c4"></span>
+      <button id="n4" onclick="ns(4)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 5: CLASSIC EXAMPLES ===== -->
+<div class="sec" id="s5">
+  <div class="deck">
+    <div class="deck-body" id="d5"></div>
+    <div class="deck-nav">
+      <button id="p5" onclick="ps(5)" disabled>← Prev</button>
+      <span class="counter" id="c5"></span>
+      <button id="n5" onclick="ns(5)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 6: REVIEW QUESTIONS ===== -->
+<div class="sec" id="s6">
+  <div class="card">
+    <h2>✅ Review Questions</h2>
+    <div class="sub">Click "Show Answer" to reveal each explanation</div>
+  </div>
+
+  <div class="rq"><p><strong>Q1.</strong> The <em>trp</em> operon is transcribed when tryptophan is absent. Is this positive or negative regulation, and is tryptophan acting as an inducer or corepressor?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">This is <strong>negative regulation</strong>. A repressor protein controls the operon by binding the operator to block transcription. Tryptophan acts as a <strong>corepressor</strong> — it binds the Trp repressor, causing a conformational change that allows the repressor–Trp complex to bind the operator, shutting off transcription. When Trp is absent, the repressor can't bind and transcription proceeds freely.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q2.</strong> A mutation in the <em>trp</em> operator causes constitutive expression. Would this mutation be complemented in trans? Explain why or why not.</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans"><strong>No, it cannot be complemented in trans.</strong> The operator is a <em>cis</em>-regulatory element — it only controls transcription of genes on the same DNA molecule. Introducing a functional operator on a plasmid does nothing for the mutant chromosome's operator. Contrast this with a <em>trpR</em> mutation (no repressor protein): because the repressor is a diffusible molecule, a functional copy on a plasmid <em>can</em> complement the defect in trans.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q3.</strong> Describe the two regulatory mechanisms that control the <em>lac</em> operon and state which sugar drives each one.</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans"><strong>1. Negative regulation (catabolite repression) — controlled by glucose:</strong> When glucose is present it inhibits adenyl cyclase, so no cAMP is made. Without cAMP, CAP cannot bind the promoter, and transcription is low. When glucose is absent, cAMP accumulates, cAMP–CAP binds the promoter, and RNA polymerase is recruited → high transcription.<br><br><strong>2. Positive regulation (de-repression) — controlled by lactose:</strong> When lactose is present, allolactose forms and binds the lac repressor, preventing the repressor from binding the operator. When lactose is absent, the repressor occupies the operator and blocks transcription.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q4.</strong> What is trp attenuation, and what role do hairpin structures play?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">Attenuation is a second layer of <em>trp</em> operon control that occurs within the leader (promoter) region upstream of <em>trpE</em>. The leader mRNA can fold into two alternative hairpins depending on ribosome position:<br><br><strong>Tryptophan abundant:</strong> The ribosome reads through the trp codons in Region 1. Regions 3+4 form a terminator hairpin → RBS is blocked → no further transcription.<br><br><strong>Tryptophan scarce:</strong> The ribosome stalls on trp codons, leaving Region 1 occupied. Regions 2+3 form an anti-terminator hairpin → Region 4 and RBS remain open → transcription continues → more Trp made.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q5.</strong> Distinguish forward genetics from reverse genetics. Give one example of each from the lecture.</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans"><strong>Forward genetics:</strong> Start with unknown genes, apply random mutagenesis, screen for a phenotype of interest, then identify the gene. Requires a model organism, mutants, and a selection/assay. <em>Example: Beadle & Tatum (Neurospora arginine auxotrophs), Jacob & Monod (E. coli lac mutants), Nüsslein-Volhard & Wieschaus (Drosophila segmentation).</em><br><br><strong>Reverse genetics:</strong> Start with a known gene (or hypothesis about gene function), mutate it specifically, and observe the phenotype. Requires a prior hypothesis and an assay. <em>Example: Using CRISPR to knock out a specific gene whose function you suspect based on its ortholog in another species.</em></div>
+  </div>
+
+  <div class="rq"><p><strong>Q6.</strong> Walk through how CRISPR-Cas9 is used in a genome editing experiment. What happens if no donor template is provided vs. when one is provided?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans">1. Engineer a <strong>Cas9 expression plasmid</strong> and a <strong>sgRNA expression plasmid</strong> (contains a 20 nt sequence complementary to your target + tracrRNA).<br>2. Introduce both into mammalian cell culture (mammalian cells because they have robust HDR machinery).<br>3. The sgRNA guides Cas9 to the target; Cas9 binds at the <strong>PAM sequence</strong> and cuts both strands → double-strand break.<br><br><strong>No donor template → NHEJ:</strong> error-prone repair creates indels → frameshift → gene silenced. Used in whole-genome screens.<br><br><strong>With donor template → HDR:</strong> homology-directed repair inserts the donor sequence precisely at the cut site. Used for specific edits (corrections, insertions, tagging).</div>
+  </div>
+
+  <div class="rq"><p><strong>Q7.</strong> In the Jacob & Monod trans-complementation test, what is the key difference between a <em>lacZ</em> mutation and a <em>lacO<sup>c</sup></em> mutation in terms of complementation?</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans"><strong><em>lacZ</em> mutation</strong> (enzyme defect): <em>Can</em> be complemented in trans. Introducing a plasmid with functional <em>lacZ</em> restores β-galactosidase production — the enzyme is a diffusible product that can act on the chromosome's genes. The operon becomes inducible again.<br><br><strong><em>lacO<sup>c</sup></em> mutation</strong> (operator defect): <em>Cannot</em> be complemented in trans. The operator is a cis-acting DNA sequence; it only controls genes physically adjacent to it on the same chromosome. A functional operator on a plasmid doesn't fix the mutant chromosome's operator, so the chromosome still shows constitutive transcription.</div>
+  </div>
+
+  <div class="rq"><p><strong>Q8.</strong> Describe three types of embryonic segmentation mutations found in <em>Drosophila</em> by Nüsslein-Volhard, Wieschaus, and Lewis, and explain the phenotype associated with each.</p>
+    <button onclick="ta(this)">Show Answer</button>
+    <div class="ans"><strong>Gap genes (e.g., <em>Krüppel</em>):</strong> Entire contiguous groups of segments are missing from the larva. <em>Kr</em> mutants lack thoracic and anterior abdominal segments.<br><br><strong>Pair-rule genes (e.g., <em>even-skipped / eve</em>):</strong> Every other segment is deleted, halving the total number of segments. <em>eve</em> mutants lack the even-numbered segments.<br><br><strong>Maternal genes (e.g., <em>bicoid</em>):</strong> Anterior–posterior patterning is disrupted. <em>bicoid</em> mutants lack head and thorax — the anterior end develops as a mirror-image of the posterior (two tails).<br><br>Also: segment polarity genes (orientation within each segment) and Hox genes (identity of segments).</div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+/* ===== SLIDE DATA ===== */
+const allSlides = [];
+
+function makeSlide(badge, badgeClass, title, subtitle, html){
+  return `<div class="slide-card">
+    <div><span class="section-badge ${badgeClass}">${badge}</span></div>
+    <div class="slide-title">${title}</div>
+    <div class="slide-subtitle">${subtitle}</div>
+    <div class="content">${html}</div>
+  </div>`;
+}
+
+/* ---- SECTION 1: OPERON REGULATION ---- */
+allSlides[1] = [
+
+  makeSlide('§1 Operon Regulation','','Inducible vs. Constitutive Expression','Two fundamental modes of gene expression',`
+    <div class="two-col">
+      <div class="cmp-card">
+        <h4>🔀 Inducible</h4>
+        <p>Expression is <strong>triggered or stopped</strong> in response to a signal.</p>
+        <ul>
+          <li>DarWin chestnut (OxO gene tied to a promoter)</li>
+          <li>Induced systemic resistance in plants via methyl jasmonate ("talking trees")</li>
+        </ul>
+      </div>
+      <div class="cmp-card gold">
+        <h4>🔁 Constitutive</h4>
+        <p>Expression is <strong>always on</strong> — no signal needed.</p>
+        <ul>
+          <li>Tannins in oaks</li>
+          <li>Darling OxO chestnut</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hl">Constitutive expression can also arise from <strong>mutations</strong> (e.g., operator mutations, repressor-loss mutations) that eliminate the ability to turn a gene off.</div>`),
+
+  makeSlide('§1 Operon Regulation','','Structure of the <em>trp</em> Operon','E. coli tryptophan biosynthesis genes',`
+    <div class="hl-purple"><strong>Key structural features:</strong>
+      <ul>
+        <li>Genes <em>trpE, trpD, trpC, trpB, trpA</em> located adjacent to each other on the chromosome</li>
+        <li>All transcribed from <strong>one promoter</strong> → <strong>polycistronic mRNA</strong></li>
+        <li>Separate stop codons → separate polypeptides translated from the same transcript</li>
+        <li>Encodes subunits of anthranilate synthetase, Indo-glycerol synthetase, tryptophan synthetase</li>
+        <li>All needed enzymes produced simultaneously, at the same levels</li>
+      </ul>
+    </div>
+    <div class="hl"><strong>Operator</strong>: sits within the promoter region; repressor binds here to block RNA polymerase.</div>`),
+
+  makeSlide('§1 Operon Regulation','','The Trp Repressor — Negative Regulation','How tryptophan shuts down its own synthesis',`
+    <div class="two-col">
+      <div class="cmp-card green">
+        <h4>Tryptophan ABSENT → Transcription ON</h4>
+        <ul>
+          <li>Trp repressor protein <strong>cannot bind the operator on its own</strong></li>
+          <li>RNA polymerase proceeds → operon transcribed</li>
+          <li>Tryptophan is made</li>
+        </ul>
+      </div>
+      <div class="cmp-card red">
+        <h4>Tryptophan PRESENT → Transcription OFF</h4>
+        <ul>
+          <li>Trp acts as a <strong>corepressor</strong></li>
+          <li>Trp binds repressor → changes its shape</li>
+          <li>Repressor–Trp complex binds operator → blocks transcription</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hl-gold">This is <strong>negative regulation</strong>: a repressor protein <em>inhibits</em> transcription. The corepressor (Trp) activates the repressor.</div>`),
+
+  makeSlide('§1 Operon Regulation','','Trp Operon Mutants','Three mutations, three phenotypes',`
+    <table>
+      <tr><th>Mutation</th><th>Location</th><th>Effect</th><th>Phenotype</th></tr>
+      <tr><td><em>trpR</em> mutation</td><td>Repressor gene (outside operon)</td><td>No repressor made → can never block transcription</td><td><strong>Constitutive</strong> (Trp always made)</td></tr>
+      <tr><td><em>trpE</em> mutation</td><td>Within trp operon</td><td>Regulation normal, but enzyme missing</td><td><strong>Auxotroph</strong> (Trp cannot be made)</td></tr>
+      <tr><td>Operator mutation</td><td>Promoter region (cis)</td><td>Repressor binding site altered → repressor can't bind</td><td><strong>Constitutive</strong> (Trp always made)</td></tr>
+    </table>
+    <div class="hl"><em>trpR</em> mutations do <em>not</em> map to the trp operon itself — the repressor is encoded elsewhere. Operator mutations map <em>within</em> the promoter region and <strong>cannot be complemented in trans</strong>.</div>`),
+
+  makeSlide('§1 Operon Regulation','','Trp Attenuation','A second layer of trp regulation — all within the promoter region',`
+    <div class="hl-purple"><strong>Attenuation</strong>: the leader mRNA upstream of <em>trpE</em> can fold into different hairpin structures depending on ribosome position. This controls whether a termination or anti-termination structure forms.</div>
+    <div class="two-col">
+      <div class="cmp-card red">
+        <h4>Tryptophan PRESENT → No more made</h4>
+        <ul>
+          <li>Ribosome reads through trp codons (Region 1)</li>
+          <li><strong>Regions 3+4 form a hairpin</strong> (terminator)</li>
+          <li>RBS is blocked → no further transcription</li>
+        </ul>
+      </div>
+      <div class="cmp-card green">
+        <h4>Tryptophan ABSENT → More made</h4>
+        <ul>
+          <li>Ribosome stalls on trp codons (no charged Trp-tRNA)</li>
+          <li>Region 1 is occupied → <strong>Regions 2+3 form a hairpin</strong> (anti-terminator)</li>
+          <li>Region 4 and RBS open → transcription continues</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hl-gold">The trp operon is regulated at <strong>two levels</strong>: (1) repressor–operator binding and (2) attenuation. Both respond to cellular Trp levels.</div>`),
+
+  makeSlide('§1 Operon Regulation','','Structure of the <em>lac</em> Operon','Lactose catabolism genes in E. coli',`
+    <div class="hl"><strong>Genes:</strong> <em>lacZ</em> (β-galactosidase), <em>lacY</em> (β-galactosidase permease), <em>lacA</em> (β-galactosidase transacylase)</div>
+    <ul>
+      <li>All three genes co-transcribed from one promoter → <strong>polycistronic mRNA</strong></li>
+      <li>Promoter region contains a <strong>CAP-binding site</strong> and an <strong>operator</strong></li>
+      <li>Lactase breaks lactose → glucose + galactose</li>
+    </ul>
+    <div class="hl-gold"><strong>The lac operon has BOTH positive AND negative regulation</strong> — a key difference from the trp operon.</div>
+    <div class="hl-green"><em>E. coli</em> shows a <strong>diauxic curve</strong>: uses glucose first (preferred), then switches to lactose when glucose is exhausted.</div>`),
+
+  makeSlide('§1 Operon Regulation','','<em>lac</em> — Negative Regulation by Glucose','Catabolite repression via CAP and cAMP',`
+    <div class="two-col">
+      <div class="cmp-card red">
+        <h4>Glucose HIGH → Low lac transcription</h4>
+        <ul>
+          <li>Glucose <strong>inhibits adenyl cyclase</strong></li>
+          <li>No cAMP is made</li>
+          <li>CAP cannot bind the CAP-binding site without cAMP</li>
+          <li>RNA polymerase poorly recruited → low transcription</li>
+        </ul>
+      </div>
+      <div class="cmp-card green">
+        <h4>Glucose LOW → High lac transcription</h4>
+        <ul>
+          <li>Adenyl cyclase active → <strong>cAMP produced</strong></li>
+          <li>cAMP binds CAP → conformational change</li>
+          <li>cAMP–CAP complex binds promoter</li>
+          <li>RNA polymerase recruited → high transcription</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hl-gold"><strong>Adenyl cyclase</strong> is the enzyme that makes cyclic AMP (cAMP). Glucose represses it, preventing CAP activation — this is why the cell only turns on the lac operon when glucose is gone.</div>`),
+
+  makeSlide('§1 Operon Regulation','','<em>lac</em> — Positive Regulation by Lactose','De-repression of the lac repressor by allolactose',`
+    <div class="two-col">
+      <div class="cmp-card red">
+        <h4>Lactose ABSENT → No transcription</h4>
+        <ul>
+          <li>lac repressor (encoded by <em>lacI</em>) binds the operator</li>
+          <li>RNA polymerase blocked</li>
+          <li>Lactose not utilized</li>
+        </ul>
+      </div>
+      <div class="cmp-card green">
+        <h4>Lactose PRESENT → Transcription</h4>
+        <ul>
+          <li>Allolactose (present when lactose is present) binds the lac repressor</li>
+          <li>Repressor <strong>cannot bind the operator</strong> when bound to allolactose</li>
+          <li>RNA polymerase proceeds → operon transcribed → lactose utilized</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hl-purple">For <strong>maximum lac transcription</strong>, both conditions must be met: <strong>glucose low</strong> (so CAP can activate) AND <strong>lactose present</strong> (so repressor is inactivated).</div>`),
+
+  makeSlide('§1 Operon Regulation','','Autoregulation','When a gene controls its own expression',`
+    <div class="hl-purple"><strong>Autoregulation</strong>: the transcription factor protein encoded by a gene binds the regulatory region of <em>its own gene</em>, controlling its own expression. Example: <em>caudal</em> in Drosophila.</div>
+    <div class="two-col">
+      <div class="cmp-card green">
+        <h4>Amplifier (e.g., <em>caudal</em>)</h4>
+        <p>Low transcription → produces an auto-<strong>activator</strong> → binds its own regulatory region → stimulates more transcription → exponential increase in gene product over time.</p>
+      </div>
+      <div class="cmp-card gold">
+        <h4>Pulse Generator</h4>
+        <p>Transcription → produces an auto-<strong>repressor</strong> → binds its own regulatory region → blocks further transcription → gene product rises then falls: a pulse.</p>
+      </div>
+    </div>
+    <div class="hl">Autoregulation is also a form of <strong>feedback loop</strong> in gene networks. Once enough Caudal protein accumulates, it also activates ~40 other downstream genes.</div>`)
+];
+
+/* ---- SECTION 2: GENE NETWORKS ---- */
+allSlides[2] = [
+
+  makeSlide('§2 Gene Networks','badge-gold','What Is a Gene Regulatory Network?','Transcription factors and their targets',`
+    <div class="hl">A <strong>gene regulatory network</strong> maps which transcription factors (TFs) regulate which other TFs and effector genes — revealing the architecture of gene expression control.</div>
+    <div class="two-col">
+      <div class="cmp-card">
+        <h4>Hub TF (many targets)</h4>
+        <ul>
+          <li>One TF regulates many genes — large number of outgoing arrows</li>
+          <li>Examples: DNA damage repair, stress responses</li>
+          <li>Few interactions <em>among</em> TFs</li>
+        </ul>
+      </div>
+      <div class="cmp-card gold">
+        <h4>Peripheral TF (few targets)</h4>
+        <ul>
+          <li>TF regulates only a few genes</li>
+          <li>Many interactions <em>among</em> TFs</li>
+          <li>Examples: cell cycle control, sporulation</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hl-green"><strong>Effectors</strong>: genes encoding functional proteins (enzymes, structural proteins, signaling molecules) — they are the <em>endpoints</em> of the network, not TFs themselves.</div>`),
+
+  makeSlide('§2 Gene Networks','badge-gold','LIN-11 Example','A TF that regulates at least 11 genes',`
+    <ul>
+      <li>LIN-11 TF (orange node) directly regulates at least 11 downstream genes</li>
+      <li>Several of those downstream genes are themselves <strong>transcription factors</strong>, which then regulate further targets</li>
+      <li>This creates a <strong>hierarchy</strong>: high-level TF → intermediate TFs → effector genes</li>
+    </ul>
+    <div class="hl-purple"><strong>Network hierarchy in C. elegans intestine:</strong><br>
+    <strong>MAB-5</strong> (essential TF) → regulates LIN-39 (intermediate TF) → regulates EGL-27 → regulates effector genes.<br>
+    MAB-5 also shows <strong>autoregulation</strong> (arrow back to itself).</div>
+    <div class="hl">The more TFs a node regulates, the more <strong>central</strong> it is in the network. Disrupting a high-level TF has cascading effects on all downstream genes.</div>`),
+
+  makeSlide('§2 Gene Networks','badge-gold','Transcription Profiles — Microarrays','Figuring out what is being transcribed at a given time',`
+    <div class="hl-purple"><strong>Goal:</strong> compare gene expression between two conditions (e.g., treated vs. untreated, mutant vs. wild-type) across all genes simultaneously.</div>
+    <p><strong>Two-channel microarray workflow:</strong></p>
+    <ul>
+      <li>Extract and label RNA from <strong>Sample 1</strong> (e.g., green fluorescent label) and <strong>Sample 2</strong> (e.g., red fluorescent label)</li>
+      <li>Hybridize both labeled samples to a microarray chip (with defined DNA features)</li>
+      <li><strong>Green spot</strong> = gene expressed more in sample 1</li>
+      <li><strong>Red spot</strong> = gene expressed more in sample 2</li>
+      <li><strong>Yellow spot</strong> = equal expression in both</li>
+      <li><strong>Gray / dark</strong> = not expressed in either</li>
+    </ul>
+    <div class="hl">This gives an <strong>expression profile</strong> — a snapshot of all genes being transcribed. Useful for identifying which genes a TF regulates and how they change under different conditions.</div>`),
+
+  makeSlide('§2 Gene Networks','badge-gold','Chromatin Immunoprecipitation (ChIP)','Finding where a TF binds in the genome',`
+    <div class="hl-gold"><strong>Goal:</strong> Identify the DNA binding sequences for a specific transcription factor — and therefore which genes it regulates.</div>
+    <p><strong>ChIP workflow:</strong></p>
+    <ul>
+      <li>Extract chromatin (DNA + bound proteins, including TFs) from cells</li>
+      <li>Fragment the chromatin; add an <strong>antibody specific to the TF of interest</strong></li>
+      <li><strong>Precipitate</strong> the antibody–TF–DNA complex</li>
+      <li>Extract the DNA that came along with the TF</li>
+      <li><strong>Sequence the DNA</strong> and map it back to the genome</li>
+      <li>The nearby gene = regulated by that TF</li>
+    </ul>
+    <div class="hl-green">ChIP tells you <strong>where</strong> a TF binds; microarrays tell you <strong>what</strong> is expressed. Together they reveal the network of TF–target relationships.</div>`),
+
+  makeSlide('§2 Gene Networks','badge-gold','Feedbacks in Gene Networks','Complexity beyond simple hierarchies',`
+    <div class="hl-purple"><strong>Feedback loops</strong> occur when a downstream component regulates something upstream — creating cycles in the network graph.</div>
+    <ul>
+      <li><strong>Autoregulation</strong>: a TF binds its own promoter (self-loop in network diagram)</li>
+      <li><strong>microRNAs (miRNAs)</strong>: small non-coding RNAs that can inhibit translation of TF mRNAs, creating negative feedback loops</li>
+      <li>In the C. elegans intestine network: MAB-5 and LIN-39 each regulate microRNAs, which in turn regulate MAB-5 and LIN-39 (feedback)</li>
+    </ul>
+    <div class="hl"><strong>Network interpretation tips:</strong><br>
+    — Arrows point from the regulator <em>to</em> the gene being regulated<br>
+    — A self-arrow = autoregulation<br>
+    — Count outgoing arrows to assess a node's influence (out-degree)<br>
+    — Count incoming arrows to assess how regulated a gene is (in-degree)</div>`)
+];
+
+/* ---- SECTION 3: GENETIC ANALYSIS ---- */
+allSlides[3] = [
+
+  makeSlide('§3 Genetic Analysis','badge-green','Requirements for a Genetic Screen','What you need before you start',`
+    <div class="hl-green"><strong>Four requirements for a genetic screen:</strong></div>
+    <div class="defs">
+      <div class="def"><h4>1. Model organism</h4><p>Well-characterized, genetically tractable, short generation time</p></div>
+      <div class="def"><h4>2. Mutants</h4><p>Random (mutagen) or targeted (CRISPR, RNAi)</p></div>
+      <div class="def"><h4>3. Assay + selection</h4><p>A way to detect the phenotype of interest and select/screen for it</p></div>
+      <div class="def"><h4>4. Reduced bias</h4><p>Design that doesn't favor a particular type of mutation</p></div>
+    </div>
+    <div class="hl">The <strong>model organism</strong> must be chosen to match the question. The <strong>assay</strong> defines what mutations you'll find — you can only find what you're looking for.</div>`),
+
+  makeSlide('§3 Genetic Analysis','badge-green','Forward vs. Reverse Genetics','Two opposite approaches to linking genes and phenotypes',`
+    <table>
+      <tr><th></th><th>Forward Genetics</th><th>Reverse Genetics</th></tr>
+      <tr><td><strong>Starting point</strong></td><td>Unknown gene(s)</td><td>Known gene</td></tr>
+      <tr><td><strong>Mutation method</strong></td><td><strong>Random</strong> — mutagen applied broadly</td><td><strong>Targeted</strong> — specific gene mutated</td></tr>
+      <tr><td><strong>Screen step</strong></td><td>Choose mutants with phenotype of interest</td><td>Look for a phenotype after mutating the gene</td></tr>
+      <tr><td><strong>End goal</strong></td><td>Identify the gene(s) responsible for phenotype</td><td>Confirm/determine function of known gene</td></tr>
+      <tr><td><strong>Requires hypothesis?</strong></td><td>No</td><td>Yes (about gene function)</td></tr>
+      <tr><td><strong>Examples</strong></td><td>Beadle & Tatum; Jacob & Monod; Nüsslein-Volhard</td><td>CRISPR knockouts of orthologous genes</td></tr>
+    </table>`),
+
+  makeSlide('§3 Genetic Analysis','badge-green','Genome-Wide Mutant Screens','Combining approaches for efficiency',`
+    <div class="hl-gold"><strong>Genome-wide mutant screens</strong> combine the power of forward and reverse genetics — you mutate <em>every</em> gene systematically (knowing the genome) and screen for phenotypes of interest.</div>
+    <ul>
+      <li><strong>More efficient</strong> than classical forward genetics: no need to mutagenize randomly and hope to hit the gene</li>
+      <li>All genes are known (sequenced genome), so you can knock each one out in turn</li>
+    </ul>
+    <div class="two-col">
+      <div class="cmp-card">
+        <h4>RNAi screens</h4>
+        <p>Introduce dsRNA matching each gene → post-transcriptional silencing → observe phenotype. Works well in <em>C. elegans</em> (can feed dsRNA-expressing bacteria).</p>
+      </div>
+      <div class="cmp-card gold">
+        <h4>CRISPR screens</h4>
+        <p>Deliver a library of sgRNAs targeting every gene in the genome → Cas9 knocks out each gene → screen for changed phenotype.</p>
+      </div>
+    </div>`)
+];
+
+/* ---- SECTION 4: CRISPR ---- */
+allSlides[4] = [
+
+  makeSlide('§4 CRISPR','badge-purple','CRISPR as Bacterial Adaptive Immunity','The natural origin of the tool',`
+    <div class="hl-purple"><strong>Adaptive immunity</strong>: uses past exposure to a pathogen to improve future defense against the same pathogen. CRISPR-Cas is the prokaryotic version.</div>
+    <ul>
+      <li>A <strong>CRISPR locus</strong> contains Clustered Regularly Interspaced Short Palindromic Repeats</li>
+      <li>Found in <strong>~40% of bacteria</strong> and <strong>~90% of archaea</strong></li>
+      <li>Located adjacent to <strong>Cas genes</strong> (encoding Cas proteins, including Cas9)</li>
+      <li>Between repeated sequences are <strong>spacers</strong> — fragments of past invaders (phage DNA)</li>
+    </ul>
+    <div class="hl">The spacers are a <strong>molecular memory</strong> of past infections. Each spacer corresponds to a specific phage the bacterium (or its ancestors) survived.</div>`),
+
+  makeSlide('§4 CRISPR','badge-purple','How Bacteria Acquire New Spacers','Building immunological memory',`
+    <div class="hl-gold"><strong>Acquisition phase:</strong> When a bacterium first encounters a new phage:</div>
+    <ul>
+      <li>Most bacteria <strong>lyse</strong> (die) upon phage infection</li>
+      <li>A few <strong>survive</strong> and incorporate a fragment of the phage genome as a <strong>new spacer</strong> into their CRISPR array (inserted after the leader)</li>
+      <li>The new spacer is flanked by a new repeat sequence</li>
+    </ul>
+    <div class="hl-green">On <strong>subsequent infection</strong> by the same phage, the bacterium is now protected — it "remembers" the phage's sequence and can target it for destruction.</div>
+    <div class="hl-purple">The <strong>CRISPR array</strong> is therefore a chronological record of past infections — the most recent spacer is nearest the leader.</div>`),
+
+  makeSlide('§4 CRISPR','badge-purple','CRISPR Interference — Destroying the Invader','crRNA, tracrRNA, and Cas9',`
+    <p><strong>Three key components:</strong></p>
+    <div class="defs">
+      <div class="def"><h4>pre-crRNA</h4><p>Transcript of the CRISPR array; contains spacer sequences separated by repeats that form stem–loops</p></div>
+      <div class="def"><h4>tracrRNA</h4><p>Trans-activating crRNA; base-pairs with pre-crRNA repeats; needed for processing</p></div>
+      <div class="def"><h4>Cas9</h4><p>Endonuclease; forms a complex with crRNA + tracrRNA; cuts target DNA</p></div>
+    </div>
+    <p><strong>Workflow:</strong></p>
+    <ul>
+      <li>CRISPR array transcribed → pre-crRNA forms stem–loops at repeats</li>
+      <li>tracrRNA + RNase III + Cas9 process pre-crRNA into individual <strong>crRNAs</strong> (each with one spacer)</li>
+      <li>crRNA guides Cas9 to the matching phage DNA sequence</li>
+      <li>Cas9 requires a <strong>PAM sequence</strong> (protospacer-adjacent motif) next to the target</li>
+      <li>Cas9 makes a <strong>double-strand cut</strong> → virus is neutralized</li>
+    </ul>`),
+
+  makeSlide('§4 CRISPR','badge-purple','CRISPR-Cas9 as a Genome Editing Tool','Adapting the bacterial system for research',`
+    <div class="hl-purple"><strong>Key insight:</strong> If you can design a synthetic sgRNA (crRNA + tracrRNA fused) with any 20 nt sequence, you can direct Cas9 to cut <em>any</em> sequence in any genome.</div>
+    <p><strong>Steps:</strong></p>
+    <ul>
+      <li>Engineer (1) <strong>Cas9 expression plasmid</strong> and (2) <strong>sgRNA expression plasmid</strong> (20 nt targeting sequence + tracrRNA)</li>
+      <li>Introduce into mammalian cell culture</li>
+      <li>Cas9 + sgRNA locate the target → cut at PAM → <strong>double-strand break (DSB)</strong></li>
+    </ul>
+    <div class="two-col">
+      <div class="cmp-card red">
+        <h4>NHEJ (no donor template)</h4>
+        <p><strong>N</strong>on-<strong>H</strong>omologous <strong>E</strong>nd <strong>J</strong>oining — error-prone repair creates <strong>indels</strong> → frameshift → <strong>gene silenced</strong>. Used for genome-wide screens.</p>
+      </div>
+      <div class="cmp-card green">
+        <h4>HDR (with donor template)</h4>
+        <p><strong>H</strong>omology-<strong>D</strong>irected <strong>R</strong>epair — donor template with flanking homology arms is inserted precisely. Used for <strong>specific edits</strong> (corrections, insertions, fusions).</p>
+      </div>
+    </div>`)
+];
+
+/* ---- SECTION 5: CLASSIC EXAMPLES ---- */
+allSlides[5] = [
+
+  makeSlide('§5 Classic Examples','badge-red','Three Nobel Prize-Winning Screens','Overview',`
+    <table>
+      <tr><th>Scientists</th><th>Organism</th><th>Topic</th><th>Key Tool</th><th>Genetics Type</th></tr>
+      <tr><td>Beadle & Tatum</td><td><em>Neurospora crassa</em></td><td>Arginine biosynthesis</td><td>X-ray/UV mutagenesis; minimal media</td><td>Forward</td></tr>
+      <tr><td>Jacob & Monod</td><td><em>E. coli</em></td><td>lac operon regulation</td><td>Trans-complementation test; inducibility assay</td><td>Forward</td></tr>
+      <tr><td>Nüsslein-Volhard, Wieschaus & Lewis</td><td><em>Drosophila melanogaster</em></td><td>Embryonic segmentation</td><td>EMS mutagenesis; balancer chromosomes</td><td>Forward</td></tr>
+    </table>
+    <div class="hl-gold">All three are examples of <strong>forward genetics</strong>: random mutagenesis → screen for phenotype → identify genes. All three are Nobel laureates.</div>`),
+
+  makeSlide('§5 Classic Examples','badge-red','Beadle & Tatum — Arginine in Neurospora','One gene, one enzyme hypothesis',`
+    <div class="hl"><strong>Approach:</strong> X-ray/UV mutagenesis of <em>Neurospora</em> conidia → cross to wild type → screen ascospores on minimal, complete, and supplemented media.</div>
+    <p><strong>Arginine biosynthesis pathway:</strong> Precursor → Ornithine → Citrulline → Arginine<br>
+    (Enzymes A, B, C encoded by <em>arg4, arg2, arg1</em> respectively)</p>
+    <div class="hl-green"><strong>Key logic:</strong> if you add an intermediate and growth is restored, the block is <em>upstream</em> of that intermediate. Adding citrulline rescues an <em>arg2</em> mutant but not an <em>arg1</em> mutant — because arg1 encodes the enzyme that converts citrulline → arginine.</div>
+    <div class="hl-gold"><strong>Conclusion:</strong> Each gene encodes one enzyme. Mutations in a gene eliminate a specific enzymatic step. → <strong>"One gene, one enzyme" hypothesis</strong>.</div>`),
+
+  makeSlide('§5 Classic Examples','badge-red','Jacob & Monod — lac in E. coli','The trans-complementation test',`
+    <div class="hl-purple"><strong>Approach:</strong> Screen for random mutants defective in lactose utilization → classify by phenotype → test complementation in trans → map to specific loci.</div>
+    <p><strong>Primary screen:</strong> unable to ferment lactose vs. constitutive fermentation</p>
+    <table>
+      <tr><th>Locus</th><th>Phenotype</th><th>Complemented in trans?</th><th>Why</th></tr>
+      <tr><td><em>lacZ / lacY</em></td><td>No enzyme (no fermentation)</td><td>✅ Yes</td><td>Diffusible enzyme — plasmid copy rescues</td></tr>
+      <tr><td><em>lacI<sup>S</sup> / lacO<sup>S</sup></em></td><td>Super-repressor (no fermentation)</td><td>❌ No</td><td>Dominant negative repressor / cis element</td></tr>
+      <tr><td><em>lacI</em></td><td>Constitutive fermentation</td><td>✅ Yes</td><td>Loss-of-function repressor — plasmid copy rescues</td></tr>
+      <tr><td><em>lacO<sup>c</sup></em></td><td>Constitutive fermentation</td><td>❌ No</td><td>Cis-acting operator — plasmid can't fix it</td></tr>
+    </table>`),
+
+  makeSlide('§5 Classic Examples','badge-red','Jacob & Monod — Key Mutant Types Explained','Understanding the protein domains',`
+    <div class="defs">
+      <div class="def"><h4>lacI (repressor lost)</h4><p>No repressor → constitutive expression. Complemented in trans (diffusible protein).</p></div>
+      <div class="def"><h4>lacI<sup>S</sup> (super-repressor)</h4><p>Can't bind allolactose → repressor always on → no fermentation even with lactose. NOT complemented (dominant).</p></div>
+      <div class="def"><h4>lacI<sup>rc</sup> (repressor conformational)</h4><p>Binds allolactose but doesn't change shape → repressor always on. NOT complemented (dominant).</p></div>
+      <div class="def"><h4>lacO<sup>c</sup> (constitutive operator)</h4><p>Repressor can't bind operator → constitutive expression. NOT complemented (cis-acting).</p></div>
+      <div class="def"><h4>lacP (promoter mutation)</h4><p>RNA polymerase can't bind → no transcription. NOT complemented in trans by mutants in other loci.</p></div>
+    </div>
+    <div class="hl-gold"><strong>Rule of thumb:</strong> If the mutation affects a <em>diffusible product</em> (protein), it CAN be complemented in trans. If it affects a <em>DNA sequence</em> (operator, promoter), it CANNOT.</div>`),
+
+  makeSlide('§5 Classic Examples','badge-red','Nüsslein-Volhard, Wieschaus & Lewis — Drosophila','Embryonic segmentation — using balancer chromosomes',`
+    <div class="hl"><strong>Approach:</strong> EMS (ethyl methanesulfonate) mutagenesis → screen larvae for segmentation defects → classify by phenotype → map genes.</div>
+    <p><strong>Balancer chromosomes:</strong> lost a centromere during recombination → do NOT recombine → used to maintain lethal mutations across generations while still observing development in heterozygotes.</p>
+    <div class="hl-gold"><strong>Why balancers are essential:</strong> Many segmentation mutations are lethal as homozygotes. Balancers allow you to keep the mutation in a heterozygous line and cross them to screen for homozygous embryos.</div>`),
+
+  makeSlide('§5 Classic Examples','badge-red','Types of Segmentation Mutations','Five classes with distinct phenotypes',`
+    <table>
+      <tr><th>Class</th><th>Gene example</th><th>Phenotype</th><th>What it controls</th></tr>
+      <tr><td>Maternal genes</td><td><em>bicoid</em></td><td>No head/thorax; anterior = mirror of posterior (two tails)</td><td>Anterior–posterior axis</td></tr>
+      <tr><td>Gap genes</td><td><em>Krüppel (Kr)</em></td><td>Large contiguous regions of segments missing</td><td>Overall sets of segments</td></tr>
+      <tr><td>Pair-rule genes</td><td><em>even-skipped (eve)</em></td><td>Every other segment missing (half the segments)</td><td>Segment periodicity</td></tr>
+      <tr><td>Segment polarity genes</td><td><em>engrailed (en)</em></td><td>Segments present but orientation within segment disrupted</td><td>Segment polarity</td></tr>
+      <tr><td>Hox genes</td><td><em>abd-A</em></td><td>Wrong segment identity (e.g., legs on head)</td><td>Segment identity</td></tr>
+    </table>
+    <div class="hl-purple">These mutations revealed a <strong>hierarchical cascade</strong>: maternal genes → gap genes → pair-rule genes → polarity genes → Hox genes. Each tier subdivides the body plan further.</div>`)
+];
+
+/* ===== ENGINE ===== */
+const cursors = {};
+const totalSecs = 7;
+
+function makeSlide_render(secIdx){
+  const slides = allSlides[secIdx];
+  const db = document.getElementById('d'+secIdx);
+  cursors[secIdx] = 0;
+  db.innerHTML = slides[0];
+  updateNav(secIdx);
+}
+
+function updateNav(s){
+  const slides = allSlides[s];
+  const i = cursors[s];
+  document.getElementById('c'+s).textContent = `${i+1} / ${slides.length}`;
+  document.getElementById('p'+s).disabled = (i===0);
+  document.getElementById('n'+s).disabled = (i===slides.length-1);
+}
+
+function ns(s){
+  const slides = allSlides[s];
+  if(cursors[s] < slides.length-1){
+    cursors[s]++;
+    document.getElementById('d'+s).innerHTML = slides[cursors[s]];
+    updateNav(s);
+  }
+}
+function ps(s){
+  const slides = allSlides[s];
+  if(cursors[s] > 0){
+    cursors[s]--;
+    document.getElementById('d'+s).innerHTML = slides[cursors[s]];
+    updateNav(s);
+  }
+}
+
+function go(idx){
+  for(let i=0;i<totalSecs;i++){
+    document.getElementById('s'+i).classList.remove('on');
+  }
+  document.getElementById('s'+idx).classList.add('on');
+  document.querySelectorAll('#topnav button').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  const pct = Math.round((idx/(totalSecs-1))*100);
+  document.getElementById('prog').style.width = pct+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+  // init deck if first visit
+  if(idx>0 && idx<6 && allSlides[idx] && !cursors[idx] && cursors[idx]!==0){
+    makeSlide_render(idx);
+  }
+}
+
+function ta(btn){
+  const ans = btn.nextElementSibling;
+  ans.classList.toggle('show');
+  btn.textContent = ans.classList.contains('show') ? 'Hide Answer' : 'Show Answer';
+}
+
+// init section 1 on load
+window.addEventListener('DOMContentLoaded',()=>{
+  for(let i=1;i<=5;i++) makeSlide_render(i);
+});
+</script>
+</body>
+</html>
