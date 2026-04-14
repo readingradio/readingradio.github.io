@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch. 17 – Metagenomes: Genomic Analysis of Communities</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --bg:#f5f3ee;--surface:#ffffff;--surface2:#f0ede6;
+    --forest:#2d5a3d;--forest-dim:#e8f2ec;--forest-mid:#c5dece;
+    --sage:#6b8f71;--sage-dim:#edf4ee;
+    --sand:#c9973a;--sand-dim:#fdf3e0;
+    --rust:#b85c38;--rust-dim:#fbeee8;
+    --teal:#2b7a78;--teal-dim:#e5f4f4;
+    --plum:#5e3d6e;--plum-dim:#f2ecf8;
+    --text:#1a2018;--muted:#6b7565;--border:#ddd8ce;
+    --mono:'DM Mono',monospace;
+    --sans:'Plus Jakarta Sans',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
+
+  /* TOP NAV */
+  #topnav{
+    background:var(--forest);
+    display:flex;align-items:center;flex-wrap:wrap;gap:0;
+    padding:0 16px;position:sticky;top:0;z-index:200;
+    box-shadow:0 2px 12px rgba(45,90,61,0.25);
+  }
+  #topnav .logo{
+    font-family:var(--mono);font-size:.73rem;font-weight:500;
+    color:#a8d4b0;padding:14px 12px 14px 0;border-right:1px solid rgba(255,255,255,0.15);
+    margin-right:4px;white-space:nowrap;letter-spacing:.06em;
+  }
+  #topnav button{
+    background:none;border:none;border-bottom:2px solid transparent;
+    color:rgba(255,255,255,0.6);font-family:var(--sans);font-size:.72rem;font-weight:600;
+    padding:14px 9px;cursor:pointer;white-space:nowrap;
+    transition:color .2s,border-color .2s;letter-spacing:.02em;
+  }
+  #topnav button:hover{color:#fff;}
+  #topnav button.active{color:#a8d4b0;border-bottom-color:#a8d4b0;}
+
+  /* PROGRESS */
+  .prog-wrap{height:3px;background:var(--forest-mid);}
+  .prog-bar{height:3px;background:linear-gradient(90deg,var(--sand),var(--sage));transition:width .3s;}
+
+  /* MAIN */
+  .main{max-width:900px;margin:0 auto;padding:32px 20px 60px;}
+  .sec{display:none;}
+  .sec.on{display:block;}
+
+  /* SECTION HEADER */
+  .sec-header{margin-bottom:28px;}
+  .sec-label{font-family:var(--mono);font-size:.68rem;color:var(--sage);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;}
+  .sec-title{font-size:1.65rem;font-weight:800;color:var(--forest);line-height:1.2;}
+  .sec-sub{font-size:.9rem;color:var(--muted);margin-top:6px;}
+
+  /* CARDS */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .card h3{font-size:1rem;font-weight:700;color:var(--forest);margin-bottom:10px;}
+  .card p{font-size:.88rem;color:#3a3f35;line-height:1.7;margin-bottom:8px;}
+  .card p:last-child{margin-bottom:0;}
+  .card ul{padding-left:18px;margin-bottom:8px;}
+  .card ul li{font-size:.88rem;color:#3a3f35;line-height:1.7;margin-bottom:4px;}
+
+  /* HIGHLIGHTS */
+  .hl{border-left:3px solid var(--forest);background:var(--forest-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.86rem;color:#243d2b;line-height:1.65;}
+  .hl-sand{border-left:3px solid var(--sand);background:var(--sand-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.86rem;color:#5a3d0a;line-height:1.65;}
+  .hl-teal{border-left:3px solid var(--teal);background:var(--teal-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.86rem;color:#1a4a48;line-height:1.65;}
+  .hl-rust{border-left:3px solid var(--rust);background:var(--rust-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.86rem;color:#4a2010;line-height:1.65;}
+  .hl-plum{border-left:3px solid var(--plum);background:var(--plum-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:.86rem;color:#3a2045;line-height:1.65;}
+
+  /* TABLE */
+  .ctable{width:100%;border-collapse:collapse;margin:12px 0;font-size:.83rem;}
+  .ctable th{background:var(--forest);color:#c8e8cc;font-family:var(--mono);font-weight:500;padding:9px 14px;text-align:left;border:1px solid var(--forest);font-size:.73rem;letter-spacing:.05em;}
+  .ctable td{padding:8px 14px;border:1px solid var(--border);color:#3a3f35;vertical-align:top;}
+  .ctable tr:nth-child(even) td{background:var(--surface2);}
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-family:var(--mono);font-size:.69rem;font-weight:500;letter-spacing:.04em;}
+  .tag-green{background:var(--forest-dim);color:var(--forest);}
+  .tag-sand{background:var(--sand-dim);color:#7a5010;}
+  .tag-teal{background:var(--teal-dim);color:var(--teal);}
+  .tag-rust{background:var(--rust-dim);color:var(--rust);}
+  .tag-plum{background:var(--plum-dim);color:var(--plum);}
+
+  /* DECK */
+  .deck{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .deck-title{background:var(--forest);padding:11px 20px;font-family:var(--mono);font-size:.7rem;color:#a8d4b0;letter-spacing:.1em;text-transform:uppercase;}
+  .deck-body{padding:24px 28px;min-height:180px;}
+  .deck-body h4{font-size:1rem;font-weight:700;color:var(--forest);margin-bottom:12px;}
+  .deck-body p{font-size:.88rem;color:#3a3f35;line-height:1.7;margin-bottom:8px;}
+  .deck-body ul{padding-left:18px;margin-bottom:8px;}
+  .deck-body ul li{font-size:.88rem;color:#3a3f35;line-height:1.7;margin-bottom:4px;}
+  .slide{display:none;}
+  .slide.on{display:block;}
+  .deck-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--surface2);border-top:1px solid var(--border);}
+  .deck-nav button{background:var(--forest-dim);color:var(--forest);border:1px solid var(--forest-mid);border-radius:6px;padding:5px 16px;font-family:var(--mono);font-size:.72rem;font-weight:500;cursor:pointer;transition:background .2s,color .2s;}
+  .deck-nav button:hover:not(:disabled){background:var(--forest);color:#fff;}
+  .deck-nav button:disabled{opacity:.3;cursor:default;}
+  .deck-nav .counter{font-family:var(--mono);font-size:.72rem;color:var(--muted);}
+
+  /* GRID */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+
+  /* FLOW STEP */
+  .flow{display:flex;flex-direction:column;gap:0;margin:12px 0;}
+  .flow-step{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:.86rem;color:#3a3f35;position:relative;}
+  .flow-step strong{color:var(--forest);}
+  .flow-arrow{text-align:center;color:var(--sage);font-size:1rem;line-height:1.2;padding:2px 0;}
+
+  /* REVIEW QUESTIONS */
+  .qbox{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .qbox .qnum{font-family:var(--mono);font-size:.68rem;color:var(--sage);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+  .qbox .qtext{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:12px;line-height:1.55;}
+  .qbox .toggle-btn{background:var(--forest-dim);color:var(--forest);border:1px solid var(--forest-mid);border-radius:6px;padding:6px 16px;font-family:var(--mono);font-size:.72rem;font-weight:500;cursor:pointer;transition:background .2s,color .2s;}
+  .qbox .toggle-btn:hover{background:var(--forest);color:#fff;}
+  .qbox .answer{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:.87rem;color:#3a4a38;line-height:1.7;}
+  .qbox .answer.show{display:block;}
+
+  /* DEFINITION PILL */
+  .def-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
+  @media(max-width:580px){.def-grid{grid-template-columns:1fr;}}
+  .def-card{border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:var(--surface2);}
+  .def-card .term{font-family:var(--mono);font-size:.75rem;font-weight:500;color:var(--forest);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+  .def-card .defn{font-size:.85rem;color:#3a3f35;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<nav id="topnav">
+  <div class="logo">EFB 307 · Guest</div>
+  <button onclick="show('overview')" id="btn-overview" class="active">📋 Overview</button>
+  <button onclick="show('what')" id="btn-what">🧬 What is a Metagenome?</button>
+  <button onclick="show('collection')" id="btn-collection">🔬 Collection & Sequencing</button>
+  <button onclick="show('otus')" id="btn-otus">📊 OTUs & Diversity</button>
+  <button onclick="show('holobiont')" id="btn-holobiont">🌱 Holobiont & Coevolution</button>
+  <button onclick="show('omics')" id="btn-omics">⚗️ Omics Applications</button>
+  <button onclick="show('review')" id="btn-review">✅ Review Qs</button>
+</nav>
+<div class="prog-wrap"><div class="prog-bar" id="prog" style="width:14%"></div></div>
+
+<div class="main">
+
+<!-- ============================================================ OVERVIEW -->
+<section class="sec on" id="overview">
+  <div class="sec-header">
+    <div class="sec-label">Guest Lecture — Environmental Genetics</div>
+    <div class="sec-title">Ch. 17: Metagenomes — Genomic Analysis of Communities</div>
+    <div class="sec-sub">How we study the genetics of entire communities of organisms, not just individual species</div>
+  </div>
+
+  <div class="card">
+    <h3>📚 Chapter Overview</h3>
+    <div class="grid2">
+      <div>
+        <div class="hl"><strong>Part 1: What is a Metagenome?</strong><br>Genome collections, target genes, sequencing methods, and how we analyze community composition</div>
+      </div>
+      <div>
+        <div class="hl-teal"><strong>Part 2: Metagenomes in Action</strong><br>Holobiont-level selection, coevolution, and connecting microbiome composition to function (omics)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🔑 Core Vocabulary at a Glance</h3>
+    <div class="def-grid">
+      <div class="def-card">
+        <div class="term">Metagenome</div>
+        <div class="defn">A collective of genomes from a community of organisms in an environmental sample (gut, lake, soil, etc.)</div>
+      </div>
+      <div class="def-card">
+        <div class="term">Microbiome</div>
+        <div class="defn">The community of microorganisms that associate with and interact with a particular host</div>
+      </div>
+      <div class="def-card">
+        <div class="term">Holobiont</div>
+        <div class="defn">The combination of a host organism and its microbiome — also called a metaorganism</div>
+      </div>
+      <div class="def-card">
+        <div class="term">OTU</div>
+        <div class="defn">Operational Taxonomic Unit — groupings of organisms based on genetic similarity (≥97% 16S identity = same species)</div>
+      </div>
+      <div class="def-card">
+        <div class="term">α Diversity</div>
+        <div class="defn">Diversity within a single group/site (species richness + evenness at one location)</div>
+      </div>
+      <div class="def-card">
+        <div class="term">β Diversity</div>
+        <div class="defn">Diversity between groups/sites — how different are two communities from each other?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ Key Methods & Tools</h3>
+    <table class="ctable">
+      <tr><th>Method</th><th>What it does</th><th>Key use in metagenomics</th></tr>
+      <tr><td><span class="tag tag-green">16S / ITS / 18S rRNA</span></td><td>Marker gene sequencing</td><td>Identify which organisms are present (who's there?)</td></tr>
+      <tr><td><span class="tag tag-teal">PCR + NGS (Illumina)</span></td><td>Amplify and sequence target genes at massive scale</td><td>Generate millions of reads from environmental samples</td></tr>
+      <tr><td><span class="tag tag-sand">OTU clustering</span></td><td>Group sequences by ≥97% similarity</td><td>Identify microbial species without culturing</td></tr>
+      <tr><td><span class="tag tag-green">PCA</span></td><td>Statistical clustering of samples by sequence similarity</td><td>Visualize β diversity — which samples are most similar?</td></tr>
+      <tr><td><span class="tag tag-teal">Rarefaction curves</span></td><td>Plot OTUs vs. number of sequences sampled</td><td>Estimate species richness and sampling completeness</td></tr>
+      <tr><td><span class="tag tag-plum">Transcriptomics</span></td><td>Target mRNA to detect gene expression</td><td>Determine which genes are being actively transcribed</td></tr>
+      <tr><td><span class="tag tag-rust">Metabolomics</span></td><td>Profile metabolic pathways from metagenome</td><td>Connect community composition to metabolic function</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ WHAT IS A METAGENOME -->
+<section class="sec" id="what">
+  <div class="sec-header">
+    <div class="sec-label">Part 1</div>
+    <div class="sec-title">What is a Metagenome?</div>
+    <div class="sec-sub">Comparing genes across entire communities of organisms</div>
+  </div>
+
+  <div class="card">
+    <h3>The Three Core Terms</h3>
+    <div class="def-grid">
+      <div class="def-card">
+        <div class="term">Metagenome</div>
+        <div class="defn">A <strong>collective of genomes</strong> from a community of organisms in an environmental sample. Communities can be holobionts (host + microbes), lakes, soils, etc.</div>
+      </div>
+      <div class="def-card">
+        <div class="term">Microbiome</div>
+        <div class="defn">The community of microorganisms that <strong>associate and interact with a host</strong> — your gut microbiome, skin microbiome, etc.</div>
+      </div>
+      <div class="def-card">
+        <div class="term">Holobiont / Metaorganism</div>
+        <div class="defn">The <strong>combination of host + its microbiome</strong>. Selection can act on the holobiont as a unit, not just on the host alone.</div>
+      </div>
+      <div class="def-card">
+        <div class="term">Why metagenomics?</div>
+        <div class="defn">Most microbes cannot be cultured in a lab. Metagenomics lets us study these <strong>nonculturable organisms</strong> directly from environmental samples.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Good Target Genes for Metagenomics</h3>
+    <p>Not every gene works well as a "barcode" for community profiling. Ideal genes are:</p>
+    <ul>
+      <li><strong>Similar across taxa</strong> — present in all organisms of interest (so you can compare)</li>
+      <li><strong>Relatively short</strong> — practical for sequencing</li>
+      <li>Have a <strong>variable region flanked by conserved regions</strong> — conserved ends = universal primers; variable center = tells species apart</li>
+      <li><strong>Occur only once</strong> per genome — avoids ambiguity</li>
+      <li><strong>Unlikely to be horizontally transferred</strong> — ensures the gene tracks organismal evolution</li>
+    </ul>
+    <div class="hl"><strong>Primary examples: 16S rRNA</strong> (bacteria/archaea), <strong>ITS</strong> (fungi), <strong>18S rRNA</strong> (eukaryotes). These genes have conserved flanking regions for PCR primers and variable internal regions for species identification.</div>
+    <p>The 16S rRNA gene has <strong>9 variable regions (V1–V9)</strong>. Researchers choose which variable region(s) to target based on the level of resolution needed and the taxa of interest.</p>
+  </div>
+
+  <div class="card">
+    <h3>Why the 97% Threshold?</h3>
+    <p>When comparing 16S sequences, organisms with <strong>≥97% sequence identity</strong> are grouped into the same OTU (roughly genus level). This threshold:</p>
+    <div class="hl-sand">Was formalized in the 1980s–90s and led to a <strong>dramatic increase</strong> in the number of microbial species described — from a few hundred to thousands per year. The OTU concept is essential for cataloguing novel microbial diversity without culturing.</div>
+  </div>
+</section>
+
+<!-- ============================================================ COLLECTION & SEQUENCING -->
+<section class="sec" id="collection">
+  <div class="sec-header">
+    <div class="sec-label">Part 2</div>
+    <div class="sec-title">Collection & Sequencing Pipeline</div>
+    <div class="sec-sub">From environmental sample to assembled genome sequences</div>
+  </div>
+
+  <div class="card">
+    <h3>The Metagenomic Workflow</h3>
+    <div class="flow">
+      <div class="flow-step"><strong>1. Sample collection</strong> — gut tissue, soil, lake water, or any environmental material containing the community</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><strong>2. DNA extraction</strong> — extract DNA from all organisms in the sample simultaneously</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><strong>3. PCR amplification</strong> — use universal primers targeting conserved flanking regions of 16S (or ITS/18S) to amplify the variable region across all taxa</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><strong>4. DNA library preparation</strong> — attach sequencing adapters to the amplified fragments</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><strong>5. Next Generation Sequencing (NGS / Illumina)</strong> — millions of reads generated in parallel; highly sensitive and fast</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><strong>6. Sequence analysis & assembly</strong> — reads are clustered into OTUs, overlapping reads assembled into contigs</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><strong>7. Database matching & annotation</strong> — sequences matched against NCBI, GOLD, UCSC databases to identify organisms and functions</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Key Genomic Databases</h3>
+    <table class="ctable">
+      <tr><th>Database</th><th>Purpose</th></tr>
+      <tr><td><strong>NCBI / GenBank</strong></td><td>Largest repository of nucleotide sequences, literature (PubMed), genes, proteins, clinical data</td></tr>
+      <tr><td><strong>GOLD (JGI)</strong></td><td>Genomes Online Database — metadata for genome and metagenome projects worldwide</td></tr>
+      <tr><td><strong>UCSC Genome Browser</strong></td><td>Visualization and annotation of assembled genomes; good for exploring specific loci</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Pros and Cons of Metagenomic Studies</h3>
+    <div class="grid2">
+      <div>
+        <div class="hl"><strong>✓ Advantages</strong>
+          <ul style="margin-top:6px;padding-left:14px;">
+            <li>Can capture <strong>nonculturable organisms</strong> — most microbes can't be grown in a lab</li>
+            <li><strong>High sensitivity</strong> — detects low-abundance taxa</li>
+            <li><strong>Fast turnaround</strong> with NGS platforms</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="hl-rust"><strong>✗ Limitations</strong>
+          <ul style="margin-top:6px;padding-left:14px;">
+            <li><strong>High cost</strong> — sequencing and analysis</li>
+            <li>Requires <strong>bioinformatic expertise</strong></li>
+            <li><strong>Contamination</strong> and low-abundance taxa can interfere</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="hl-teal"><strong>Key takeaway:</strong> Multiple approaches in combination are the most effective. Metagenomic sequencing works best alongside culturing, microscopy, and functional assays.</div>
+  </div>
+</section>
+
+<!-- ============================================================ OTUs & DIVERSITY -->
+<section class="sec" id="otus">
+  <div class="sec-header">
+    <div class="sec-label">Part 3</div>
+    <div class="sec-title">OTUs, Diversity Metrics & Analysis</div>
+    <div class="sec-sub">How we quantify and compare community composition</div>
+  </div>
+
+  <div class="deck">
+    <div class="deck-title">OTUs & Diversity Analysis — Slide Deck</div>
+    <div class="deck-body" id="otu-body">
+
+      <div class="slide on" id="otu-0">
+        <h4>Operational Taxonomic Units (OTUs)</h4>
+        <p>OTUs are <strong>groupings of organisms based on genetic similarity</strong> — essentially a computational proxy for "species" in microbial ecology. Also called <em>phylotypes</em>.</p>
+        <div class="hl">Standard threshold: sequences sharing <strong>≥97% 16S rRNA identity</strong> are placed in the same OTU (roughly genus level). Below 97% → different OTUs.</div>
+        <p>OTUs are especially useful for <strong>novel microbial species</strong> that have never been cultured or formally described. You can track and compare them without knowing what they are.</p>
+      </div>
+
+      <div class="slide" id="otu-1">
+        <h4>α Diversity vs. β Diversity</h4>
+        <table class="ctable">
+          <tr><th>Metric</th><th>What it measures</th><th>Visualized by</th></tr>
+          <tr><td><strong>α (Alpha) Diversity</strong></td><td>Diversity <em>within</em> a single group/site — how many different species are there, and how evenly distributed?</td><td>Shannon index box plots; rarefaction curves</td></tr>
+          <tr><td><strong>β (Beta) Diversity</strong></td><td>Diversity <em>between</em> groups — how different are two communities from each other?</td><td>PCA / PCoA scatter plots; distance matrices</td></tr>
+        </table>
+        <div class="hl-sand"><strong>Real example:</strong> Mangrove microbiomes have much higher α diversity (Shannon index ~11) than hot springs (~6). β diversity analysis shows these environments cluster into completely separate groups on a PCoA plot.</div>
+      </div>
+
+      <div class="slide" id="otu-2">
+        <h4>Principal Component Analysis (PCA)</h4>
+        <p>PCA is a statistical method that <strong>groups samples by the similarity of their microbial community sequences</strong>. Similar communities cluster together on the plot; dissimilar communities are far apart.</p>
+        <div class="hl-teal"><strong>Human microbiome PCA example:</strong>
+          <ul style="margin-top:6px;padding-left:14px;">
+            <li>Different body sites (oral, gastrointestinal, skin, urogenital) cluster into <strong>distinct groups</strong></li>
+            <li>Within the gastrointestinal site alone, samples shift from infant → child → adult → elder along PC1</li>
+          </ul>
+        </div>
+        <p>Each dot = one sample. Distance between dots = difference in community composition. The axes (PC1, PC2) capture the most variance in the data.</p>
+      </div>
+
+      <div class="slide" id="otu-3">
+        <h4>Rarefaction Curves</h4>
+        <p>Rarefaction curves plot <strong>cumulative OTUs (y-axis) vs. number of sequences sampled (x-axis)</strong>. They answer: "Are we sampling enough to capture the full diversity?"</p>
+        <div class="hl"><strong>Interpretation:</strong>
+          <ul style="margin-top:6px;padding-left:14px;">
+            <li><strong>Curve that plateaus (flattens)</strong> = good sampling; most diversity has been captured (low species richness OR sufficient depth)</li>
+            <li><strong>Curve that keeps rising steeply</strong> = insufficient sampling; more sequencing needed; high species richness</li>
+          </ul>
+        </div>
+        <div class="hl-sand"><strong>Panda example:</strong> Giant pandas (bamboo specialists) have much lower gut microbiome diversity than Thompson's gazelles (generalist grazers). The panda curve plateaus early at ~15 OTUs; the gazelle curve rises steeply past ~70 OTUs. Dietary specialization likely reduces microbiome diversity.</div>
+      </div>
+
+    </div>
+    <div class="deck-nav">
+      <button id="otu-prev" onclick="slide('otu',false)" disabled>← Prev</button>
+      <span class="counter" id="otu-counter">1 / 4</span>
+      <button id="otu-next" onclick="slide('otu',true)">Next →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ HOLOBIONT & COEVOLUTION -->
+<section class="sec" id="holobiont">
+  <div class="sec-header">
+    <div class="sec-label">Part 4</div>
+    <div class="sec-title">Holobionts, Coevolution & Selection</div>
+    <div class="sec-sub">When the microbiome shapes fitness — and how hosts and microbes coevolve</div>
+  </div>
+
+  <div class="deck">
+    <div class="deck-title">Holobiont Selection & Coevolution — Slide Deck</div>
+    <div class="deck-body" id="holo-body">
+
+      <div class="slide on" id="holo-0">
+        <h4>The Microbiome Can Modulate Phenotypic Expression</h4>
+        <p>The microbiome isn't just a passenger — it actively influences the host's phenotype. This means selection can act on the <strong>holobiont as a whole unit</strong>, not just the host genome.</p>
+        <div class="hl"><strong>Obese mouse example:</strong> Obese (ob/ob) mice — with the same diet as wild-type mice — have a <strong>higher proportion of Firmicutes</strong> and a <strong>lower proportion of Bacteroidetes</strong> in their gut. The microbiome composition correlates with the obese phenotype even when diet is controlled.</div>
+        <p>This suggests that microbiome composition can <strong>contribute to phenotypic differences</strong> beyond what the host genome alone predicts.</p>
+      </div>
+
+      <div class="slide" id="holo-1">
+        <h4>Attine Ants: A Multi-Species Coevolution System</h4>
+        <p>Leaf-cutter ants (tribe Attini) maintain a complex multi-organism system involving <strong>four players</strong>:</p>
+        <ol style="padding-left:18px;font-size:.88rem;color:#3a3f35;line-height:1.9;">
+          <li><strong>Attine ant</strong> (host) — farms a fungal garden for food</li>
+          <li><strong>Cultivated fungus</strong> (Trachymyrmex spp.) — the ant's food source</li>
+          <li><strong>Parasitic fungus</strong> (Escovopsis) — invades and devastates fungal gardens</li>
+          <li><strong>Actinobacteria</strong> — live on the ant's cuticle and produce antibiotics that inhibit Escovopsis</li>
+        </ol>
+        <div class="hl-teal">The three phylogenies (ant, cultivated fungus, Escovopsis) show <strong>similar branching patterns</strong> — evidence of long-term coevolution — even though Escovopsis is transmitted horizontally.</div>
+      </div>
+
+      <div class="slide" id="holo-2">
+        <h4>The Red Queen Hypothesis in Metagenomics Context</h4>
+        <p>Hosts and parasites are <strong>always evolving to get around each other's defenses</strong> — neither side ever "wins" permanently.</p>
+        <div class="hl-rust">Key experimental evidence: Non-deleterious mutations in a parasite of an <strong>evolving host</strong> accumulate at a <strong>much faster rate</strong> than in a parasite of a constant/static host. The parasite must keep mutating just to keep infecting the evolving host — exactly the "running to stay in place" dynamic.</div>
+        <p>This is directly observable in metagenome data: by tracking mutation rates in parasitic microbes across evolving vs. non-evolving host populations, we can test the Red Queen hypothesis empirically.</p>
+      </div>
+
+    </div>
+    <div class="deck-nav">
+      <button id="holo-prev" onclick="slide('holo',false)" disabled>← Prev</button>
+      <span class="counter" id="holo-counter">1 / 3</span>
+      <button id="holo-next" onclick="slide('holo',true)">Next →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ OMICS -->
+<section class="sec" id="omics">
+  <div class="sec-header">
+    <div class="sec-label">Part 5</div>
+    <div class="sec-title">Applications & Omics Branches</div>
+    <div class="sec-sub">Beyond who's there — connecting composition to function</div>
+  </div>
+
+  <div class="deck">
+    <div class="deck-title">Omics Applications — Slide Deck</div>
+    <div class="deck-body" id="om-body">
+
+      <div class="slide on" id="om-0">
+        <h4>Branches of Metagenomics</h4>
+        <table class="ctable">
+          <tr><th>Branch</th><th>Question it answers</th><th>Method</th></tr>
+          <tr><td><strong>Intra-species analysis</strong></td><td>How do individuals of the same species differ genetically?</td><td>SNP calling, population genomics</td></tr>
+          <tr><td><strong>Inter-species analysis</strong></td><td>How do different species in a community relate?</td><td>OTU profiling, phylogenetics</td></tr>
+          <tr><td><strong>Ancient metagenomics</strong></td><td>What organisms/diseases were present historically?</td><td>aDNA extraction from fossils/calculus</td></tr>
+          <tr><td><strong>Transcriptomics</strong></td><td>Which genes are being actively expressed right now?</td><td>Target mRNA with specific primers</td></tr>
+          <tr><td><strong>Metabolomics</strong></td><td>Which metabolic pathways are active in the community?</td><td>Profile metabolic gene abundances (KEGG)</td></tr>
+          <tr><td><strong>Functional metagenomics</strong></td><td>Which functional genes exist? (e.g., resistome)</td><td>Clone-and-screen; antibiotic selection</td></tr>
+        </table>
+      </div>
+
+      <div class="slide" id="om-1">
+        <h4>Ancient Metagenomics</h4>
+        <p>Metagenomics can be applied to ancient DNA (aDNA) extracted from archaeological materials — teeth, bones, calcified nodules — to reconstruct past microbiomes and diseases.</p>
+        <div class="hl-sand"><strong>Example 1 — Medieval Italy:</strong> A 14th-century skeleton from Geridu, Italy had calcified nodules containing bacterial fossils. Metagenomic sequencing identified <em>Brucella melitensis</em> as the likely cause of death — confirming a medieval strain closely related to but distinct from contemporary strains.</div>
+        <div class="hl-teal"><strong>Example 2 — Neanderthal dental calculus:</strong> Ancient DNA from calcified plaque revealed Neanderthal diet (plants, mushrooms) and pathogen exposure — even differentiating Neanderthal vs. modern human microbiome compositions by major bacterial phyla.</div>
+      </div>
+
+      <div class="slide" id="om-2">
+        <h4>Transcriptomics: What Genes Are Being Expressed?</h4>
+        <p>While metagenomics tells us <em>which organisms and genes are present</em>, transcriptomics tells us <em>which genes are actively being transcribed</em> at a given moment.</p>
+        <p>Method: Target mRNA (not DNA) using specific primers → reverse transcribe to cDNA → sequence.</p>
+        <div class="hl"><strong>Marine bacteria example:</strong> Photosynthetic marine bacteria (<em>Prochlorococcus</em>) show <strong>oscillating gene expression</strong> throughout the day — peaking at different times for different metabolic categories (ribosomes, carbon fixation, photosynthesis). Non-photosynthetic bacteria (<em>Pelagibacter</em>) living alongside them show <strong>similar oscillation patterns</strong> — their transcription is coupled to the photosynthetic bacteria's nutrient output.</div>
+      </div>
+
+      <div class="slide" id="om-3">
+        <h4>Metabolomics: Composition vs. Function</h4>
+        <p>A key insight from metabolomics: <strong>the specific microbial taxa can vary enormously between individuals and environments, but metabolic pathways remain relatively stable.</strong></p>
+        <div class="hl-rust"><strong>Key finding:</strong> Three environmental microbiomes (whale falls, Sargasso Sea, agricultural soil) have proportions of key metabolic genes (carbohydrate metabolism, energy metabolism, amino acid metabolism) <em>similar</em> to human and mouse gut microbiomes — despite completely different community compositions. <strong>Similar functions can emerge from radically different organisms.</strong></div>
+        <p>Within the human microbiome: microbial taxa vary greatly between individuals for the same body site, but metabolic pathway representation is <strong>much more uniform</strong> within a healthy population — suggesting strong functional selection on the holobiont.</p>
+      </div>
+
+      <div class="slide" id="om-4">
+        <h4>Functional Metagenomics: Mining the Resistome</h4>
+        <p>Functional metagenomics doesn't just characterize who's there — it finds <strong>specific functional genes</strong> by selecting for phenotypes.</p>
+        <p><strong>Resistome pipeline (antibiotic resistance genes):</strong></p>
+        <div class="flow" style="margin-top:8px;">
+          <div class="flow-step"><strong>1.</strong> Extract genomic DNA from fecal sample</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step"><strong>2.</strong> Fragment DNA into ~2 kb pieces and ligate into plasmid vectors</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step"><strong>3.</strong> Transfect into indicator host strain (e.g., E. coli)</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step"><strong>4.</strong> Grow on antibiotic-containing medium → <strong>only resistant clones survive</strong></div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step"><strong>5.</strong> PCR amplify → sequence → annotate the resistance gene</div>
+        </div>
+        <div class="hl-teal">This approach harvests the entire "resistome" — all antibiotic resistance genes present in a microbiome — without needing to know what organisms they came from.</div>
+      </div>
+
+    </div>
+    <div class="deck-nav">
+      <button id="om-prev" onclick="slide('om',false)" disabled>← Prev</button>
+      <span class="counter" id="om-counter">1 / 5</span>
+      <button id="om-next" onclick="slide('om',true)">Next →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ REVIEW QUESTIONS -->
+<section class="sec" id="review">
+  <div class="sec-header">
+    <div class="sec-label">Review</div>
+    <div class="sec-title">Review Questions</div>
+    <div class="sec-sub">Try answering before revealing — click to show each answer</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q1</div>
+    <div class="qtext">Define metagenome, microbiome, and holobiont. How do they relate to each other?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">A <strong>metagenome</strong> is the collective of all genomes from a community of organisms in an environmental sample (gut, lake, soil, etc.). A <strong>microbiome</strong> is the specific community of microorganisms associated with a particular host (e.g., the human gut microbiome). A <strong>holobiont</strong> (or metaorganism) is the combination of a host and its microbiome treated as a single biological unit. The relationship: the holobiont's microbiome contributes to its metagenome; studying the metagenome gives us data on the microbiome's genetic content and function.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q2</div>
+    <div class="qtext">What properties make 16S rRNA an ideal target gene for metagenomic community profiling? Why might you use ITS instead?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">16S rRNA is ideal for bacteria/archaea because it is: (1) present in all prokaryotes (similar across taxa), (2) relatively short and practical to sequence, (3) contains a <strong>variable region flanked by conserved regions</strong> — the conserved regions allow universal PCR primers while the variable region tells species apart, (4) single-copy (occurs once per genome), and (5) unlikely to be horizontally transferred, ensuring it tracks true evolutionary relationships.<br><br><strong>ITS (Internal Transcribed Spacer)</strong> is used instead when studying <strong>fungi</strong>, because ITS is the standard fungal barcode gene with similar properties for that kingdom. 18S rRNA is used for eukaryotes more broadly.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q3</div>
+    <div class="qtext">What is an OTU and why is the 97% identity threshold significant? What taxonomic level does it roughly correspond to?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">An OTU (Operational Taxonomic Unit) is a <strong>group of organisms with ≥97% 16S rRNA sequence similarity</strong> — a computational proxy for species in microbial ecology. It is especially useful for novel, nonculturable microbes that have never been formally described. The 97% threshold roughly corresponds to <strong>genus level</strong> taxonomic grouping. The introduction of this threshold in the 1980s–90s drove a massive increase in microbial species discovery.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q4</div>
+    <div class="qtext">Distinguish α diversity from β diversity. Give one method for visualizing each.</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer"><strong>α diversity</strong> = diversity <em>within</em> a single community/site — measures species richness and evenness at one location. Visualized by: Shannon index box plots, rarefaction curves (OTUs vs. sequences).<br><br><strong>β diversity</strong> = diversity <em>between</em> communities — measures how different two communities are from each other. Visualized by: PCA/PCoA scatter plots (samples that cluster together have similar community composition), Bray-Curtis dissimilarity matrices.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q5</div>
+    <div class="qtext">How do you interpret a rarefaction curve? What does a curve that has plateaued tell you vs. one that is still rising steeply?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">A rarefaction curve plots <strong>cumulative OTUs discovered vs. number of sequences sampled</strong>.<br><br>A <strong>curve that plateaus/flattens</strong> means that additional sequencing is unlikely to reveal new OTUs — sampling depth is sufficient and most of the community's diversity has been captured. This community has relatively <strong>low species richness</strong> OR has been thoroughly sampled.<br><br>A <strong>curve that continues rising steeply</strong> means there are still many undiscovered OTUs — the community has high species richness or the sample is undersequenced. The giant panda gut microbiome plateaus early (~15 OTUs), reflecting low diversity due to bamboo specialization. The Thompson's gazelle microbiome keeps rising past 70+ OTUs, reflecting high diversity from a more varied diet.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q6</div>
+    <div class="qtext">Describe the attine ant holobiont system. What are the four key players, and what evidence is there for long-term coevolution?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">The attine ant system involves four players: (1) the <strong>attine ant</strong> (host), (2) the <strong>cultivated fungus</strong> (<em>Trachymyrmex</em> species) farmed by the ant for food, (3) the <strong>parasitic fungus</strong> (<em>Escovopsis</em>) that invades and destroys fungal gardens, and (4) <strong>Actinobacteria</strong> living on the ant's cuticle that produce antibiotics inhibiting <em>Escovopsis</em>.<br><br>Evidence for coevolution: The phylogenetic trees of ants, their cultivated fungi, and <em>Escovopsis</em> all show <strong>similar branching patterns</strong>, indicating long-term co-diversification. This is remarkable because <em>Escovopsis</em> is horizontally transmitted (not vertically inherited) — yet it has tracked ant and fungal evolution closely, implying tight coevolutionary pressure.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q7</div>
+    <div class="qtext">What is the key finding from comparing microbial taxa composition vs. metabolic pathway representation across different body sites and individuals?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">The key finding is: <strong>microbial community composition (which taxa are present) varies enormously between individuals and body sites, but metabolic pathway representation is much more stable and uniform</strong>.<br><br>Within one body site, different individuals have very different microbial species — yet the same metabolic pathways (carbohydrate metabolism, ATP synthesis, amino acid transport) are present at similar proportions. This also holds across environments: whale fall, soil, and ocean microbiomes have metabolic gene profiles similar to human gut microbiomes despite completely different taxa. This suggests that <strong>functional selection acts on the holobiont</strong> — what matters is that essential metabolic functions are maintained, not which specific organisms perform them.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q8</div>
+    <div class="qtext">What is functional metagenomics? Describe how you would use it to identify antibiotic resistance genes (the "resistome") in a gut microbiome.</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">Functional metagenomics screens for specific <strong>functional genes by selecting for phenotypes</strong>, not just sequencing. To find antibiotic resistance genes: (1) extract genomic DNA from a fecal sample, (2) fragment into ~2 kb pieces, (3) ligate fragments into plasmid vectors, (4) transfect into E. coli indicator cells, (5) grow on antibiotic-containing medium — only cells containing resistance genes survive, (6) PCR amplify those genes from surviving colonies, (7) sequence and annotate. This harvests the entire "resistome" — all resistance genes present — regardless of which organism they originally came from.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q9</div>
+    <div class="qtext">How does the Red Queen hypothesis connect to metagenomic data on host-parasite coevolution? What evidence supports it?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer">The Red Queen hypothesis predicts that hosts and parasites are always co-evolving — each must keep adapting just to maintain fitness against the other. Metagenomic evidence: when parasites infect an <strong>evolving host</strong> (one that is changing genetically), the parasite accumulates <strong>non-deleterious mutations at a faster rate</strong> than a parasite infecting a genetically constant host. This shows that parasite evolution is driven by and tracks host evolution — supporting the coevolutionary arms race model. The attine ant system also supports this: even though <em>Escovopsis</em> is horizontally transmitted, its phylogeny mirrors the ant and fungal phylogenies, showing it has tracked holobiont evolution over millions of years.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qnum">Q10</div>
+    <div class="qtext">Name at least three pros and three cons of metagenomic approaches. What is the general recommendation for maximizing research effectiveness?</div>
+    <button class="toggle-btn" onclick="toggle(this)">Show Answer</button>
+    <div class="answer"><strong>Pros:</strong> (1) Can detect <em>nonculturable organisms</em> — the majority of microbes cannot be grown in a lab; (2) High sensitivity — detects even low-abundance taxa; (3) Fast turnaround with modern NGS platforms like Illumina.<br><br><strong>Cons:</strong> (1) High cost — sequencing and computational analysis; (2) Requires significant bioinformatics expertise; (3) Contamination and low-abundance taxa can interfere with results.<br><br><strong>Recommendation:</strong> Multiple approaches in combination are the most effective — metagenomics is best used alongside culturing, microscopy, transcriptomics, metabolomics, and functional assays to get a complete picture of community composition and function.</div>
+  </div>
+
+</section>
+
+</div><!-- end main -->
+
+<script>
+  const sections = ['overview','what','collection','otus','holobiont','omics','review'];
+  const progs = {overview:14,what:28,collection:42,otus:56,holobiont:70,omics:84,review:100};
+
+  function show(id){
+    sections.forEach(s=>{
+      document.getElementById(s).classList.remove('on');
+      document.getElementById('btn-'+s).classList.remove('active');
+    });
+    document.getElementById(id).classList.add('on');
+    document.getElementById('btn-'+id).classList.add('active');
+    document.getElementById('prog').style.width=progs[id]+'%';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  const decks={
+    otu:{count:4,idx:0},
+    holo:{count:3,idx:0},
+    om:{count:5,idx:0}
+  };
+
+  function slide(deck,forward){
+    const d=decks[deck];
+    document.getElementById(deck+'-'+d.idx).classList.remove('on');
+    if(forward) d.idx=Math.min(d.idx+1,d.count-1);
+    else d.idx=Math.max(d.idx-1,0);
+    document.getElementById(deck+'-'+d.idx).classList.add('on');
+    document.getElementById(deck+'-counter').textContent=(d.idx+1)+' / '+d.count;
+    document.getElementById(deck+'-prev').disabled=d.idx===0;
+    document.getElementById(deck+'-next').disabled=d.idx===d.count-1;
+  }
+
+  function toggle(btn){
+    const ans=btn.nextElementSibling;
+    const showing=ans.classList.contains('show');
+    ans.classList.toggle('show');
+    btn.textContent=showing?'Show Answer':'Hide Answer';
+  }
+</script>
+
+</body>
+</html>
